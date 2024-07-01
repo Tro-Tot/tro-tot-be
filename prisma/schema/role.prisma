@@ -1,0 +1,17 @@
+model Role {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  name      String    @unique
+  code      RoleCode
+  users     User[]
+}
+
+enum RoleCode {
+  RENTER
+  LANDLORD
+  BULDING_MANAGER
+  COOPERATIVE_MANAGER
+  ADMIN
+}

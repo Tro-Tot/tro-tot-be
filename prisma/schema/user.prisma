@@ -1,0 +1,10 @@
+model User {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  email     String    @unique
+  name      String?
+  role      Role      @relation(fields: [roleId], references: [id])
+  roleId    String
+}
