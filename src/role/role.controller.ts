@@ -13,6 +13,8 @@ import { RoleService } from './role.service';
 import { UpdateRoleReqDto } from './dto/update-role-req.dto';
 import { UpdateRolesReqDto } from './dto/update-roles-req.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { apiSuccess } from 'src/common/api-response';
+import { ApiResponse } from 'src/common/dto/response.dto';
 
 @Controller('role')
 @ApiTags('role')
@@ -20,13 +22,15 @@ export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
   @Get()
-  async roles(): Promise<Role[]> {
-    return this.roleService.roles({});
+  async roles(): Promise<ApiResponse> {
+    const result = await this.roleService.roles({});
+    return apiSuccess(200, result, 'Get role successfully');
   }
 
   @Get(':id')
-  async role(@Param('id') id: string): Promise<Role> {
-    return this.roleService.role({ id: id });
+  async role(@Param('id') id: string): Promise<ApiResponse> {
+    const result = await this.roleService.role({ id: id });
+    return apiSuccess(200, result, 'Get role successfully');
   }
 
   @Post()
