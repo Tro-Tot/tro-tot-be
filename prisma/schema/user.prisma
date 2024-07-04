@@ -7,4 +7,5 @@ model User {
   name      String?
   role      Role      @relation(fields: [roleId], references: [id])
   roleId    String
+  password  String
 }
