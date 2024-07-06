@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
-import { RoleModule } from './role/role.module';
+import { RoleModule } from './modules/role/role.module';
 
 @Module({
   imports: [ConfigModule.forRoot(), RoleModule],
