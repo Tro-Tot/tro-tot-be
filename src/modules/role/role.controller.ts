@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  ValidationPipe,
 } from '@nestjs/common';
 import { Prisma, Role } from '@prisma/client';
 import { CreateRoleReqDto } from './dto/create-role-req.dto';
@@ -13,8 +14,9 @@ import { RoleService } from './role.service';
 import { UpdateRoleReqDto } from './dto/update-role-req.dto';
 import { UpdateRolesReqDto } from './dto/update-roles-req.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { apiSuccess } from 'src/common/api-response';
+import { apiSuccess } from 'src/common/dto/api-response';
 import { ApiResponse } from 'src/common/dto/response.dto';
+import { UsernameDuplicateException } from '../user/exception/username-duplicate.exception';
 
 @Controller('role')
 @ApiTags('role')
@@ -34,7 +36,9 @@ export class RoleController {
   }
 
   @Post()
-  async createRole(@Body() createRoleReqDto: CreateRoleReqDto): Promise<Role> {
+  async createRole(
+    @Body(new ValidationPipe()) createRoleReqDto: CreateRoleReqDto,
+  ): Promise<Role> {
     const role: Prisma.RoleCreateInput = {
       name: createRoleReqDto.name,
       code: createRoleReqDto.code,
@@ -56,7 +60,7 @@ export class RoleController {
   @Patch(':id')
   async updateRole(
     @Param('id') id: string,
-    @Body() updateRoleReqDto: UpdateRoleReqDto,
+    @Body(new ValidationPipe()) updateRoleReqDto: UpdateRoleReqDto,
   ): Promise<Role> {
     const role: Prisma.RoleUpdateInput = {
       name: updateRoleReqDto.name,
