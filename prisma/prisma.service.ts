@@ -41,18 +41,18 @@ export class PrismaService
     this.$use(this.softDeleteMiddleware);
     this.$use(this.findNotDeletedMiddleware);
 
-    this.$on('error', ({ message }) => {
-      this.logger.error(message);
-    });
-    this.$on('warn', ({ message }) => {
-      this.logger.warn(message);
-    });
-    this.$on('info', ({ message }) => {
-      this.logger.debug(message);
-    });
-    this.$on('query', ({ query, params }) => {
-      this.logger.log(`${query}; ${params}`);
-    });
+    // this.$on('error', ({ message }) => {
+    //   this.logger.error(message);
+    // });
+    // this.$on('warn', ({ message }) => {
+    //   this.logger.warn(message);
+    // });
+    // this.$on('info', ({ message }) => {
+    //   this.logger.debug(message);
+    // });
+    // this.$on('query', ({ query, params }) => {
+    //   this.logger.log(`${query}; ${params}`);
+    // });
   }
 
   findNotDeletedMiddleware: Prisma.Middleware = async (params, next) => {
