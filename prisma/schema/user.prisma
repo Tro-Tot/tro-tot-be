@@ -8,4 +8,5 @@ model User {
   role      Role      @relation(fields: [roleId], references: [id])
   roleId    String
   password  String
+  username String   @unique
 }
