@@ -11,6 +11,7 @@ import { RefreshTokenService } from '../refresh-token/refresh-token.service';
 import { date } from 'zod';
 import { AuthenUser } from './dto/authen-user.dto';
 import { Logout } from './dto/logout.dto';
+import { BlacklistTokenService } from '../blacklist-token/blacklist-token.service';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +19,7 @@ export class AuthService {
     private userService: UserService,
     private config: ConfigService,
     private jwtService: JwtService,
+    private blackListTokenService: BlacklistTokenService,
     private refreshTokenService: RefreshTokenService,
   ) {}
 
@@ -77,6 +79,7 @@ export class AuthService {
 
   async handleLogout(user: AuthenUser, logout: Logout) {
     try {
+      await this.blackListTokenService.createBlackListToken(user.accessToken);
       const result = await this.refreshTokenService.updateRefreshTokenStatus(
         logout.refreshToken,
         false,

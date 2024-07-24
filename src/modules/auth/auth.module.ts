@@ -10,6 +10,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { RefreshTokenStrategy } from './strategy/refresh-token.stategy';
 import { RefreshTokenModule } from '../refresh-token/refresh-token.module';
 import { AccessTokenStrategy } from './strategy/access-token.strategy';
+import { BlacklistTokenModule } from '../blacklist-token/blacklist-token.module';
 
 @Module({
   controllers: [AuthController],
@@ -18,6 +19,7 @@ import { AccessTokenStrategy } from './strategy/access-token.strategy';
     UserModule,
     ConfigModule,
     RefreshTokenModule,
+    BlacklistTokenModule,
   ],
   providers: [
     AuthService,

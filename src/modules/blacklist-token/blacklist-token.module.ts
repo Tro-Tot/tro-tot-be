@@ -6,5 +6,6 @@ import { PrismaService } from 'prisma/prisma.service';
 @Module({
   controllers: [BlacklistTokenController],
   providers: [BlacklistTokenService, PrismaService],
+  exports: [BlacklistTokenService],
 })
 export class BlacklistTokenModule {}
