@@ -9,6 +9,7 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { RefreshTokenStrategy } from './strategy/refresh-token.stategy';
 import { RefreshTokenModule } from '../refresh-token/refresh-token.module';
+import { AccessTokenStrategy } from './strategy/access-token.strategy';
 
 @Module({
   controllers: [AuthController],
@@ -18,6 +19,11 @@ import { RefreshTokenModule } from '../refresh-token/refresh-token.module';
     ConfigModule,
     RefreshTokenModule,
   ],
-  providers: [AuthService, LocalStrategy, RefreshTokenStrategy],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    RefreshTokenStrategy,
+    AccessTokenStrategy,
+  ],
 })
 export class AuthModule {}

@@ -9,6 +9,8 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { RefreshTokenService } from '../refresh-token/refresh-token.service';
 import { date } from 'zod';
+import { AuthenUser } from './dto/authen-user.dto';
+import { Logout } from './dto/logout.dto';
 
 @Injectable()
 export class AuthService {
@@ -56,9 +58,6 @@ export class AuthService {
           );
         }
 
-        //Update refresh token in database
-        await this.userService.updateRefreshToken(user.id, refreshToken);
-
         return apiSuccess(
           200,
           { accessToken, refreshToken, user },
@@ -75,25 +74,19 @@ export class AuthService {
       return apiFailed(500, e, 'Internal server error');
     }
   }
-  generateRefreshToken(user: {
-    id: string;
-    createdAt: Date;
-    updatedAt: Date;
-    deletedAt: Date | null;
-    email: string;
-    name: string | null;
-    roleId: string;
-    password: string;
-    username: string;
-  }) {
-    const refreshTokenExpiresIn = this.config.get('JWT_REFRESH_TOKEN_EXPIRY');
-    const secrect = this.config.get('JWT_REFRESH_SECRET');
-    const refreshToken = this.jwtService.sign(
-      { userId: user.id, role: user.roleId },
-      { secret: secrect, expiresIn: refreshTokenExpiresIn },
-    );
-    return refreshToken;
+
+  async handleLogout(user: AuthenUser, logout: Logout) {
+    try {
+      const result = await this.refreshTokenService.updateRefreshTokenStatus(
+        logout.refreshToken,
+        false,
+      );
+      return apiSuccess(200, result, 'Logout successfully');
+    } catch (e) {
+      return apiSuccess(400, {}, 'Logout failed');
+    }
   }
+
   generateAccessToken(user: {
     id: string;
     createdAt: Date;
@@ -161,12 +154,6 @@ export class AuthService {
         if (!accessToken && !newRefreshToken) {
           return apiFailed(500, 'Server error can not generate token', null);
         }
-
-        //Update refreshToken
-        await this.userService.updateRefreshToken(
-          userId,
-          newRefreshToken.refreshToken,
-        );
 
         return apiSuccess(
           200,

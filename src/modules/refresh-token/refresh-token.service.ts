@@ -42,10 +42,18 @@ export class RefreshTokenService {
       { secret: secrect, expiresIn: refreshTokenExpiresIn },
     );
 
+    //Regex to get the number from env
+    const numbers = refreshTokenExpiresIn.match(/\d+/g);
+    console.log(numbers[0]);
+    const expiredAtTake = new Date();
+    expiredAtTake.setDate(expiredAtTake.getDate() + parseInt(numbers[0]));
+
+    console.log(expiredAtTake);
     if (refreshTokenResult) {
       const refreshToken: Prisma.RefreshTokenCreateInput = {
         userId: user.id,
         refreshToken: refreshTokenResult,
+        expiredAt: expiredAtTake,
       };
       const result = this.prisma.refreshToken.create({
         data: refreshToken,
@@ -63,6 +71,9 @@ export class RefreshTokenService {
         userId: userIdInput,
         refreshToken: refreshTokenInput,
         status: true,
+        expiredAt: {
+          gte: new Date(),
+        },
       },
     });
     return !!refreshTokenResult;

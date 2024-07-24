@@ -13,16 +13,16 @@ export class UserService {
       },
     });
   }
-  updateRefreshToken(id: string, refreshToken: string) {
-    return this.prisma.user.update({
-      where: {
-        id: id,
-      },
-      data: {
-        refreshToken: refreshToken,
-      },
-    });
-  }
+  // updateRefreshToken(id: string, refreshToken: string) {
+  //   return this.prisma.user.update({
+  //     where: {
+  //       id: id,
+  //     },
+  //     data: {
+  //       refreshToken: refreshToken,
+  //     },
+  //   });
+  // }
   findOneByUserName(usernameInput: string) {
     return this.prisma.user.findFirstOrThrow({
       where: {

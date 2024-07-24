@@ -19,6 +19,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { RefreshTokenStrategy } from './strategy/refresh-token.stategy';
 import { GetUser } from './decorator/get_user.decorator';
 import { AuthenUser } from './dto/authen-user.dto';
+import { Logout } from './dto/logout.dto';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -44,5 +45,7 @@ export class AuthController {
 
   @Post('/logout')
   @UseGuards(AuthGuard('jwt'))
-  logout(@GetUser() user: AuthenUser, @Body() logout: any) {}
+  logout(@GetUser() user: AuthenUser, @Body() logoutBody: Logout) {
+    return this.authService.handleLogout(user, logoutBody);
+  }
 }
