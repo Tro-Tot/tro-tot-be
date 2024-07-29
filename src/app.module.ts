@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { RoleModule } from './modules/role/role.module';
+import { MailModule } from './modules/mail/mail.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { BlacklistTokenModule } from './modules/blacklist-token/blacklist-token.module';
@@ -16,6 +17,7 @@ import { RefreshTokenModule } from './modules/refresh-token/refresh-token.module
     UserModule,
     BlacklistTokenModule,
     RefreshTokenModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

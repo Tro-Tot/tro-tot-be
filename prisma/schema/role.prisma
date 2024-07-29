@@ -1,10 +1,10 @@
 model Role {
   id        String    @id @default(uuid())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
   name      String    @unique
   code      RoleCode
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+  updatedAt DateTime  @updatedAt
   users     User[]
 }
 
