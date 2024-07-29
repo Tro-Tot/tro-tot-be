@@ -1,17 +1,17 @@
-import { ApiResponse } from './dto/response.dto';
+import { ApiResponse } from './response.dto';
 
 export const apiSuccess = (
   statusCode: number = 200,
   data: any = null,
   message: string,
 ): ApiResponse => {
-  return { statusCode, data, message };
+  return new ApiResponse(statusCode, data, message);
 };
 
 export const apiFailed = (
   statusCode: number = 500,
-  data: any = null,
   message: string = 'Internal server error',
+  error: any = null,
 ): ApiResponse => {
-  return { statusCode, data, message };
+  return new ApiResponse(statusCode, null, message, error);
 };
