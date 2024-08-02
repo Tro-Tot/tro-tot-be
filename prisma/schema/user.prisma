@@ -1,12 +1,26 @@
 model User {
-  id        String    @id @default(uuid())
-  email     String    @unique
-  name      String?
-  roleId    String
-  createdAt DateTime  @default(now())
-  deletedAt DateTime?
-  updatedAt DateTime  @updatedAt
-  password  String
-  username  String    @unique
-  role      Role      @relation(fields: [roleId], references: [id])
+  id             String           @id @default(uuid())
+  email          String           @unique
+  password       String
+  username       String
+  avatar_url     String?
+  cid_id         String
+  created_at     DateTime?        @default(now())
+  date_of_birth  DateTime
+  first_name     String
+  gender         Gender
+  is_deleted     Boolean?         @default(false)
+  is_verified    Boolean?         @default(false)
+  last_name      String
+  phone_number   String           @unique
+  role_id        String
+  status         String?          @default("active")
+  updated_at     DateTime?
+  LandLord       LandLord[]
+  Manager        Manager[]
+  Renter         Renter[]
+  Staff          Staff[]
+  TechnicalStaff TechnicalStaff[]
+  Cid            Cid              @relation(fields: [cid_id], references: [id])
+  Role           Role             @relation(fields: [role_id], references: [id])
 }

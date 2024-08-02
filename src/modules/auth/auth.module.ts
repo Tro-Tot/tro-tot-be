@@ -11,6 +11,7 @@ import { RefreshTokenStrategy } from './strategy/refresh-token.stategy';
 import { RefreshTokenModule } from '../refresh-token/refresh-token.module';
 import { AccessTokenStrategy } from './strategy/access-token.strategy';
 import { BlacklistTokenModule } from '../blacklist-token/blacklist-token.module';
+import { MailService } from '../mail/mail.service';
 
 @Module({
   controllers: [AuthController],
@@ -26,6 +27,7 @@ import { BlacklistTokenModule } from '../blacklist-token/blacklist-token.module'
     LocalStrategy,
     RefreshTokenStrategy,
     AccessTokenStrategy,
+    MailService,
   ],
 })
 export class AuthModule {}

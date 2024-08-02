@@ -5,7 +5,7 @@ model Role {
   createdAt DateTime  @default(now())
   deletedAt DateTime?
   updatedAt DateTime  @updatedAt
-  users     User[]
+  User      User[]
 }
 
 enum RoleCode {

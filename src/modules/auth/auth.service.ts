@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { LoginAuthDTO } from './dto/login-auth.dto';
 import { apiFailed, apiSuccess } from 'src/common/dto/api-response';
@@ -12,6 +12,7 @@ import { date } from 'zod';
 import { AuthenUser } from './dto/authen-user.dto';
 import { Logout } from './dto/logout.dto';
 import { BlacklistTokenService } from '../blacklist-token/blacklist-token.service';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -21,6 +22,7 @@ export class AuthService {
     private jwtService: JwtService,
     private blackListTokenService: BlacklistTokenService,
     private refreshTokenService: RefreshTokenService,
+    private readonly mailService: MailService,
   ) {}
 
   async login(body: LoginAuthDTO) {
@@ -171,5 +173,43 @@ export class AuthService {
       }
       return apiFailed(400, 'Refresh token is invalid', e);
     }
+  }
+
+  private async generateResetPasswordToken(userId: string, email: string) {
+    const token = this.jwtService.sign(
+      { userId, email },
+      { secret: this.config.get('JWT_SECRET'), expiresIn: '30m' },
+    );
+
+    return token;
+  }
+
+  async sendResetPasswordEmail(email: string, clientUrl: string) {
+    const user = await this.userService.findOneByEmail(email);
+    if (!user) throw new BadRequestException('Email not found');
+
+    const resetPasswordToken = await this.generateResetPasswordToken(
+      user.id,
+      email,
+    );
+
+    const resetPasswordUrl = `${clientUrl}?token=${resetPasswordToken}`;
+
+    await this.mailService.sendResetPassword(email, resetPasswordUrl);
+    return apiSuccess(200, null, 'Email sent');
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    const { userId, email } = this.jwtService.verify(token, {
+      secret: this.config.get('JWT_SECRET'),
+    });
+
+    const user = await this.userService.findOneByUserId(userId);
+    if (!user) throw new BadRequestException('User not found');
+
+    const hashPassword = await this.hashPassword(newPassword);
+    await this.userService.updatePassword(userId, hashPassword);
+
+    return apiSuccess(200, null, 'Password reset successfully');
   }
 }
