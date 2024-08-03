@@ -11,6 +11,7 @@ import { AllExceptionsFilter } from './all-exceptions.filter';
 import { HttpAdapterHost } from '@nestjs/core';
 import { ApiResponse } from '../dto/response.dto';
 import { apiFailed } from '../dto/api-response';
+import { PrismaErrorEnum } from '../enum/prisma-error.enum';
 
 @Catch(PrismaClientKnownRequestError)
 export class PrismaExceptionFilter implements ExceptionFilter {
@@ -18,19 +19,22 @@ export class PrismaExceptionFilter implements ExceptionFilter {
   catch(exception: PrismaClientKnownRequestError, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
-    const message = exception.message.replace(/\n/g, '');
 
     let logger = new Logger('PrismaExceptionFilter');
     logger.verbose('-------------Exception Start-------------');
     logger.error(exception.stack);
     logger.verbose('-------------Exception End---------------');
     let responseBody: ApiResponse;
+
+    let message = exception.message;
+
     switch (exception.code) {
       case 'P2025':
-        responseBody = apiFailed(HttpStatus.NOT_FOUND, message);
+        message = 'Record does not exist for';
+        responseBody = apiFailed(HttpStatus.CONFLICT, message);
         break;
-      case 'P2002':
-        //handle unique constraint error
+      case PrismaErrorEnum.UniqueConstraintFailed:
+        message = `Unique constraint violation for ${exception.meta.target}`;
         responseBody = apiFailed(HttpStatus.CONFLICT, message);
         break;
       default:
