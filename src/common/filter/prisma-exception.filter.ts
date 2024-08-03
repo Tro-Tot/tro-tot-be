@@ -30,6 +30,7 @@ export class PrismaExceptionFilter implements ExceptionFilter {
         responseBody = apiFailed(HttpStatus.NOT_FOUND, message);
         break;
       case 'P2002':
+        console.log(exception.meta);
         //handle unique constraint error
         responseBody = apiFailed(HttpStatus.CONFLICT, message);
         break;

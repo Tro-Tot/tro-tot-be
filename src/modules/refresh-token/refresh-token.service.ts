@@ -24,21 +24,11 @@ export class RefreshTokenService {
     private jwtService: JwtService,
   ) {}
 
-  generateRefreshToken(user: {
-    id: string;
-    createdAt: Date;
-    updatedAt: Date;
-    deletedAt: Date | null;
-    email: string;
-    name: string | null;
-    roleId: string;
-    password: string;
-    username: string;
-  }) {
+  generateRefreshToken(user: { id: string; role_id: string }) {
     const refreshTokenExpiresIn = this.config.get('JWT_REFRESH_TOKEN_EXPIRY');
     const secrect = this.config.get('JWT_REFRESH_SECRET');
     const refreshTokenResult = this.jwtService.sign(
-      { userId: user.id, role: user.roleId },
+      { userId: user.id, role: user.role_id },
       { secret: secrect, expiresIn: refreshTokenExpiresIn },
     );
 

@@ -1,9 +1,16 @@
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { Logger } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  BadRequestException,
+  Logger,
+  ValidationError,
+  ValidationPipe,
+} from '@nestjs/common';
 import { AllExceptionsFilter } from './common/filter/all-exceptions.filter';
 import { PrismaExceptionFilter } from './common/filter/prisma-exception.filter';
+import { ValidationPipeExceptionFilter } from './common/filter/validation-pipe-exception.filter';
 
 async function bootstrap() {
   const logger = new Logger('main.ts');
@@ -16,8 +23,15 @@ async function bootstrap() {
     optionsSuccessStatus: 204,
   });
 
+  class CustomValidationPipe extends ValidationPipe {
+    catch(exception: any, host: ArgumentsHost) {
+      console.log(exception);
+    }
+  }
+
   app.useGlobalFilters(
     new AllExceptionsFilter(app.get(HttpAdapterHost)),
+    new ValidationPipeExceptionFilter(app.get(HttpAdapterHost)),
     new PrismaExceptionFilter(app.get(HttpAdapterHost)),
   );
 

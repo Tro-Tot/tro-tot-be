@@ -1,51 +1,397 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { LoginAuthDTO } from './dto/login-auth.dto';
 import { apiFailed, apiSuccess } from 'src/common/dto/api-response';
 import * as bcrypt from 'bcrypt';
-import { RefreshToken, User } from '@prisma/client';
-import { config } from 'process';
+import { PrismaClient, RefreshToken, Renter, User } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { RefreshTokenService } from '../refresh-token/refresh-token.service';
-import { date } from 'zod';
 import { AuthenUser } from './dto/authen-user.dto';
 import { Logout } from './dto/logout.dto';
 import { BlacklistTokenService } from '../blacklist-token/blacklist-token.service';
+import { SignUpDTO } from './dto/sign-up.dto';
+import { PrismaService } from 'prisma/prisma.service';
+import { CidService } from '../cid/cid.service';
+import { CidDTO } from '../cid/dto/cid.dto';
 
 @Injectable()
 export class AuthService {
+  async registerManager(user: SignUpDTO) {
+    // Ensure the transaction either succeeds or fails completely
+    return await this.prisma.$transaction(async (prisma) => {
+      try {
+        //Hash user's password
+        user.password = await this.hashPassword(user.password);
+
+        // TEST: apply Manager role id
+        user.role_id = '5';
+
+        //Create User type
+        const userInput: any = {
+          username: user.username,
+          email: user.email,
+          phone_number: user.phone_number,
+          password: user.password,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          date_of_birth: user.date_of_birth,
+          gender: user.gender,
+          avatar_url: '',
+          is_verified: false,
+          is_deleted: undefined,
+          created_at: undefined,
+          updated_at: undefined,
+          role_id: user.role_id,
+          cid_id: undefined,
+          id: undefined,
+          status: undefined,
+        };
+        //Save the renter in DB
+        const userResult = await this.prisma.user.create({ data: userInput });
+        if (!userResult) {
+          return apiFailed(400, 'Created User failed');
+        }
+        //Create the renter schema
+        const renter: Renter = {
+          id: undefined,
+          userId: userResult.id,
+          createdAt: undefined,
+          updatedAt: undefined,
+        };
+
+        const renterResult = await this.prisma.manager.create({
+          data: renter,
+        });
+        if (!renterResult) {
+          return apiFailed(400, 'Created User failed');
+        }
+
+        const accessToken = await this.generateAccessToken(userResult);
+
+        //Generate refresh token and store it
+        const refreshTokenResult =
+          await this.refreshTokenService.generateRefreshToken(userResult);
+
+        let refreshToken;
+        if (refreshTokenResult?.refreshToken) {
+          refreshToken = refreshTokenResult.refreshToken;
+        }
+
+        return apiSuccess(
+          201,
+          { accessToken, refreshToken, user: userResult },
+          'Created user successfully',
+        );
+      } catch (error) {
+        throw error;
+      }
+    });
+  }
+
+  async registerTechnicalStaff(user: SignUpDTO) {
+    // Ensure the transaction either succeeds or fails completely
+    return await this.prisma.$transaction(async (prisma) => {
+      try {
+        //Hash user's password
+        user.password = await this.hashPassword(user.password);
+
+        // TEST: apply Technical Staff role id
+        user.role_id = '3';
+
+        //Create User type
+        const userInput: any = {
+          username: user.username,
+          email: user.email,
+          phone_number: user.phone_number,
+          password: user.password,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          date_of_birth: user.date_of_birth,
+          gender: user.gender,
+          avatar_url: '',
+          is_verified: false,
+          is_deleted: undefined,
+          created_at: undefined,
+          updated_at: undefined,
+          role_id: user.role_id,
+          cid_id: undefined,
+          id: undefined,
+          status: undefined,
+        };
+        //Save the renter in DB
+        const userResult = await this.prisma.user.create({ data: userInput });
+        if (!userResult) {
+          return apiFailed(400, 'Created User failed');
+        }
+        //Create the renter schema
+        const renter: Renter = {
+          id: undefined,
+          userId: userResult.id,
+          createdAt: undefined,
+          updatedAt: undefined,
+        };
+
+        const renterResult = await this.prisma.technicalStaff.create({
+          data: renter,
+        });
+        if (!renterResult) {
+          return apiFailed(400, 'Created User failed');
+        }
+
+        const accessToken = await this.generateAccessToken(userResult);
+
+        //Generate refresh token and store it
+        const refreshTokenResult =
+          await this.refreshTokenService.generateRefreshToken(userResult);
+
+        let refreshToken;
+        if (refreshTokenResult?.refreshToken) {
+          refreshToken = refreshTokenResult.refreshToken;
+        }
+
+        return apiSuccess(
+          201,
+          { accessToken, refreshToken, user: userResult },
+          'Created user successfully',
+        );
+      } catch (error) {
+        throw error;
+      }
+    });
+  }
+
+  async registerStaff(user: SignUpDTO) {
+    // Ensure the transaction either succeeds or fails completely
+    return await this.prisma.$transaction(async (prisma) => {
+      try {
+        //Hash user's password
+        user.password = await this.hashPassword(user.password);
+
+        // TEST: apply Staff role id
+        user.role_id = '4';
+
+        //Create User type
+        const userInput: any = {
+          username: user.username,
+          email: user.email,
+          phone_number: user.phone_number,
+          password: user.password,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          date_of_birth: user.date_of_birth,
+          gender: user.gender,
+          avatar_url: '',
+          is_verified: false,
+          is_deleted: undefined,
+          created_at: undefined,
+          updated_at: undefined,
+          role_id: user.role_id,
+          cid_id: undefined,
+          id: undefined,
+          status: undefined,
+        };
+        //Save the renter in DB
+        const userResult = await this.prisma.user.create({ data: userInput });
+        if (!userResult) {
+          return apiFailed(400, 'Created User failed');
+        }
+        //Create the renter schema
+        const renter: Renter = {
+          id: undefined,
+          userId: userResult.id,
+          createdAt: undefined,
+          updatedAt: undefined,
+        };
+
+        const renterResult = await this.prisma.staff.create({ data: renter });
+        if (!renterResult) {
+          return apiFailed(400, 'Created User failed');
+        }
+
+        const accessToken = await this.generateAccessToken(userResult);
+
+        //Generate refresh token and store it
+        const refreshTokenResult =
+          await this.refreshTokenService.generateRefreshToken(userResult);
+
+        let refreshToken;
+        if (refreshTokenResult?.refreshToken) {
+          refreshToken = refreshTokenResult.refreshToken;
+        }
+
+        return apiSuccess(
+          201,
+          { accessToken, refreshToken, user: userResult },
+          'Created user successfully',
+        );
+      } catch (error) {
+        throw error;
+      }
+    });
+  }
+
+  async registerLandlord(user: SignUpDTO) {
+    // Ensure the transaction either succeeds or fails completely
+    return await this.prisma.$transaction(async (prisma) => {
+      try {
+        //Hash user's password
+        user.password = await this.hashPassword(user.password);
+
+        // TEST: apply landlord role id
+        user.role_id = '2';
+
+        //Create User type
+        const userInput: any = {
+          username: user.username,
+          email: user.email,
+          phone_number: user.phone_number,
+          password: user.password,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          date_of_birth: user.date_of_birth,
+          gender: user.gender,
+          avatar_url: '',
+          is_verified: false,
+          is_deleted: undefined,
+          created_at: undefined,
+          updated_at: undefined,
+          role_id: user.role_id,
+          cid_id: undefined,
+          id: undefined,
+          status: undefined,
+        };
+        //Save the renter in DB
+        const userResult = await this.prisma.user.create({ data: userInput });
+        if (!userResult) {
+          return apiFailed(400, 'Created User failed');
+        }
+        //Create the renter schema
+        const renter: Renter = {
+          id: undefined,
+          userId: userResult.id,
+          createdAt: undefined,
+          updatedAt: undefined,
+        };
+
+        const renterResult = await this.prisma.landLord.create({
+          data: renter,
+        });
+        if (!renterResult) {
+          return apiFailed(400, 'Created User failed');
+        }
+
+        const accessToken = await this.generateAccessToken(userResult);
+
+        //Generate refresh token and store it
+        const refreshTokenResult =
+          await this.refreshTokenService.generateRefreshToken(userResult);
+
+        let refreshToken;
+        if (refreshTokenResult?.refreshToken) {
+          refreshToken = refreshTokenResult.refreshToken;
+        }
+
+        return apiSuccess(
+          201,
+          { accessToken, refreshToken, user: userResult },
+          'Created user successfully',
+        );
+      } catch (error) {
+        throw error;
+      }
+    });
+  }
+
+  async registerRenter(user: SignUpDTO) {
+    // Ensure the transaction either succeeds or fails completely
+    return await this.prisma.$transaction(async (prisma) => {
+      try {
+        //Hash user's password
+        user.password = await this.hashPassword(user.password);
+
+        // TEST: apply renter role id
+        user.role_id = '1';
+
+        //Create User type
+        const userInput: any = {
+          username: user.username,
+          email: user.email,
+          phone_number: user.phone_number,
+          password: user.password,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          date_of_birth: user.date_of_birth,
+          gender: user.gender,
+          avatar_url: '',
+          is_verified: false,
+          is_deleted: undefined,
+          created_at: undefined,
+          updated_at: undefined,
+          role_id: user.role_id,
+          cid_id: undefined,
+          id: undefined,
+          status: undefined,
+        };
+        //Save the renter in DB
+        const userResult = await this.prisma.user.create({ data: userInput });
+        if (!userResult) {
+          return apiFailed(400, 'Created User failed');
+        }
+        //Create the renter schema
+        const renter: Renter = {
+          id: undefined,
+          userId: userResult.id,
+          createdAt: undefined,
+          updatedAt: undefined,
+        };
+
+        const renterResult = await this.prisma.renter.create({ data: renter });
+        if (!renterResult) {
+          return apiFailed(400, 'Created User failed');
+        }
+
+        const accessToken = await this.generateAccessToken(userResult);
+
+        //Generate refresh token and store it
+        const refreshTokenResult =
+          await this.refreshTokenService.generateRefreshToken(userResult);
+
+        let refreshToken;
+        if (refreshTokenResult?.refreshToken) {
+          refreshToken = refreshTokenResult.refreshToken;
+        }
+
+        return apiSuccess(
+          201,
+          { accessToken, refreshToken, user: userResult },
+          'Created user successfully',
+        );
+      } catch (error) {
+        throw error;
+      }
+    });
+  }
+
   constructor(
     private userService: UserService,
     private config: ConfigService,
     private jwtService: JwtService,
     private blackListTokenService: BlacklistTokenService,
     private refreshTokenService: RefreshTokenService,
+    private cidService: CidService,
+    private prisma: PrismaService,
   ) {}
 
   async login(body: LoginAuthDTO) {
     try {
       const user = await this.userService.findOneByUserName(body.username);
       const isMatch = await this.validatePassword(user.password, body.password);
+
       if (isMatch) {
         const accessToken = await this.generateAccessToken(user);
         const refreshTokenResult =
           await this.refreshTokenService.generateRefreshToken(user);
-
-        // const today = new Date();
-        // const startDate = new Date(today.getFullYear(), 6, 2);
-        // console.log('startDate', startDate);
-        // console.log('usser', user.createdAt);
-        // console.log('today', today);
-        // const timeDifference = today.getTime() - user.createdAt.getTime();
-        // console.log(timeDifference / (1000 * 60 * 60 * 24));
-        // console.log(today.getTimezoneOffset());
-        // console.log(refreshTokenResult.createdAt);
-        // const daysPassed = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
-
-        // console.log(
-        //   `Số ngày đã qua từ ngày 02/07 đến hôm nay là: ${daysPassed} ngày`,
-        // );
 
         let refreshToken;
         if (refreshTokenResult?.refreshToken) {
@@ -79,7 +425,11 @@ export class AuthService {
 
   async handleLogout(user: AuthenUser, logout: Logout) {
     try {
-      await this.blackListTokenService.createBlackListToken(user.accessToken);
+      const jwt = this.decodeJwt(user.accessToken);
+      await this.blackListTokenService.createBlackListToken(
+        user.accessToken,
+        jwt.expiredAt,
+      );
       const result = await this.refreshTokenService.updateRefreshTokenStatus(
         logout.refreshToken,
         false,
@@ -90,21 +440,11 @@ export class AuthService {
     }
   }
 
-  generateAccessToken(user: {
-    id: string;
-    createdAt: Date;
-    updatedAt: Date;
-    deletedAt: Date | null;
-    email: string;
-    name: string | null;
-    roleId: string;
-    password: string;
-    username: string;
-  }) {
+  generateAccessToken(user: { id: string; role_id: string }) {
     const accessTokenExpiresIn = this.config.get('JWT_ACCESS_TOKEN_EXPIRY');
     const secrect = this.config.get('JWT_SECRET');
     const accessToken = this.jwtService.sign(
-      { userId: user.id, role: user.roleId },
+      { userId: user.id, role: user.role_id },
       { secret: secrect, expiresIn: accessTokenExpiresIn },
     );
     return accessToken;
@@ -171,5 +511,9 @@ export class AuthService {
       }
       return apiFailed(400, 'Refresh token is invalid', e);
     }
+  }
+
+  decodeJwt(jwt: string) {
+    return this.jwtService.decode(jwt);
   }
 }
