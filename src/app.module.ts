@@ -8,6 +8,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { BlacklistTokenModule } from './modules/blacklist-token/blacklist-token.module';
 import { RefreshTokenModule } from './modules/refresh-token/refresh-token.module';
+import { CidModule } from './modules/cid/cid.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { RefreshTokenModule } from './modules/refresh-token/refresh-token.module
     BlacklistTokenModule,
     RefreshTokenModule,
     MailModule,
+    CidModule,
   ],
   controllers: [AppController],
   providers: [AppService],

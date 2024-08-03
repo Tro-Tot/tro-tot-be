@@ -6,18 +6,21 @@ import {
   HttpException,
   HttpStatus,
   Logger,
+  ValidationPipe,
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 
 import { apiFailed } from '../dto/api-response';
 import { ApiResponse } from '../dto/response.dto';
+import { ValidationError } from 'class-validator';
 
 @Catch()
-export class AllExceptionsFilter implements ExceptionFilter {
+export class ValidationPipeExceptionFilter extends ValidationPipe {
   constructor(
     private readonly httpAdapterHost: HttpAdapterHost,
     isLogged: boolean = false,
   ) {
+    super();
     this.isLogged = isLogged;
   }
 
@@ -25,7 +28,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
   catch(exception: unknown, host: ArgumentsHost): void {
     if (!this.isLogged) {
-      const logger = new Logger(AllExceptionsFilter.name);
+      const logger = new Logger(ValidationPipeExceptionFilter.name);
       logger.verbose('-------------Exception Start-------------');
       exception instanceof Error
         ? logger.error(exception.message, exception.stack)
@@ -36,7 +39,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
 
     let responseBody: ApiResponse;
-    if (exception instanceof HttpException) {
+    if (exception instanceof BadRequestException) {
+      const response = exception.getResponse() as any;
+      responseBody = apiFailed(400, response.message, response.error);
+    } else if (exception instanceof HttpException) {
       responseBody = apiFailed(exception.getStatus(), exception.message);
     } else {
       responseBody = apiFailed(

@@ -20,6 +20,9 @@ import { RefreshTokenStrategy } from './strategy/refresh-token.stategy';
 import { GetUser } from './decorator/get_user.decorator';
 import { AuthenUser } from './dto/authen-user.dto';
 import { Logout } from './dto/logout.dto';
+import { SignUpDTO } from './dto/sign-up.dto';
+import { SendResetPasswordDTO } from './dto/send-reset-password.dto';
+import { ResetPasswordDTO } from './dto/reset-password.dto';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -37,6 +40,39 @@ export class AuthController {
     return this.authService.login(body);
   }
 
+  @Post('/sign-up/renter')
+  @UsePipes(new ValidationPipe())
+  renterSignUp(@Body() body: SignUpDTO) {
+    return this.authService.registerRenter(body);
+  }
+
+  @Post('/sign-up/landlord')
+  @UsePipes(new ValidationPipe())
+  landlordSignUp(@Body() body: SignUpDTO) {
+    return this.authService.registerRenter(body);
+  }
+
+  //To-do: Need Authen Manager to do this
+  @Post('/sign-up/staff')
+  @UsePipes(new ValidationPipe())
+  staffSignUp(@Body() body: SignUpDTO) {
+    return this.authService.registerRenter(body);
+  }
+
+  //To-do: Need Authen Manager to do this
+  @Post('/sign-up/technical-staff')
+  @UsePipes(new ValidationPipe())
+  technicalStaffSignUp(@Body() body: SignUpDTO) {
+    return this.authService.registerRenter(body);
+  }
+
+  //To-do: Need Authen Manager to do this
+  @Post('/sign-up/manager')
+  @UsePipes(new ValidationPipe())
+  managerSignUp(@Body() body: SignUpDTO) {
+    return this.authService.registerRenter(body);
+  }
+
   @Get('/refresh-token')
   @UseGuards(AuthGuard('jwt-refresh'))
   refreshToken(@GetUser() user: AuthenUser) {
@@ -47,5 +83,21 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   logout(@GetUser() user: AuthenUser, @Body() logoutBody: Logout) {
     return this.authService.handleLogout(user, logoutBody);
+  }
+
+  @Post('/send-reset-password')
+  async getResetPassword(@Body() sendResetPasswordDTO: SendResetPasswordDTO) {
+    return this.authService.sendResetPasswordEmail(
+      sendResetPasswordDTO.email,
+      sendResetPasswordDTO.clientUrl,
+    );
+  }
+
+  @Post('/reset-password')
+  async resetPassword(@Body() resetPasswordDTO: ResetPasswordDTO) {
+    return this.authService.resetPassword(
+      resetPasswordDTO.token,
+      resetPasswordDTO.newPassword,
+    );
   }
 }

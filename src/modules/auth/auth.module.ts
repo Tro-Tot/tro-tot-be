@@ -11,6 +11,9 @@ import { RefreshTokenStrategy } from './strategy/refresh-token.stategy';
 import { RefreshTokenModule } from '../refresh-token/refresh-token.module';
 import { AccessTokenStrategy } from './strategy/access-token.strategy';
 import { BlacklistTokenModule } from '../blacklist-token/blacklist-token.module';
+import { PrismaService } from 'prisma/prisma.service';
+import { CidModule } from '../cid/cid.module';
+import { MailService } from '../mail/mail.service';
 
 @Module({
   controllers: [AuthController],
@@ -19,13 +22,16 @@ import { BlacklistTokenModule } from '../blacklist-token/blacklist-token.module'
     UserModule,
     ConfigModule,
     RefreshTokenModule,
+    CidModule,
     BlacklistTokenModule,
   ],
   providers: [
     AuthService,
+    PrismaService,
     LocalStrategy,
     RefreshTokenStrategy,
     AccessTokenStrategy,
+    MailService,
   ],
 })
 export class AuthModule {}

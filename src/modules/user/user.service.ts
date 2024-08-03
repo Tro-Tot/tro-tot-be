@@ -13,16 +13,7 @@ export class UserService {
       },
     });
   }
-  // updateRefreshToken(id: string, refreshToken: string) {
-  //   return this.prisma.user.update({
-  //     where: {
-  //       id: id,
-  //     },
-  //     data: {
-  //       refreshToken: refreshToken,
-  //     },
-  //   });
-  // }
+
   findOneByUserName(usernameInput: string) {
     return this.prisma.user.findFirstOrThrow({
       where: {
@@ -39,10 +30,29 @@ export class UserService {
       where: {
         AND: [
           {
-            name: username,
+            username: username,
             password: password,
           },
         ],
+      },
+    });
+  }
+
+  async findOneByEmail(email: string) {
+    return await this.prisma.user.findFirst({
+      where: {
+        email: email,
+      },
+    });
+  }
+
+  async updatePassword(id: string, newPassword: string) {
+    return await this.prisma.user.update({
+      where: {
+        id: id,
+      },
+      data: {
+        password: newPassword,
       },
     });
   }
