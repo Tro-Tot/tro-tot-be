@@ -5,7 +5,6 @@ import express from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AuthenUser } from '../dto/authen-user.dto';
 import { BlacklistTokenService } from 'src/modules/blacklist-token/blacklist-token.service';
-// import { BlackListTokenService } from 'src/modules/black-list-token/black-list-token.service';
 
 @Injectable()
 export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {

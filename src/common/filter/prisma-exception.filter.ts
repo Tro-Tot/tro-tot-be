@@ -33,8 +33,9 @@ export class PrismaExceptionFilter implements ExceptionFilter {
         message = 'Record does not exist for';
         responseBody = apiFailed(HttpStatus.CONFLICT, message);
         break;
-      case PrismaErrorEnum.UniqueConstraintFailed:
-        message = `Unique constraint violation for ${exception.meta.target}`;
+      case 'P2002':
+        console.log(exception.meta);
+        //handle unique constraint error
         responseBody = apiFailed(HttpStatus.CONFLICT, message);
         break;
       default:
