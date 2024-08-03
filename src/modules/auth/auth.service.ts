@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { LoginAuthDTO } from './dto/login-auth.dto';
 import { apiFailed, apiSuccess } from 'src/common/dto/api-response';

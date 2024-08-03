@@ -21,6 +21,8 @@ import { GetUser } from './decorator/get_user.decorator';
 import { AuthenUser } from './dto/authen-user.dto';
 import { Logout } from './dto/logout.dto';
 import { SignUpDTO } from './dto/sign-up.dto';
+import { SendResetPasswordDTO } from './dto/send-reset-password.dto';
+import { ResetPasswordDTO } from './dto/reset-password.dto';
 
 @Controller('auth')
 @ApiTags('auth')
