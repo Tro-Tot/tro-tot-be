@@ -18,14 +18,12 @@ model User {
   role_id String
   role    Role   @relation(fields: [role_id], references: [id])
 
-  cid_id String?
-  cid    Cid?    @relation(fields: [cid_id], references: [id])
-
   Manager        Manager[]
   TechnicalStaff TechnicalStaff[]
   Staff          Staff[]
   LandLord       LandLord[]
   Renter         Renter[]
+  Cid            Cid[]
 }
 
 enum Gender {

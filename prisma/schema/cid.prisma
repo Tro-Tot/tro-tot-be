@@ -1,5 +1,6 @@
 model Cid {
     id                 String    @id @default(uuid())
+    user_id            String
     number             String    @unique
     issuing_authority  String
     issue_date         DateTime
@@ -7,5 +8,6 @@ model Cid {
     created_at         DateTime? @default(now())
     updated_at         DateTime? @updatedAt
 
-    User User[]
+    User   User?   @relation(fields: [userId], references: [id])
+    userId String?
 }
