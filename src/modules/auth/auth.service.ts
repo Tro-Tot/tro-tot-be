@@ -17,6 +17,327 @@ import { CidDTO } from '../cid/dto/cid.dto';
 
 @Injectable()
 export class AuthService {
+  async loginAdmin(body: LoginAuthDTO) {
+    try {
+      const user = await this.userService.findOneByUserName(body.username);
+      if (!user) {
+        return apiFailed(404, 'Account not found');
+      }
+      const isMatch = await this.validatePassword(user.password, body.password);
+
+      if (isMatch) {
+        //Change to admin late
+        //Check Role
+        const checkIsRenter = await this.prisma.renter.findFirst({
+          where: {
+            userId: user.id,
+          },
+        });
+
+        if (!checkIsRenter) {
+          return apiFailed(404, 'Account not found');
+        }
+
+        //Generate JWT
+        const accessToken = await this.generateAccessToken(user);
+        const refreshTokenResult =
+          await this.refreshTokenService.generateRefreshToken(user);
+
+        let refreshToken;
+        if (refreshTokenResult?.refreshToken) {
+          refreshToken = refreshTokenResult.refreshToken;
+        }
+        //If access token or refresh token is not generated
+        if (accessToken === undefined || refreshToken === undefined) {
+          return apiFailed(
+            500,
+            'Internal server error',
+            'Internal server error',
+          );
+        }
+
+        return apiSuccess(
+          200,
+          { accessToken, refreshToken, user },
+          'Login success',
+        );
+      } else {
+        return apiFailed(401, 'Password not match', ['password']);
+      }
+    } catch (e) {
+      if (e.code === 'P2025') {
+        return apiFailed(404, 'User not found', ['username']);
+      }
+      console.log(e);
+      return apiFailed(500, e, 'Internal server error');
+    }
+  }
+
+  async loginRenter(body: LoginAuthDTO) {
+    try {
+      const user = await this.userService.findOneByUserName(body.username);
+      if (!user) {
+        return apiFailed(404, 'Account not found');
+      }
+      const isMatch = await this.validatePassword(user.password, body.password);
+
+      if (isMatch) {
+        //Check Role
+        const checkIsRenter = await this.prisma.renter.findFirst({
+          where: {
+            userId: user.id,
+          },
+        });
+
+        if (!checkIsRenter) {
+          return apiFailed(404, 'Account not found');
+        }
+
+        //Generate JWT
+        const accessToken = await this.generateAccessToken(user);
+        const refreshTokenResult =
+          await this.refreshTokenService.generateRefreshToken(user);
+
+        let refreshToken;
+        if (refreshTokenResult?.refreshToken) {
+          refreshToken = refreshTokenResult.refreshToken;
+        }
+        //If access token or refresh token is not generated
+        if (accessToken === undefined || refreshToken === undefined) {
+          return apiFailed(
+            500,
+            'Internal server error',
+            'Internal server error',
+          );
+        }
+
+        return apiSuccess(
+          200,
+          { accessToken, refreshToken, user },
+          'Login success',
+        );
+      } else {
+        return apiFailed(401, 'Password not match', ['password']);
+      }
+    } catch (e) {
+      if (e.code === 'P2025') {
+        return apiFailed(404, 'User not found', ['username']);
+      }
+      console.log(e);
+      return apiFailed(500, e, 'Internal server error');
+    }
+  }
+
+  async loginLandlord(body: LoginAuthDTO) {
+    try {
+      const user = await this.userService.findOneByUserName(body.username);
+      if (!user) {
+        return apiFailed(404, 'Account not found');
+      }
+      const isMatch = await this.validatePassword(user.password, body.password);
+
+      if (isMatch) {
+        //Check Role
+        const checkIsRenter = await this.prisma.landLord.findFirst({
+          where: {
+            userId: user.id,
+          },
+        });
+
+        if (!checkIsRenter) {
+          return apiFailed(404, 'Account not found');
+        }
+
+        //Generate JWT
+        const accessToken = await this.generateAccessToken(user);
+        const refreshTokenResult =
+          await this.refreshTokenService.generateRefreshToken(user);
+
+        let refreshToken;
+        if (refreshTokenResult?.refreshToken) {
+          refreshToken = refreshTokenResult.refreshToken;
+        }
+        //If access token or refresh token is not generated
+        if (accessToken === undefined || refreshToken === undefined) {
+          return apiFailed(
+            500,
+            'Internal server error',
+            'Internal server error',
+          );
+        }
+
+        return apiSuccess(
+          200,
+          { accessToken, refreshToken, user },
+          'Login success',
+        );
+      } else {
+        return apiFailed(401, 'Password not match', ['password']);
+      }
+    } catch (e) {
+      if (e.code === 'P2025') {
+        return apiFailed(404, 'User not found', ['username']);
+      }
+      console.log(e);
+      return apiFailed(500, e, 'Internal server error');
+    }
+  }
+
+  async loginStaff(body: LoginAuthDTO) {
+    try {
+      const user = await this.userService.findOneByUserName(body.username);
+      if (!user) {
+        return apiFailed(404, 'Account not found');
+      }
+      const isMatch = await this.validatePassword(user.password, body.password);
+
+      if (isMatch) {
+        //Check role
+        const checkIsRenter = await this.prisma.staff.findFirst({
+          where: {
+            userId: user.id,
+          },
+        });
+
+        if (!checkIsRenter) {
+          return apiFailed(404, 'Account not found');
+        }
+
+        //Generate JWT
+        const accessToken = await this.generateAccessToken(user);
+        const refreshTokenResult =
+          await this.refreshTokenService.generateRefreshToken(user);
+
+        let refreshToken;
+        if (refreshTokenResult?.refreshToken) {
+          refreshToken = refreshTokenResult.refreshToken;
+        }
+        //If access token or refresh token is not generated
+        if (accessToken === undefined || refreshToken === undefined) {
+          return apiFailed(
+            500,
+            'Internal server error',
+            'Internal server error',
+          );
+        }
+
+        return apiSuccess(
+          200,
+          { accessToken, refreshToken, user },
+          'Login success',
+        );
+      } else {
+        return apiFailed(401, 'Password not match', ['password']);
+      }
+    } catch (e) {
+      if (e.code === 'P2025') {
+        return apiFailed(404, 'User not found', ['username']);
+      }
+      console.log(e);
+      return apiFailed(500, e, 'Internal server error');
+    }
+  }
+
+  async loginManager(body: LoginAuthDTO) {
+    try {
+      const user = await this.userService.findOneByUserName(body.username);
+      const isMatch = await this.validatePassword(user.password, body.password);
+
+      const checkIsRenter = await this.prisma.manager.findFirst({
+        where: {
+          userId: user.id,
+        },
+      });
+
+      if (!checkIsRenter) {
+        return apiFailed(404, 'Access denied');
+      }
+
+      if (isMatch) {
+        const accessToken = await this.generateAccessToken(user);
+        const refreshTokenResult =
+          await this.refreshTokenService.generateRefreshToken(user);
+
+        let refreshToken;
+        if (refreshTokenResult?.refreshToken) {
+          refreshToken = refreshTokenResult.refreshToken;
+        }
+        //If access token or refresh token is not generated
+        if (accessToken === undefined || refreshToken === undefined) {
+          return apiFailed(
+            500,
+            'Internal server error',
+            'Internal server error',
+          );
+        }
+
+        return apiSuccess(
+          200,
+          { accessToken, refreshToken, user },
+          'Login success',
+        );
+      } else {
+        return apiFailed(401, 'Password not match', ['password']);
+      }
+    } catch (e) {
+      if (e.code === 'P2025') {
+        return apiFailed(404, 'User not found', ['username']);
+      }
+      console.log(e);
+      return apiFailed(500, e, 'Internal server error');
+    }
+  }
+
+  async loginTechnicalStaff(body: LoginAuthDTO) {
+    try {
+      const user = await this.userService.findOneByUserName(body.username);
+      const isMatch = await this.validatePassword(user.password, body.password);
+
+      const checkIsRenter = await this.prisma.technicalStaff.findFirst({
+        where: {
+          userId: user.id,
+        },
+      });
+
+      if (!checkIsRenter) {
+        return apiFailed(404, 'Account not found');
+      }
+
+      if (isMatch) {
+        const accessToken = await this.generateAccessToken(user);
+        const refreshTokenResult =
+          await this.refreshTokenService.generateRefreshToken(user);
+
+        let refreshToken;
+        if (refreshTokenResult?.refreshToken) {
+          refreshToken = refreshTokenResult.refreshToken;
+        }
+        //If access token or refresh token is not generated
+        if (accessToken === undefined || refreshToken === undefined) {
+          return apiFailed(
+            500,
+            'Internal server error',
+            'Internal server error',
+          );
+        }
+
+        return apiSuccess(
+          200,
+          { accessToken, refreshToken, user },
+          'Login success',
+        );
+      } else {
+        return apiFailed(401, 'Password not match', ['password']);
+      }
+    } catch (e) {
+      if (e.code === 'P2025') {
+        return apiFailed(404, 'User not found', ['username']);
+      }
+      console.log(e);
+      return apiFailed(500, e, 'Internal server error');
+    }
+  }
+
   async registerManager(user: SignUpDTO) {
     // Ensure the transaction either succeeds or fails completely
     return await this.prisma.$transaction(async (prisma) => {
