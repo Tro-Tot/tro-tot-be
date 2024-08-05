@@ -29,13 +29,12 @@ export class PrismaExceptionFilter implements ExceptionFilter {
     let message = exception.message;
 
     switch (exception.code) {
-      case 'P2025':
-        message = 'Record does not exist for';
-        responseBody = apiFailed(HttpStatus.CONFLICT, message);
+      case PrismaErrorEnum.OperationDependencyNotFound:
+        message = `An operation failed because it depends on one or more records that were required but not found`;
+        responseBody = apiFailed(HttpStatus.CONFLICT, message, exception.meta);
         break;
-      case 'P2002':
-        console.log(exception.meta);
-        //handle unique constraint error
+      case PrismaErrorEnum.ForeignKeyConstraintFailed:
+        message = exception.message;
         responseBody = apiFailed(HttpStatus.CONFLICT, message);
         break;
       default:
