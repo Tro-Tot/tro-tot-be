@@ -14,6 +14,7 @@ import { BlacklistTokenModule } from '../blacklist-token/blacklist-token.module'
 import { PrismaService } from 'prisma/prisma.service';
 import { CidModule } from '../cid/cid.module';
 import { MailService } from '../mail/mail.service';
+import { OtpService } from '../otp/otp.service';
 
 @Module({
   controllers: [AuthController],
@@ -32,6 +33,7 @@ import { MailService } from '../mail/mail.service';
     RefreshTokenStrategy,
     AccessTokenStrategy,
     MailService,
+    OtpService,
   ],
 })
 export class AuthModule {}

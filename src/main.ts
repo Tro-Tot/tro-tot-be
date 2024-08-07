@@ -18,7 +18,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
     origin: '*',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     preflightContinue: false,
     optionsSuccessStatus: 204,
   });
@@ -28,6 +28,8 @@ async function bootstrap() {
       console.log(exception);
     }
   }
+
+  app.useGlobalPipes(new CustomValidationPipe());
 
   app.useGlobalFilters(
     new AllExceptionsFilter(app.get(HttpAdapterHost)),

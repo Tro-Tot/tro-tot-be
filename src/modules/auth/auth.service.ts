@@ -20,9 +20,22 @@ import { PrismaService } from 'prisma/prisma.service';
 import { CidService } from '../cid/cid.service';
 import { CidDTO } from '../cid/dto/cid.dto';
 import { MailService } from '../mail/mail.service';
+import { OtpService } from '../otp/otp.service';
+import { ApiResponse } from 'src/common/dto/response.dto';
 
 @Injectable()
 export class AuthService {
+  constructor(
+    private userService: UserService,
+    private config: ConfigService,
+    private jwtService: JwtService,
+    private blackListTokenService: BlacklistTokenService,
+    private refreshTokenService: RefreshTokenService,
+    private cidService: CidService,
+    private prisma: PrismaService,
+    private readonly mailService: MailService,
+    private readonly otpService: OtpService,
+  ) {}
   async registerManager(user: SignUpDTO) {
     // Ensure the transaction either succeeds or fails completely
     return await this.prisma.$transaction(async (prisma) => {
@@ -379,17 +392,6 @@ export class AuthService {
     });
   }
 
-  constructor(
-    private userService: UserService,
-    private config: ConfigService,
-    private jwtService: JwtService,
-    private blackListTokenService: BlacklistTokenService,
-    private refreshTokenService: RefreshTokenService,
-    private cidService: CidService,
-    private prisma: PrismaService,
-    private readonly mailService: MailService,
-  ) {}
-
   async login(body: LoginAuthDTO) {
     try {
       const user = await this.userService.findOneByUserName(body.username);
@@ -535,7 +537,7 @@ export class AuthService {
 
   async sendResetPasswordEmail(email: string, clientUrl: string) {
     const user = await this.userService.findOneByEmail(email);
-    if (!user) throw new BadRequestException('Email not found');
+    if (!user) throw new BadRequestException('Email not registered');
 
     const resetPasswordToken = await this.generateResetPasswordToken(
       user.id,
@@ -560,5 +562,26 @@ export class AuthService {
     await this.userService.updatePassword(userId, hashPassword);
 
     return apiSuccess(200, null, 'Password reset successfully');
+  }
+
+  async isEmailExist(email: string): Promise<boolean> {
+    const user = await this.userService.findOneByEmail(email);
+    return user ? true : false;
+  }
+
+  async sendVerifyOtp(email: string): Promise<ApiResponse> {
+    if (await this.isEmailExist(email)) {
+      return apiFailed(400, 'Email already registered');
+    }
+    return await this.otpService.sendOTP(email);
+  }
+
+  async verifyOtp(email: string, otp: string) {
+    const isVerified = await this.otpService.verifyOTP(email, otp);
+    return apiSuccess(
+      200,
+      { isVerified },
+      isVerified ? 'OTP verified' : 'OTP not verified',
+    );
   }
 }

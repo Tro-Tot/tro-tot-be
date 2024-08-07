@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsString, IsUrl } from 'class-validator';
+import { IsEmail, IsNumber, IsString, Length, Max, Min } from 'class-validator';
 
-export class SendResetPasswordDTO {
+export class VerifyOtpDTO {
   @ApiProperty()
   @IsString()
   @IsEmail()
@@ -9,5 +9,6 @@ export class SendResetPasswordDTO {
 
   @ApiProperty()
   @IsString()
-  clientUrl: string;
+  @Length(6, 6)
+  otp: string;
 }

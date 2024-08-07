@@ -34,8 +34,8 @@ export class PrismaExceptionFilter implements ExceptionFilter {
         responseBody = apiFailed(HttpStatus.CONFLICT, message, exception.meta);
         break;
       case PrismaErrorEnum.ForeignKeyConstraintFailed:
-        message = exception.message;
-        responseBody = apiFailed(HttpStatus.CONFLICT, message);
+        message = `An operation failed because it would violate a primary key constraint ${exception.meta.target}`;
+        responseBody = apiFailed(HttpStatus.CONFLICT, message, exception.meta);
         break;
       default:
         responseBody = apiFailed(HttpStatus.BAD_REQUEST, message);
