@@ -21,6 +21,10 @@ import { GetUser } from './decorator/get_user.decorator';
 import { AuthenUser } from './dto/authen-user.dto';
 import { Logout } from './dto/logout.dto';
 import { SignUpDTO } from './dto/sign-up.dto';
+import { SendResetPasswordDTO } from './dto/send-reset-password.dto';
+import { ResetPasswordDTO } from './dto/reset-password.dto';
+import { EmailDTO } from './dto/email.dto';
+import { VerifyOtpDTO } from './dto/verify-otp.dto';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -117,5 +121,31 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   logout(@GetUser() user: AuthenUser, @Body() logoutBody: Logout) {
     return this.authService.handleLogout(user, logoutBody);
+  }
+
+  @Post('/send-verify-otp')
+  async sendVerifyOtp(@Body() emailDTO: EmailDTO) {
+    return this.authService.sendVerifyOtp(emailDTO.email);
+  }
+
+  @Post('/verify-otp')
+  async verifyOtp(@Body() verifyOtpDTO: VerifyOtpDTO) {
+    return this.authService.verifyOtp(verifyOtpDTO.email, verifyOtpDTO.otp);
+  }
+
+  @Post('/send-reset-password')
+  async getResetPassword(@Body() sendResetPasswordDTO: SendResetPasswordDTO) {
+    return this.authService.sendResetPasswordEmail(
+      sendResetPasswordDTO.email,
+      sendResetPasswordDTO.clientUrl,
+    );
+  }
+
+  @Post('/reset-password')
+  async resetPassword(@Body() resetPasswordDTO: ResetPasswordDTO) {
+    return this.authService.resetPassword(
+      resetPasswordDTO.token,
+      resetPasswordDTO.newPassword,
+    );
   }
 }

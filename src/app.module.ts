@@ -9,6 +9,7 @@ import { UserModule } from './modules/user/user.module';
 import { BlacklistTokenModule } from './modules/blacklist-token/blacklist-token.module';
 import { RefreshTokenModule } from './modules/refresh-token/refresh-token.module';
 import { CidModule } from './modules/cid/cid.module';
+import { OtpModule } from './modules/otp/otp.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { CidModule } from './modules/cid/cid.module';
     RefreshTokenModule,
     MailModule,
     CidModule,
+    OtpModule,
   ],
   controllers: [AppController],
   providers: [AppService],

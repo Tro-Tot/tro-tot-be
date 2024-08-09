@@ -5,14 +5,13 @@ model Role {
   createdAt DateTime  @default(now())
   deletedAt DateTime?
   updatedAt DateTime  @updatedAt
-  users     User[]
+  User      User[]
 }
 
 enum RoleCode {
   RENTER
   LANDLORD
-  STAFF
-  TECHNICAL_STAFF
-  MANAGER
+  BULDING_MANAGER
+  COOPERATIVE_MANAGER
   ADMIN
 }
