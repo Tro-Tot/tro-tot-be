@@ -10,6 +10,7 @@ import { BlacklistTokenModule } from './modules/blacklist-token/blacklist-token.
 import { RefreshTokenModule } from './modules/refresh-token/refresh-token.module';
 import { CidModule } from './modules/cid/cid.module';
 import { OtpModule } from './modules/otp/otp.module';
+import { TuyaModule } from './modules/tuya/tuya.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { OtpModule } from './modules/otp/otp.module';
     MailModule,
     CidModule,
     OtpModule,
+    TuyaModule,
   ],
   controllers: [AppController],
   providers: [AppService],
