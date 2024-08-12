@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FirebaseApp, initializeApp } from 'firebase/app';
+import { getFirestore } from 'firebase/firestore/lite';
 
 @Injectable()
 export class FirebaseService {
@@ -16,5 +17,9 @@ export class FirebaseService {
       ),
       appId: this.configService.get<string>('FIREBASE_APP_ID'),
     });
+  }
+
+  getFirestoreInstance() {
+    return getFirestore(this.app);
   }
 }
