@@ -12,4 +12,7 @@ export enum PrismaErrorEnum {
 
   //P2014: An operation failed because it depends on one or more records that were required but not found.
   RequiredRecordNotFound = 'P2014',
+
+  //P1001: Database connection failed.
+  DatabaseConnectionFailed = 'P1001',
 }
