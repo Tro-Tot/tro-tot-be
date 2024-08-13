@@ -4,7 +4,7 @@ model User {
   password       String
   username       String
   avatar_url     String?
-  cid_id         String
+  cid_id         String?
   created_at     DateTime?        @default(now())
   date_of_birth  DateTime
   first_name     String
@@ -21,7 +21,7 @@ model User {
   Renter         Renter[]
   Staff          Staff[]
   TechnicalStaff TechnicalStaff[]
-  Cid            Cid              @relation(fields: [cid_id], references: [id])
+  Cid            Cid?             @relation(fields: [cid_id], references: [id], onDelete: Restrict)
   role           Role             @relation(fields: [role_id], references: [id])
 }
 

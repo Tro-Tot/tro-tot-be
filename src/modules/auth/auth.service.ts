@@ -654,7 +654,7 @@ export class AuthService {
         user.role_id = '1';
 
         //Create User type
-        const userInput: any = {
+        const userInput: User = {
           username: user.username,
           email: user.email,
           phone_number: user.phone_number,
@@ -669,7 +669,6 @@ export class AuthService {
           created_at: undefined,
           updated_at: undefined,
           role_id: user.role_id,
-          cid_id: undefined,
           id: undefined,
           status: undefined,
         };
