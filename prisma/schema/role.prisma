@@ -1,18 +1,18 @@
 model Role {
-  id        String    @id @default(uuid())
-  name      String    @unique
-  code      RoleCode
-  createdAt DateTime  @default(now())
-  deletedAt DateTime?
-  updatedAt DateTime  @updatedAt
+  id        String    @id @default(uuid()) @map("id")
+  name      String    @unique @map("name")
+  code      RoleCode  @map("code")
+  createdAt DateTime  @default(now()) @map("created_at")
+  deletedAt DateTime? @map("deleted_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
   User      User[]
 }
 
 enum RoleCode {
-  RENTER
-  LANDLORD
-  STAFF
-  TECHNICAL_STAFF
-  ADMIN
-  MANAGER
+  RENTER          @map("RENTER")
+  LANDLORD        @map("LANDLORD")
+  STAFF           @map("STAFF")
+  TECHNICAL_STAFF @map("TECHNICAL_STAFF")
+  ADMIN           @map("ADMIN")
+  MANAGER         @map("MANAGER")
 }

@@ -1,6 +1,6 @@
 model BlacklistToken {
   id        String   @id @default(uuid())
   token     String   @unique
-  createdAt DateTime @default(now())
-  expiredAt DateTime
+  createdAt DateTime @default(now()) @map("created_at")
+  expiredAt DateTime @map("expired_at")
 }
