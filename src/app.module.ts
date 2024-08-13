@@ -9,6 +9,7 @@ import { UserModule } from './modules/user/user.module';
 import { BlacklistTokenModule } from './modules/blacklist-token/blacklist-token.module';
 import { RefreshTokenModule } from './modules/refresh-token/refresh-token.module';
 import { CidModule } from './modules/cid/cid.module';
+import { OtpModule } from './modules/otp/otp.module';
 import { ImageModule } from './modules/image/image.module';
 
 @Module({
@@ -22,6 +23,7 @@ import { ImageModule } from './modules/image/image.module';
     MailModule,
     CidModule,
     ImageModule,
+    OtpModule,
   ],
   controllers: [AppController],
   providers: [AppService],

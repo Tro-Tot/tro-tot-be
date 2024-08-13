@@ -21,7 +21,7 @@ export class MailController {
   @Post('test')
   async test(@Query('email') email: string) {
     Logger.log('Send email to ' + email);
-    await this.mailService.sendUserOTP(email, '123456');
+    await this.mailService.sendOTP(email, '123456');
     return apiSuccess(200, null, 'Send email successfully');
   }
 }

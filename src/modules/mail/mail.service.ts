@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 export class MailService {
   constructor(private mailerService: MailerService) {}
 
-  async sendUserOTP(email: string, otp: string) {
+  async sendOTP(email: string, otp: string) {
     try {
       await this.mailerService.sendMail({
         to: email,
@@ -24,5 +24,22 @@ export class MailService {
     }
   }
 
-  async sendUserResetPassword(email: string, resetPasswordUrl: string) {}
+  async sendResetPassword(email: string, resetPasswordUrl: string) {
+    try {
+      await this.mailerService.sendMail({
+        to: email,
+        from: 'Trotot <trotot.com@gmail.com>',
+        subject: 'Reset Password',
+        template: './reset-password',
+        context: {
+          email,
+          resetPasswordUrl,
+        },
+      });
+      return true;
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
+  }
 }

@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { LoginAuthDTO } from './dto/login-auth.dto';
 import { apiFailed, apiSuccess } from 'src/common/dto/api-response';
@@ -14,6 +19,9 @@ import { SignUpDTO } from './dto/sign-up.dto';
 import { PrismaService } from 'prisma/prisma.service';
 import { CidService } from '../cid/cid.service';
 import { CidDTO } from '../cid/dto/cid.dto';
+import { MailService } from '../mail/mail.service';
+import { OtpService } from '../otp/otp.service';
+import { ApiResponse } from 'src/common/dto/response.dto';
 
 @Injectable()
 export class AuthService {
@@ -338,6 +346,17 @@ export class AuthService {
     }
   }
 
+  constructor(
+    private userService: UserService,
+    private config: ConfigService,
+    private jwtService: JwtService,
+    private blackListTokenService: BlacklistTokenService,
+    private refreshTokenService: RefreshTokenService,
+    private cidService: CidService,
+    private prisma: PrismaService,
+    private readonly mailService: MailService,
+    private readonly otpService: OtpService,
+  ) {}
   async registerManager(user: SignUpDTO) {
     // Ensure the transaction either succeeds or fails completely
     return await this.prisma.$transaction(async (prisma) => {
@@ -694,16 +713,6 @@ export class AuthService {
     });
   }
 
-  constructor(
-    private userService: UserService,
-    private config: ConfigService,
-    private jwtService: JwtService,
-    private blackListTokenService: BlacklistTokenService,
-    private refreshTokenService: RefreshTokenService,
-    private cidService: CidService,
-    private prisma: PrismaService,
-  ) {}
-
   async login(body: LoginAuthDTO) {
     try {
       const user = await this.userService.findOneByUserName(body.username);
@@ -836,5 +845,64 @@ export class AuthService {
 
   decodeJwt(jwt: string) {
     return this.jwtService.decode(jwt);
+  }
+
+  private async generateResetPasswordToken(userId: string, email: string) {
+    const token = this.jwtService.sign(
+      { userId, email },
+      { secret: this.config.get('JWT_SECRET'), expiresIn: '30m' },
+    );
+
+    return token;
+  }
+
+  async sendResetPasswordEmail(email: string, clientUrl: string) {
+    const user = await this.userService.findOneByEmail(email);
+    if (!user) throw new BadRequestException('Email not registered');
+
+    const resetPasswordToken = await this.generateResetPasswordToken(
+      user.id,
+      email,
+    );
+
+    const resetPasswordUrl = `${clientUrl}?token=${resetPasswordToken}`;
+
+    await this.mailService.sendResetPassword(email, resetPasswordUrl);
+    return apiSuccess(200, null, 'Email sent');
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    const { userId, email } = this.jwtService.verify(token, {
+      secret: this.config.get('JWT_SECRET'),
+    });
+
+    const user = await this.userService.findOneByUserId(userId);
+    if (!user) throw new BadRequestException('User not found');
+
+    const hashPassword = await this.hashPassword(newPassword);
+    await this.userService.updatePassword(userId, hashPassword);
+
+    return apiSuccess(200, null, 'Password reset successfully');
+  }
+
+  async isEmailExist(email: string): Promise<boolean> {
+    const user = await this.userService.findOneByEmail(email);
+    return user ? true : false;
+  }
+
+  async sendVerifyOtp(email: string): Promise<ApiResponse> {
+    if (await this.isEmailExist(email)) {
+      return apiFailed(400, 'Email already registered');
+    }
+    return await this.otpService.sendOTP(email);
+  }
+
+  async verifyOtp(email: string, otp: string) {
+    const isVerified = await this.otpService.verifyOTP(email, otp);
+    return apiSuccess(
+      200,
+      { isVerified },
+      isVerified ? 'OTP verified' : 'OTP not verified',
+    );
   }
 }

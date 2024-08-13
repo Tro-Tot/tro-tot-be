@@ -25,7 +25,7 @@ import path from 'path';
           },
         },
         template: {
-          dir: process.cwd() + '/src/modules/mail/templates/',
+          dir: __dirname + '/templates',
           adapter: new HandlebarsAdapter(),
           options: {
             strict: true,

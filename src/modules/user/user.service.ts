@@ -82,4 +82,23 @@ export class UserService {
       },
     });
   }
+
+  async findOneByEmail(email: string) {
+    return await this.prisma.user.findFirst({
+      where: {
+        email: email,
+      },
+    });
+  }
+
+  async updatePassword(id: string, newPassword: string) {
+    return await this.prisma.user.update({
+      where: {
+        id: id,
+      },
+      data: {
+        password: newPassword,
+      },
+    });
+  }
 }

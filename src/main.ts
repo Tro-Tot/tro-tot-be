@@ -18,10 +18,18 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
     origin: '*',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     preflightContinue: false,
     optionsSuccessStatus: 204,
   });
+
+  class CustomValidationPipe extends ValidationPipe {
+    catch(exception: any, host: ArgumentsHost) {
+      console.log(exception);
+    }
+  }
+
+  app.useGlobalPipes(new CustomValidationPipe());
 
   app.useGlobalFilters(
     new AllExceptionsFilter(app.get(HttpAdapterHost)),
@@ -39,7 +47,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(8000);
+  await app.listen(process.env.PORT || 8000);
 
   logger.log(`Application is running on: ${await app.getUrl()}`);
 }
