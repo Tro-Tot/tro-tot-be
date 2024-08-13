@@ -12,6 +12,9 @@ import {
 } from 'firebase/storage';
 import { User } from '@prisma/client';
 import { AuthenUser } from '../auth/dto/authen-user.dto';
+import { apiFailed, apiGeneral } from 'src/common/dto/api-response';
+import { ApiResponse } from 'src/common/dto/response.dto';
+import e from 'express';
 
 @Injectable()
 export class ImageService {
@@ -32,6 +35,95 @@ export class ImageService {
     } catch (error) {
       console.error('Error uploading file:', error);
       throw error;
+    }
+  }
+
+  async addImageToFirebase(
+    file: Express.Multer.File,
+    id: string,
+    pathInput: string,
+  ) {
+    if (file.mimetype !== 'image/jpeg') {
+      throw new BadRequestException('Only JPEG images are allowed');
+    }
+    const path = `images/${pathInput}/${id}`;
+    const filename = `${Date.now()}-${file.originalname}`;
+    const storageRef = ref(this.storage, `${path}/${filename}`);
+    try {
+      const snapshot = await uploadBytes(storageRef, file.buffer, {
+        contentType: file.mimetype,
+      });
+      return snapshot.metadata.name;
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      return 'asdasd';
+    }
+  }
+
+  async handleArrayImages(
+    files: Express.Multer.File[],
+    id,
+    path,
+  ): Promise<ApiResponse> {
+    try {
+      //Upload and get all image promise
+      const uploadPromises = files.map((file: Express.Multer.File, index) => {
+        return this.addImageToFirebase(file, id, path)
+          .then((result) => ({
+            status: 'fulfilled' as const,
+            value: result,
+            file,
+          }))
+          .catch((error) => {
+            return {
+              status: 'rejected' as const,
+              reason: error.message,
+              file: file.originalname,
+              index,
+            };
+          });
+      });
+
+      //Handle all Promise
+      const results = await Promise.allSettled(uploadPromises);
+
+      //successful and failed array data
+      const successful: string[] = [];
+      const failed: { filename: string; index: number; error: string }[] = [];
+
+      //Filter status and map message
+      results.forEach((result) => {
+        if (result.status === 'fulfilled') {
+          if (result.value.status === 'fulfilled') {
+            successful.push(result.value.value);
+          } else {
+            failed.push({
+              filename: result.value.file,
+              index: result.value.index,
+              error: result.value.reason,
+            });
+          }
+        } else {
+          failed.push({ filename: 'Unknown', index: 0, error: result.reason });
+        }
+      });
+      let statusCode = 200;
+      console.log(failed.length);
+      console.log(successful.length);
+      //Handle status code base on number of success or failed
+      if (failed.length > 0 && successful.length <= 0) {
+        statusCode = 400;
+      } else if (failed.length > 0 && successful.length > 0) {
+        statusCode = 207;
+      } else if (failed.length <= 0 && successful.length > 0) {
+        statusCode = 200;
+      } else {
+        statusCode = 400;
+      }
+
+      return apiGeneral(statusCode, successful, 'Upload image finish', failed);
+    } catch (error) {
+      return apiFailed(500, 'Upload image failed', error);
     }
   }
 

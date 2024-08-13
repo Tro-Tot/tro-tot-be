@@ -1,3 +1,4 @@
+import { error } from 'console';
 import { ApiResponse } from './response.dto';
 
 export const apiSuccess = (
@@ -14,4 +15,13 @@ export const apiFailed = (
   error: any = null,
 ): ApiResponse => {
   return new ApiResponse(statusCode, null, message, error);
+};
+
+export const apiGeneral = (
+  statusCode: number = 200,
+  data: any = null,
+  message: string,
+  error: any = null,
+): ApiResponse => {
+  return new ApiResponse(statusCode, data, message, error);
 };

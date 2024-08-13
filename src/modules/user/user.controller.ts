@@ -9,11 +9,12 @@ import {
   UseInterceptors,
   UploadedFile,
   UseGuards,
+  UploadedFiles,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiTags } from '@nestjs/swagger';
 import { apiSuccess, apiFailed } from 'src/common/dto/api-response';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ImageService } from '../image/image.service';
 import { Auth } from 'firebase-admin/lib/auth/auth';
 import { AuthGuard } from '@nestjs/passport';
@@ -34,6 +35,16 @@ export class UserController {
   ) {
     return this.userService.addAvatar(file, user);
   }
+
+  // @Post('/avatar')
+  // // @UseGuards(AuthGuard('jwt'))
+  // @UseInterceptors(FilesInterceptor('files', 10))
+  // uploadAvatarArray(
+  //   @UploadedFiles() files: Express.Multer.File[],
+  //   @GetUser() user: AuthenUser,
+  // ) {
+  //   return this.userService.addAvatars(files, user);
+  // }
 
   @Get('/by-username')
   async findOneByUserName(@Body() body: { username: string }) {
