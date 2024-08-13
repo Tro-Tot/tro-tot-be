@@ -1,10 +1,10 @@
 model Cid {
-  id                 String    @id @default(uuid())
-  number             String    @unique
-  issuing_authority  String
-  issue_date         DateTime
-  registered_address String
-  created_at         DateTime? @default(now())
-  updated_at         DateTime? @updatedAt
-  User               User[]
+  id                String    @id @default(uuid()) @map("id")
+  number            String    @unique @map("number")
+  issuingAuthority  String    @map("issuing_authority")
+  issueDate         DateTime  @map("issue_date")
+  registeredAddress String    @map("registered_address")
+  createdAt         DateTime? @default(now()) @map("created_at")
+  updatedAt         DateTime? @updatedAt @map("updated_at")
+  User              User[]
 }

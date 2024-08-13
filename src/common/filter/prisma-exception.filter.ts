@@ -30,12 +30,23 @@ export class PrismaExceptionFilter implements ExceptionFilter {
 
     switch (exception.code) {
       case PrismaErrorEnum.OperationDependencyNotFound:
-        message = `An operation failed because it depends on one or more records that were required but not found`;
+        message = exception?.message
+          ? exception.message
+          : `An operation failed because it depends on one or more records that were required but not found`;
         responseBody = apiFailed(HttpStatus.CONFLICT, message, exception.meta);
         break;
       case PrismaErrorEnum.ForeignKeyConstraintFailed:
         message = `An operation failed because it would violate a primary key constraint ${exception.meta.target}`;
         responseBody = apiFailed(HttpStatus.CONFLICT, message, exception.meta);
+        break;
+
+      case PrismaErrorEnum.UniqueConstraintFailed:
+        message = `An operation failed because it would violate a unique key constraint ${exception.meta.target}`;
+        responseBody = apiFailed(
+          HttpStatus.CONFLICT,
+          message,
+          exception.meta.target,
+        );
         break;
       case PrismaErrorEnum.DatabaseConnectionFailed:
         message = `Database connection failed`;

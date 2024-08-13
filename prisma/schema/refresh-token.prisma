@@ -1,8 +1,8 @@
 model RefreshToken {
-  refreshToken String   @id @unique
-  userId       String
-  status       Boolean  @default(true)
-  expiredAt    DateTime
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  refreshToken String   @id @unique @map("refresh_token")
+  userId       String   @map("user_id")
+  status       Boolean  @default(true) @map("status")
+  expiredAt    DateTime @map("expired_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 }

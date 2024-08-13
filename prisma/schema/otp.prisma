@@ -1,9 +1,9 @@
 model Otp {
-  id        Int       @id @default(autoincrement())
-  otp       String
-  email     String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  expiredAt DateTime
+    id        Int       @id @default(autoincrement())
+    otp       String
+    email     String
+    createdAt DateTime  @default(now()) @map("created_at")
+    updatedAt DateTime  @updatedAt @map("updated_at")
+    deletedAt DateTime? @map("deleted_at")
+    expiredAt DateTime  @map("expired_at")
 }
