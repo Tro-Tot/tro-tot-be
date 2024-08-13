@@ -671,6 +671,7 @@ export class AuthService {
           role_id: user.role_id,
           id: undefined,
           status: undefined,
+          cid_id: null,
         };
         //Save the renter in DB
         const userResult = await this.prisma.user.create({ data: userInput });
