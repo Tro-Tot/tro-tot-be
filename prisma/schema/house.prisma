@@ -1,0 +1,5 @@
+model House {
+    id     String  @id @default(uuid())
+    roomId String?
+    Room   Room[]
+}

@@ -1,0 +1,13 @@
+model Penalty {
+    id      String   @id @default(uuid()) @map("id")
+    billId  String   @map("bill_id")
+    dueDate DateTime @map("due_date")
+    amount  Float    @map("amount")
+    count   Int      @default(0) @map("count") // Assuming `number` should be `Int` with default increment behavior
+
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+    deletedAt DateTime @map("deleted_at")
+
+    bill Bill @relation(fields: [billId], references: [id])
+}
