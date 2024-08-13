@@ -55,12 +55,16 @@ export class PrismaService
     // });
   }
 
+  private notSoftDeletedTables: string[] = ['Role', 'RefreshToken'];
+
   findNotDeletedMiddleware: Prisma.Middleware = async (params, next) => {
-    if (params.model !== 'Role') {
+    if (this.notSoftDeletedTables.indexOf(params.model) === -1) {
       return next(params);
     }
     if (
-      (params.action.startsWith('find') || params.action === 'aggregate') &&
+      (params.action.startsWith('find') ||
+        params.action === 'aggregate' ||
+        params.action === 'count') &&
       !params.args.where?.deletedAt
     ) {
       return next({
@@ -78,7 +82,7 @@ export class PrismaService
   };
 
   softDeleteMiddleware: Prisma.Middleware = async (params, next) => {
-    if (params.model !== 'Role') {
+    if (this.notSoftDeletedTables.indexOf(params.model) === -1) {
       return next(params);
     }
     if (params.action === 'delete') {
