@@ -3,7 +3,8 @@ import { PrismaService } from 'prisma/prisma.service';
 import { User } from '@prisma/client';
 import { AuthenUser } from '../auth/dto/authen-user.dto';
 import { ImageService } from '../image/image.service';
-import { apiFailed, apiSuccess } from 'src/common/dto/api-response';
+import { apiFailed, apiSuccess, apiGeneral } from 'src/common/dto/api-response';
+import { ApiResponse } from 'src/common/dto/response.dto';
 
 @Injectable()
 export class UserService {
@@ -50,6 +51,13 @@ export class UserService {
     private prisma: PrismaService,
     private readonly imageService: ImageService,
   ) {}
+
+  async addAvatars(files: Express.Multer.File[], userInput: AuthenUser) {
+    if (files.length <= 0) {
+      return apiFailed(400, 'No images found');
+    }
+    return this.imageService.handleArrayImages(files, userInput, 'users');
+  }
 
   findOneByUserId(userId: string) {
     return this.prisma.user.findFirstOrThrow({

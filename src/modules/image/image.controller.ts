@@ -21,6 +21,7 @@ export class ImageController {
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   create(@UploadedFile() file: Express.Multer.File) {
+    // console.log(file);
     return this.imageService.createImage(file);
   }
 

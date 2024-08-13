@@ -27,4 +27,8 @@ export class CidDTO {
   @IsNotEmpty()
   @IsString()
   registered_address: string;
+
+  @IsNotEmpty()
+  @IsUUID()
+  user_id: string;
 }
