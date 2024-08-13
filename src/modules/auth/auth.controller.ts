@@ -67,7 +67,7 @@ export class AuthController {
   }
 
   @Post('/admin/login')
-  @UsePipes(new ValidationPipe())
+  @UsePipes(new ValidationPipe({}))
   adminLogin(@Body() body: LoginAuthDTO) {
     return this.authService.loginAdmin(body);
   }
