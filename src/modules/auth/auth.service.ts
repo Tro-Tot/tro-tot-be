@@ -395,6 +395,7 @@ export class AuthService {
           cidId: undefined,
           id: undefined,
           status: undefined,
+          deleted_at: null,
         };
         //Save the renter in DB
         const userResult = await this.prisma.user.create({ data: userInput });
@@ -470,6 +471,7 @@ export class AuthService {
           cidId: undefined,
           id: undefined,
           status: undefined,
+          deleted_at: null,
         };
         //Save the renter in DB
         const userResult = await this.prisma.user.create({ data: userInput });
@@ -543,6 +545,7 @@ export class AuthService {
           cidId: undefined,
           id: undefined,
           status: undefined,
+          deleted_at: null,
         };
         //Save the renter in DB
         const userResult = await this.prisma.user.create({ data: userInput });
@@ -614,6 +617,7 @@ export class AuthService {
           cidId: undefined,
           id: undefined,
           status: undefined,
+          deleted_at: null,
         };
         //Save the renter in DB
         const userResult = await this.prisma.user.create({ data: userInput });
@@ -687,6 +691,7 @@ export class AuthService {
           id: undefined,
           status: undefined,
           cidId: null,
+          deleted_at: null,
         };
         //Save the renter in DB
         const userResult = await this.prisma.user.create({ data: userInput });
@@ -816,6 +821,8 @@ export class AuthService {
     try {
       const user = await this.userService.findOneByUserId(userId);
       if (user) {
+        console.log(userId);
+        console.log(refreshToken);
         const isRefreshTokenMatches =
           await this.refreshTokenService.validateRefreshToken(
             userId,

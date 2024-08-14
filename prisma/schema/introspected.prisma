@@ -1,0 +1,175 @@
+model AddRoomMemberRequest {
+  id              String      @id
+  room_history_id String
+  renter_id       String
+  status          String
+  is_deleted      Boolean     @default(false)
+  deleted_at      DateTime?
+  created_at      DateTime    @default(now())
+  updated_at      DateTime
+  Renter          Renter      @relation(fields: [renter_id], references: [id])
+  RoomHistory     RoomHistory @relation(fields: [room_history_id], references: [id])
+}
+
+model DepositBill {
+  id             String          @id
+  amount         Float
+  status         String          @default("pending")
+  deleted_at     DateTime?
+  created_at     DateTime        @default(now())
+  updated_at     DateTime
+  RenterContract RenterContract?
+}
+
+model DepositTransaction {
+  id               String          @id
+  deposit_bill_id  String
+  transaction_type TransactionType
+  amount           Float
+  created_at       DateTime        @default(now())
+}
+
+model RentalRequest {
+  id                       String              @id
+  room_id                  String
+  renter_id                String
+  rental_request_status_id String
+  deleted_at               DateTime?
+  created_at               DateTime            @default(now())
+  updated_at               DateTime
+  RentalRequestStatus      RentalRequestStatus @relation(fields: [rental_request_status_id], references: [id])
+  Renter                   Renter              @relation(fields: [renter_id], references: [id])
+  Room                     Room                @relation(fields: [room_id], references: [id])
+}
+
+model RentalRequestStatus {
+  id            String          @id
+  status        String          @default("pending")
+  statusCode    StatusCode      @default(PENDING)
+  deleted_at    DateTime?
+  created_at    DateTime        @default(now())
+  updated_at    DateTime
+  RentalRequest RentalRequest[]
+}
+
+model RenterContract {
+  id                       String                     @id
+  room_history_id          String
+  deposit_bill_id          String                     @unique
+  renter_id                String
+  total_months             Int
+  billing_cycle            Int
+  from_date                DateTime
+  to_date                  DateTime
+  signing_date             DateTime
+  exterminate_date         DateTime
+  status                   String
+  is_deleted               Boolean                    @default(false)
+  deleted_at               DateTime?
+  created_at               DateTime                   @default(now())
+  updated_at               DateTime
+  DepositBill              DepositBill                @relation(fields: [deposit_bill_id], references: [id])
+  Renter                   Renter                     @relation(fields: [renter_id], references: [id])
+  RoomHistory              RoomHistory                @relation(fields: [room_history_id], references: [id])
+  RenterContractAttachment RenterContractAttachment[]
+}
+
+model RenterContractAttachment {
+  id             String         @id
+  name           String
+  contract_id    String
+  file_type      FileType
+  deleted_at     DateTime?
+  created_at     DateTime       @default(now())
+  updated_at     DateTime
+  RenterContract RenterContract @relation(fields: [contract_id], references: [id])
+}
+
+model Report {
+  id              String    @id
+  room_history_id String
+  renter_id       String
+  attachment_id   String?
+  description     String?
+  status          String    @default("pending")
+  deleted_at      DateTime?
+  created_at      DateTime  @default(now())
+  updated_at      DateTime
+}
+
+model RoomMember {
+  id              String         @id
+  room_history_id String
+  renter_id       String
+  room_role_id    String
+  status          String
+  is_deleted      Boolean        @default(false)
+  deleted_at      DateTime?
+  created_at      DateTime       @default(now())
+  updated_at      DateTime
+  Renter          Renter         @relation(fields: [renter_id], references: [id])
+  RoomHistory     RoomHistory    @relation(fields: [room_history_id], references: [id])
+  RoomMemberRole  RoomMemberRole @relation(fields: [room_role_id], references: [id])
+}
+
+model RoomMemberRole {
+  id             String       @id
+  room_role_name String
+  room_role_code RoomRoleCode
+  is_deleted     Boolean      @default(false)
+  deleted_at     DateTime?
+  created_at     DateTime     @default(now())
+  updated_at     DateTime
+  RoomMember     RoomMember[]
+}
+
+model RoomVisitRequest {
+  id                String              @id
+  room_id           String
+  renter_id         String
+  status            String              @default("pending")
+  deleted_at        DateTime?
+  created_at        DateTime            @default(now())
+  updated_at        DateTime
+  Renter            Renter              @relation(fields: [renter_id], references: [id])
+  Room              Room                @relation(fields: [room_id], references: [id])
+  RoomVisitSchedule RoomVisitSchedule[]
+}
+
+model RoomVisitSchedule {
+  id                    String           @id
+  room_visit_request_id String
+  status                String           @default("active")
+  from                  DateTime
+  expectation_end       DateTime
+  created_at            DateTime         @default(now())
+  updated_at            DateTime
+  RoomVisitRequest      RoomVisitRequest @relation(fields: [room_visit_request_id], references: [id])
+}
+
+enum FileType {
+  IMAGE
+  PDF
+  VIDEO
+}
+
+enum RoomHistoryStatus {
+  ACTIVE
+  DEACTIVE
+}
+
+enum RoomRoleCode {
+  CONTRACT_OWNER
+  MEMBER
+}
+
+enum StatusCode {
+  PENDING
+  APPROVE
+  DISAPPROVE
+}
+
+enum TransactionType {
+  BANKING
+  CASH
+}
