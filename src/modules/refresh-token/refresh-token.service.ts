@@ -56,16 +56,25 @@ export class RefreshTokenService {
   }
 
   async validateRefreshToken(userIdInput: string, refreshTokenInput: string) {
-    const refreshTokenResult = await this.prisma.refreshToken.findFirst({
-      where: {
-        userId: userIdInput,
-        refreshToken: refreshTokenInput,
-        status: true,
-        expiredAt: {
-          gte: new Date(),
+    console.log('userIdInput:', userIdInput);
+    console.log('refreshTokenInput:', refreshTokenInput);
+
+    try {
+      const refreshTokenResult = await this.prisma.refreshToken.findFirst({
+        where: {
+          userId: userIdInput,
+          refreshToken: refreshTokenInput,
+          status: true,
+          expiredAt: {
+            gte: new Date(),
+          },
         },
-      },
-    });
-    return !!refreshTokenResult;
+      });
+      console.log('refreshTokenResult:', refreshTokenResult);
+      return !!refreshTokenResult;
+    } catch (error) {
+      console.error('Error validating refresh token:', error);
+      throw new Error('Refresh token validation failed');
+    }
   }
 }
