@@ -1,11 +1,10 @@
 model BillItem {
-    id             String   @id @default(uuid()) @map("id")
-    serviceUsageId String   @map("service_usage_id")
-    billId         String   @map("bill_id")
-    amount         Float    @map("amount")
-    createdAt      DateTime @default(now()) @map("created_at")
-    updatedAt      DateTime @updatedAt @map("updated_at")
-
-    serviceUsage ServiceUsage @relation(fields: [serviceUsageId], references: [id])
-    Bill         Bill         @relation(fields: [billId], references: [id])
+  id             String       @id @default(uuid()) @map("id")
+  serviceUsageId String       @map("service_usage_id")
+  billId         String       @map("bill_id")
+  amount         Float        @map("amount")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  Bill           Bill         @relation(fields: [billId], references: [id])
+  serviceUsage   ServiceUsage @relation(fields: [serviceUsageId], references: [id])
 }

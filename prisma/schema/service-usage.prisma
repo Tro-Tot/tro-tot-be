@@ -1,16 +1,13 @@
 model ServiceUsage {
-    id                  String   @id @default(uuid()) @map("id")
-    roomServiceId       String   @map("room_service_id")
-    previousUsageNumber Int?     @map("previous_usage_number") // Nullable field
-    currentUsageNumber  Int      @map("current_usage_number")
-    fromDate            DateTime @map("from_date")
-    toDate              DateTime @default(now()) @map("to_date") // Ensure not null
-    isInitial           Boolean  @default(false) @map("is_initial")
-
-    createdAt DateTime @default(now()) @map("created_at")
-    updatedAt DateTime @updatedAt @map("updated_at")
-
-    roomService RoomService @relation(fields: [roomServiceId], references: [id])
-
-    BillItem BillItem[]
+  id                  String      @id @default(uuid()) @map("id")
+  roomServiceId       String      @map("room_service_id")
+  previousUsageNumber Int?        @map("previous_usage_number")
+  currentUsageNumber  Int         @map("current_usage_number")
+  fromDate            DateTime    @map("from_date")
+  toDate              DateTime    @default(now()) @map("to_date")
+  isInitial           Boolean     @default(false) @map("is_initial")
+  createdAt           DateTime    @default(now()) @map("created_at")
+  updatedAt           DateTime    @updatedAt @map("updated_at")
+  BillItem            BillItem[]
+  roomService         RoomService @relation(fields: [roomServiceId], references: [id])
 }

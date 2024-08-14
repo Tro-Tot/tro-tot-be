@@ -1,23 +1,20 @@
 model RoomService {
-    id             String    @id @default(uuid()) @map("id")
-    houseServiceId String    @map("house_service_id")
-    roomHistoryId  String    @map("room_history_id")
-    status         String    @default("available") @map("status")
-    isDeleted      Boolean   @default(false) @map("is_deleted")
-    fromDate       DateTime? @map("from_date")
-    toDate         DateTime? @map("to_date")
-    createdAt      DateTime  @default(now()) @map("created_at")
-    updatedAt      DateTime  @updatedAt @map("updated_at")
-    deletedAt      DateTime  @map("deleted_at")
-
-    roomHistory  RoomHistory  @relation(fields: [roomHistoryId], references: [id])
-    houseService HouseService @relation(fields: [houseServiceId], references: [id])
-
-    ServiceUsage ServiceUsage[]
+  id             String         @id @default(uuid()) @map("id")
+  houseServiceId String         @map("house_service_id")
+  roomHistoryId  String         @map("room_history_id")
+  status         String         @default("available") @map("status")
+  isDeleted      Boolean        @default(false) @map("is_deleted")
+  fromDate       DateTime?      @map("from_date")
+  toDate         DateTime?      @map("to_date")
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+  deletedAt      DateTime       @map("deleted_at")
+  houseService   HouseService   @relation(fields: [houseServiceId], references: [id])
+  roomHistory    RoomHistory    @relation(fields: [roomHistoryId], references: [id])
+  ServiceUsage   ServiceUsage[]
 }
 
 model HouseService {
-    id String @id @default(uuid())
-
-    RoomService RoomService[]
+  id          String        @id @default(uuid())
+  RoomService RoomService[]
 }

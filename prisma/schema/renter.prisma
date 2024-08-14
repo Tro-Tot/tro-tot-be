@@ -1,17 +1,12 @@
 model Renter {
-  id        String   @id @default(uuid()) @map("id")
-  userId    String   @map("user_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  user      User     @relation(fields: [userId], references: [id])
-
-  RoomMember RoomMember[]
-
-  RenterContract RenterContract[]
-
+  id                   String                 @id @default(uuid()) @map("id")
+  createdAt            DateTime               @default(now()) @map("created_at")
+  updatedAt            DateTime               @updatedAt @map("updated_at")
+  userId               String                 @map("user_id")
   AddRoomMemberRequest AddRoomMemberRequest[]
-
-  RentalRequest RentalRequest[]
-
-  RoomVisitRequest RoomVisitRequest[]
+  RentalRequest        RentalRequest[]
+  user                 User                   @relation(fields: [userId], references: [id])
+  RenterContract       RenterContract[]
+  RoomMember           RoomMember[]
+  RoomVisitRequest     RoomVisitRequest[]
 }

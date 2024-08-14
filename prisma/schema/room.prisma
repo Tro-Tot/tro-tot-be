@@ -1,29 +1,26 @@
 model Room {
-    id                String   @id @default(uuid()) @map("id")
-    houseId           String   @unique @map("house_id")
-    attachmentId      String?  @map("attachment_id")
-    roomName          String   @map("room_name")
-    width             Float    @map("width")
-    length            Float    @map("length")
-    height            Float    @map("height")
-    squareFootage     Float    @map("square_footage")
-    reservationPrice  Float    @map("reservation_price")
-    numberOfBedrooms  Int      @map("number_of_bedrooms")
-    numberOfBathrooms Int      @map("number_of_bathrooms")
-    rentPrice         Float    @map("rent_price")
-    numberOfPeople    Int      @map("number_of_people")
-    hasMezzanine      Boolean  @map("has_mezzanine")
-    isOccupied        Boolean  @default(false) @map("is_occupied")
-    index             Int      @default(autoincrement()) @map("index")
-    status            String   @default("available") @map("status")
-    isDeleted         Boolean  @default(false) @map("is_deleted")
-    createdAt         DateTime @default(now()) @map("created_at")
-    updatedAt         DateTime @updatedAt @map("updated_at")
-
-    roomHistory RoomHistory[]
-    house       House         @relation(fields: [houseId], references: [id])
-
-    RentalRequest RentalRequest[]
-
-    RoomVisitRequest RoomVisitRequest[]
+  id                String             @id @default(uuid()) @map("id")
+  houseId           String             @unique @map("house_id")
+  attachmentId      String?            @map("attachment_id")
+  roomName          String             @map("room_name")
+  width             Float              @map("width")
+  length            Float              @map("length")
+  height            Float              @map("height")
+  squareFootage     Float              @map("square_footage")
+  reservationPrice  Float              @map("reservation_price")
+  numberOfBedrooms  Int                @map("number_of_bedrooms")
+  numberOfBathrooms Int                @map("number_of_bathrooms")
+  rentPrice         Float              @map("rent_price")
+  numberOfPeople    Int                @map("number_of_people")
+  hasMezzanine      Boolean            @map("has_mezzanine")
+  isOccupied        Boolean            @default(false) @map("is_occupied")
+  index             Int                @default(autoincrement()) @map("index")
+  status            String             @default("available") @map("status")
+  isDeleted         Boolean            @default(false) @map("is_deleted")
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+  RentalRequest     RentalRequest[]
+  house             House              @relation(fields: [houseId], references: [id])
+  roomHistory       RoomHistory[]
+  RoomVisitRequest  RoomVisitRequest[]
 }
