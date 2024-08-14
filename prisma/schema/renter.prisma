@@ -4,4 +4,14 @@ model Renter {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
   user      User     @relation(fields: [userId], references: [id])
+
+  RoomMember RoomMember[]
+
+  RenterContract RenterContract[]
+
+  AddRoomMemberRequest AddRoomMemberRequest[]
+
+  RentalRequest RentalRequest[]
+
+  RoomVisitRequest RoomVisitRequest[]
 }

@@ -1,21 +1,25 @@
 model User {
-  id             String           @id @default(uuid()) @map("id")
-  email          String           @unique @map("email")
-  password       String           @map("password")
-  username       String           @map("username")
-  avatarUrl      String?          @map("avatar_url")
-  cidId          String?          @map("cid_id")
-  createdAt      DateTime?        @default(now()) @map("created_at")
-  dateOfBirth    DateTime         @map("date_of_birth")
-  firstName      String           @map("first_name")
-  gender         Gender           @map("gender")
-  isDeleted      Boolean?         @default(false) @map("is_deleted")
-  isVerified     Boolean?         @default(false) @map("is_verified")
-  lastName       String           @map("last_name")
-  phoneNumber    String           @unique @map("phone_number")
-  roleId         String           @map("role_id")
+  id     String  @id @default(uuid()) @map("id")
+  cidId  String? @map("cid_id")
+  roleId String  @map("role_id")
+
+  email       String   @unique @map("email")
+  password    String   @map("password")
+  username    String   @map("username")
+  avatarUrl   String?  @map("avatar_url")
+  firstName   String   @map("first_name")
+  lastName    String   @map("last_name")
+  dateOfBirth DateTime @map("date_of_birth")
+  gender      Gender   @map("gender")
+  phoneNumber String   @unique @map("phone_number")
+
+  isDeleted  Boolean? @default(false) @map("is_deleted")
+  isVerified Boolean? @default(false) @map("is_verified")
+
   status         String?          @default("active") @map("status")
-  updatedAt      DateTime?        @updatedAt @map("updated_at")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+  deletedAt      DateTime?        @map("deleted_at")
   LandLord       LandLord[]
   Manager        Manager[]
   Renter         Renter[]
