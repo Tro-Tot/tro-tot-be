@@ -8,7 +8,13 @@ import { UserService } from '../user/user.service';
 import { LoginAuthDTO } from './dto/login-auth.dto';
 import { apiFailed, apiSuccess } from 'src/common/dto/api-response';
 import * as bcrypt from 'bcrypt';
-import { PrismaClient, RefreshToken, Renter, User } from '@prisma/client';
+import {
+  PrismaClient,
+  RefreshToken,
+  Renter,
+  RoleCode,
+  User,
+} from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { RefreshTokenService } from '../refresh-token/refresh-token.service';
@@ -22,6 +28,7 @@ import { CidDTO } from '../cid/dto/cid.dto';
 import { MailService } from '../mail/mail.service';
 import { OtpService } from '../otp/otp.service';
 import { ApiResponse } from 'src/common/dto/response.dto';
+import { RoleService } from '../role/role.service';
 
 @Injectable()
 export class AuthService {
@@ -353,6 +360,7 @@ export class AuthService {
     private blackListTokenService: BlacklistTokenService,
     private refreshTokenService: RefreshTokenService,
     private cidService: CidService,
+    private roleService: RoleService,
     private prisma: PrismaService,
     private readonly mailService: MailService,
     private readonly otpService: OtpService,
@@ -364,8 +372,9 @@ export class AuthService {
         //Hash user's password
         user.password = await this.hashPassword(user.password);
 
-        // TEST: apply Manager role id
-        user.role_id = '5';
+        //Apply Manager role id
+        const role = await this.roleService.findRoleByCode(RoleCode.MANAGER);
+        user.role_id = role.id;
 
         //Create User type
         const userInput: any = {
@@ -436,8 +445,10 @@ export class AuthService {
         //Hash user's password
         user.password = await this.hashPassword(user.password);
 
-        // TEST: apply Technical Staff role id
-        user.role_id = '3';
+        const role = await this.roleService.findRoleByCode(
+          RoleCode.TECHNICAL_STAFF,
+        );
+        user.role_id = role.id;
 
         //Create User type
         const userInput: any = {
@@ -508,8 +519,9 @@ export class AuthService {
         //Hash user's password
         user.password = await this.hashPassword(user.password);
 
-        // TEST: apply Staff role id
-        user.role_id = '4';
+        //Apply Staff role id
+        const role = await this.roleService.findRoleByCode(RoleCode.STAFF);
+        user.role_id = role.id;
 
         //Create User type
         const userInput: any = {
@@ -566,6 +578,7 @@ export class AuthService {
           'Created user successfully',
         );
       } catch (error) {
+        console.log(error);
         throw error;
       }
     });
@@ -578,8 +591,9 @@ export class AuthService {
         //Hash user's password
         user.password = await this.hashPassword(user.password);
 
-        // TEST: apply landlord role id
-        user.role_id = '2';
+        // Apply landlord role id
+        const role = await this.roleService.findRoleByCode(RoleCode.LANDLORD);
+        user.role_id = role.id;
 
         //Create User type
         const userInput: any = {
@@ -650,8 +664,9 @@ export class AuthService {
         //Hash user's password
         user.password = await this.hashPassword(user.password);
 
-        // TEST: apply renter role id
-        user.role_id = '1';
+        //Apply renter role id
+        const role = await this.roleService.findRoleByCode(RoleCode.RENTER);
+        user.role_id = role.id;
 
         //Create User type
         const userInput: User = {
