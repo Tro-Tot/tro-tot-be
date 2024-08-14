@@ -1,20 +1,24 @@
 model RoomService {
-  id             String         @id @default(uuid()) @map("id")
-  houseServiceId String         @map("house_service_id")
-  roomHistoryId  String         @map("room_history_id")
-  status         String         @default("available") @map("status")
-  isDeleted      Boolean        @default(false) @map("is_deleted")
-  fromDate       DateTime?      @map("from_date")
-  toDate         DateTime?      @map("to_date")
-  createdAt      DateTime       @default(now()) @map("created_at")
-  updatedAt      DateTime       @updatedAt @map("updated_at")
-  deletedAt      DateTime       @map("deleted_at")
-  houseService   HouseService   @relation(fields: [houseServiceId], references: [id])
-  roomHistory    RoomHistory    @relation(fields: [roomHistoryId], references: [id])
-  ServiceUsage   ServiceUsage[]
+  id             String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  houseServiceId String @map("house_service_id") @db.Uuid
+  roomHistoryId  String @map("room_history_id") @db.Uuid
+  status         String @default("available") @map("status")
+
+  fromDate DateTime? @map("from_date") @db.Timestamptz()
+  toDate   DateTime? @map("to_date") @db.Timestamptz()
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz()
+
+  houseService  HouseService   @relation(fields: [houseServiceId], references: [id])
+  roomHistory   RoomHistory    @relation(fields: [roomHistoryId], references: [id])
+  serviceUsages ServiceUsage[]
+
+  @@map("room_member_services")
 }
 
 model HouseService {
-  id          String        @id @default(uuid())
-  RoomService RoomService[]
+  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  roomServices RoomService[]
 }

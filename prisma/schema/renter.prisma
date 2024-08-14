@@ -1,12 +1,17 @@
 model Renter {
-  id                   String                 @id @default(uuid()) @map("id")
-  createdAt            DateTime               @default(now()) @map("created_at")
-  updatedAt            DateTime               @updatedAt @map("updated_at")
-  userId               String                 @map("user_id")
-  AddRoomMemberRequest AddRoomMemberRequest[]
-  RentalRequest        RentalRequest[]
-  user                 User                   @relation(fields: [userId], references: [id])
-  RenterContract       RenterContract[]
-  RoomMember           RoomMember[]
-  RoomVisitRequest     RoomVisitRequest[]
+  id     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId String @map("user_id") @db.Uuid
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz() // Nullable field
+
+  addRoomMemberRequests AddRoomMemberRequest[]
+  rentalRequests        RentalRequest[]
+  user                  User                   @relation(fields: [userId], references: [id])
+  renterContracts       RenterContract[]
+  roomMembers           RoomMember[]
+  roomVisitRequests     RoomVisitRequest[]
+
+  @@map("renters")
 }

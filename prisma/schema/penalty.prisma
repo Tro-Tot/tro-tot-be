@@ -1,11 +1,15 @@
 model Penalty {
-  id        String   @id @default(uuid()) @map("id")
-  billId    String   @map("bill_id")
-  dueDate   DateTime @map("due_date")
-  amount    Float    @map("amount")
-  count     Int      @default(0) @map("count")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  deletedAt DateTime @map("deleted_at")
-  bill      Bill     @relation(fields: [billId], references: [id])
+  id      String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  billId  String   @map("bill_id") @db.Uuid
+  dueDate DateTime @map("due_date") @db.Timestamptz()
+  amount  Float    @map("amount")
+  count   Int      @default(0) @map("count")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz() // Nullable field
+
+  bill Bill @relation(fields: [billId], references: [id])
+
+  @@map("penalties")
 }

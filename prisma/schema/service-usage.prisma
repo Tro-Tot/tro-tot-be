@@ -1,13 +1,18 @@
 model ServiceUsage {
-  id                  String      @id @default(uuid()) @map("id")
-  roomServiceId       String      @map("room_service_id")
-  previousUsageNumber Int?        @map("previous_usage_number")
-  currentUsageNumber  Int         @map("current_usage_number")
-  fromDate            DateTime    @map("from_date")
-  toDate              DateTime    @default(now()) @map("to_date")
-  isInitial           Boolean     @default(false) @map("is_initial")
-  createdAt           DateTime    @default(now()) @map("created_at")
-  updatedAt           DateTime    @updatedAt @map("updated_at")
-  BillItem            BillItem[]
-  roomService         RoomService @relation(fields: [roomServiceId], references: [id])
+  id                  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  roomServiceId       String   @map("room_service_id") @db.Uuid
+  previousUsageNumber Int?     @map("previous_usage_number")
+  currentUsageNumber  Int      @map("current_usage_number")
+  fromDate            DateTime @map("from_date") @db.Timestamptz()
+  toDate              DateTime @default(now()) @map("to_date") @db.Timestamptz()
+  isInitial           Boolean  @default(false) @map("is_initial")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz()
+
+  billItems   BillItem[]
+  roomService RoomService @relation(fields: [roomServiceId], references: [id])
+
+  @@map("service_usages")
 }

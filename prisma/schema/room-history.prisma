@@ -1,20 +1,25 @@
 model RoomHistory {
-  id                   String                 @id @default(uuid()) @map("id")
-  roomId               String                 @map("room_id")
-  fromDate             DateTime               @map("from_date")
-  toDate               DateTime?              @map("to_date")
-  created_at           DateTime               @default(now())
-  deleted_at           DateTime?
-  status               RoomHistoryStatus      @default(ACTIVE)
-  updated_at           DateTime
-  AddRoomMemberRequest AddRoomMemberRequest[]
-  RenterContract       RenterContract[]
-  room                 Room                   @relation(fields: [roomId], references: [id])
-  RoomMember           RoomMember[]
-  RoomService          RoomService[]
+  id       String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  roomId   String    @map("room_id") @db.Uuid
+  fromDate DateTime  @map("from_date") @db.Timestamptz()
+  toDate   DateTime? @map("to_date") @db.Timestamptz()
+
+  status RoomHistoryStatus @default(ACTIVE)
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz()
+
+  addRoomMemberRequests AddRoomMemberRequest[]
+  renterContracts       RenterContract[]
+  room                  Room                   @relation(fields: [roomId], references: [id])
+  roomMembers           RoomMember[]
+  roomServices          RoomService[]
+
+  @@map("room_histories")
 }
 
 enum RoomHistoryStatus {
-    ACTIVE
-    DEACTIVE
+  ACTIVE
+  DEACTIVE
 }

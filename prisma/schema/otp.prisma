@@ -1,9 +1,12 @@
 model Otp {
-  id        Int       @id @default(autoincrement())
-  otp       String
-  email     String
-  createdAt DateTime  @default(now()) @map("created_at")
-  deletedAt DateTime? @map("deleted_at")
-  expiredAt DateTime  @map("expired_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
+  id    Int    @id @default(autoincrement())
+  otp   String @map("otp")
+  email String @map("email")
+
+  expiredAt DateTime  @map("expired_at") @db.Timestamptz()
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz() // Nullable field
+
+  @@map("otps")
 }

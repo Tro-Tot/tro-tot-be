@@ -36,16 +36,6 @@ export class UserController {
     return this.userService.addAvatar(file, user);
   }
 
-  // @Post('/avatar')
-  // // @UseGuards(AuthGuard('jwt'))
-  // @UseInterceptors(FilesInterceptor('files', 10))
-  // uploadAvatarArray(
-  //   @UploadedFiles() files: Express.Multer.File[],
-  //   @GetUser() user: AuthenUser,
-  // ) {
-  //   return this.userService.addAvatars(files, user);
-  // }
-
   @Get('/by-username')
   async findOneByUserName(@Body() body: { username: string }) {
     try {

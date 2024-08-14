@@ -1,10 +1,15 @@
 model Cid {
-  id                String    @id @default(uuid()) @map("id")
-  number            String    @unique @map("number")
-  issuingAuthority  String    @map("issuing_authority")
-  issueDate         DateTime  @map("issue_date")
-  registeredAddress String    @map("registered_address")
-  createdAt         DateTime? @default(now()) @map("created_at")
-  updatedAt         DateTime? @updatedAt @map("updated_at")
-  User              User[]
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  number            String   @unique @map("number")
+  issuingAuthority  String   @map("issuing_authority")
+  issueDate         DateTime @map("issue_date") @db.Timestamptz()
+  registeredAddress String   @map("registered_address")
+
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt  DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
+  deleted_at DateTime? @map("deleted_at") @db.Timestamptz()
+
+  users User[]
+
+  @@map("cids")
 }
