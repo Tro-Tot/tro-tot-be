@@ -18,25 +18,25 @@ import e from 'express';
 
 @Injectable()
 export class ImageService {
-  async addAvatarToFirebase(file: Express.Multer.File, id: string) {
-    if (file.mimetype !== 'image/jpeg') {
-      throw new BadRequestException('Only JPEG images are allowed');
-    }
+  // async addAvatarToFirebase(file: Express.Multer.File, id: string) {
+  //   if (file.mimetype !== 'image/jpeg') {
+  //     throw new BadRequestException('Only JPEG images are allowed');
+  //   }
 
-    const filename = `${Date.now()}-${file.originalname}`;
-    const storageRef = ref(this.storage, `images/users/${id}/${filename}`);
+  //   const filename = `${Date.now()}-${file.originalname}`;
+  //   const storageRef = ref(this.storage, `images/users/${id}/${filename}`);
 
-    try {
-      const snapshot = await uploadBytes(storageRef, file.buffer, {
-        contentType: file.mimetype,
-      });
+  //   try {
+  //     const snapshot = await uploadBytes(storageRef, file.buffer, {
+  //       contentType: file.mimetype,
+  //     });
 
-      return snapshot.metadata.name;
-    } catch (error) {
-      console.error('Error uploading file:', error);
-      throw error;
-    }
-  }
+  //     return snapshot.metadata.name;
+  //   } catch (error) {
+  //     console.error('Error uploading file:', error);
+  //     throw error;
+  //   }
+  // }
 
   async addImageToFirebase(
     file: Express.Multer.File,
@@ -56,10 +56,11 @@ export class ImageService {
       return snapshot.metadata.name;
     } catch (error) {
       console.error('Error uploading file:', error);
-      return 'asdasd';
+      return error;
     }
   }
 
+  //Use when add array of Image
   async handleArrayImages(
     files: Express.Multer.File[],
     id,

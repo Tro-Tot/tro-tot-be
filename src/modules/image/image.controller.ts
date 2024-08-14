@@ -8,11 +8,15 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
+  UseGuards,
+  UploadedFiles,
 } from '@nestjs/common';
+
 import { ImageService } from './image.service';
 import { CreateImageDto } from './dto/create-image.dto';
 import { UpdateImageDto } from './dto/update-image.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { ApiResponse } from 'src/common/dto/response.dto';
 
 @Controller('image')
 export class ImageController {
@@ -43,5 +47,18 @@ export class ImageController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.imageService.remove(+id);
+  }
+
+  @Post('/array')
+  // @UseGuards(AuthGuard('jwt'))
+  @UseInterceptors(FilesInterceptor('files', 10))
+  async uploadAvatarArray(@UploadedFiles() files: Express.Multer.File[]) {
+    const result: ApiResponse = await this.imageService.handleArrayImages(
+      files,
+      'test',
+      'test',
+    );
+    console.log(result.data);
+    return 'test';
   }
 }

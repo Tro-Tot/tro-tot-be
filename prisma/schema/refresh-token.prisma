@@ -1,9 +1,12 @@
 model RefreshToken {
-  status       Boolean   @default(true) @map("status")
-  createdAt    DateTime  @default(now()) @map("created_at")
-  expiredAt    DateTime  @map("expired_at")
-  refreshToken String    @id @unique @map("refresh_token")
-  updatedAt    DateTime  @updatedAt @map("updated_at")
-  userId       String    @map("user_id")
-  deletedAt    DateTime? @map("deleted_at") @db.Timestamptz(6)
+  refreshToken String  @id @unique @map("refresh_token")
+  userId       String  @map("user_id") @db.Uuid
+  status       Boolean @default(true) @map("status")
+
+  expiredAt DateTime  @map("expired_at") @db.Timestamptz()
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz() // Nullable field
+
+  @@map("refresh_tokens")
 }

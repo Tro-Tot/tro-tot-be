@@ -1,11 +1,15 @@
 model Role {
-  id        String    @id @default(uuid()) @map("id")
-  name      String    @unique @map("name")
-  code      RoleCode  @map("code")
-  createdAt DateTime  @default(now()) @map("created_at")
-  deletedAt DateTime? @map("deleted_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  User      User[]
+  id   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name String   @unique @map("name")
+  code RoleCode @map("code")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz()
+
+  users User[]
+
+  @@map("roles")
 }
 
 enum RoleCode {
@@ -15,4 +19,6 @@ enum RoleCode {
   TECHNICAL_STAFF @map("TECHNICAL_STAFF")
   ADMIN           @map("ADMIN")
   MANAGER         @map("MANAGER")
+
+  @@map("role_codes")
 }
