@@ -35,7 +35,7 @@ export class SignUpDTO {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  phone_number: string;
+  phoneNumber: string;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -45,12 +45,12 @@ export class SignUpDTO {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  first_name: string;
+  firstName: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  last_name: string;
+  lastName: string;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -60,7 +60,7 @@ export class SignUpDTO {
   @ApiProperty()
   @IsNotEmpty()
   @IsDateString()
-  date_of_birth: Date;
+  dateOfBirth: Date;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -75,7 +75,7 @@ export class SignUpDTO {
   @ApiProperty()
   @IsOptional()
   @IsString()
-  avatar_url?: string;
+  avatarUrl?: string;
 
   @ApiProperty()
   @IsOptional()
@@ -85,10 +85,10 @@ export class SignUpDTO {
   @ApiProperty()
   @IsOptional()
   @IsUUID()
-  role_id?: string;
+  roleId?: string;
 
   @ApiProperty()
   @IsOptional()
   @IsUUID()
-  cid_id?: string;
+  cidId?: string;
 }
