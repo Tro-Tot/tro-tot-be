@@ -5,7 +5,7 @@ model User {
   username       String           @map("username")
   avatarUrl      String?          @map("avatar_url")
   cidId          String?          @map("cid_id")
-  createdAt      DateTime?        @default(now()) @map("created_at")
+  createdAt      DateTime         @default(now()) @map("created_at")
   dateOfBirth    DateTime         @map("date_of_birth")
   firstName      String           @map("first_name")
   gender         Gender           @map("gender")
@@ -15,7 +15,8 @@ model User {
   phoneNumber    String           @unique @map("phone_number")
   roleId         String           @map("role_id")
   status         String?          @default("active") @map("status")
-  updatedAt      DateTime?        @updatedAt @map("updated_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+  deleted_at     DateTime?
   LandLord       LandLord[]
   Manager        Manager[]
   Renter         Renter[]

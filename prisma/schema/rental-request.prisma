@@ -1,0 +1,14 @@
+model RentalRequest {
+    id                    String @id @default(uuid()) @map("id")
+    roomId                String @map("room_id")
+    renterId              String @map("renter_id")
+    rentalRequestStatusId String @map("rental_request_status_id")
+
+    deletedAt DateTime? @map("deleted_at") // Nullable field
+    createdAt DateTime  @default(now()) @map("created_at")
+    updatedAt DateTime  @updatedAt @map("updated_at")
+
+    room                Room                @relation(fields: [roomId], references: [id])
+    renter              Renter              @relation(fields: [renterId], references: [id])
+    rentalRequestStatus RentalRequestStatus @relation(fields: [rentalRequestStatusId], references: [id])
+}

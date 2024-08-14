@@ -1,11 +1,8 @@
 model Transaction {
-    id     String @id @default(uuid()) @map("id")
-    billId String @map("bill_id") // Nullable field
-
-    amount        Float  @map("amount")
-    paymentMethod String @map("payment_method") // Assuming `transaction_type` is a string
-
-    createdAt DateTime @default(now()) @map("created_at")
-
-    bill Bill @relation(fields: [billId], references: [id])
+  id               String          @id @default(uuid()) @map("id")
+  billId           String          @map("bill_id")
+  amount           Float           @map("amount")
+  createdAt        DateTime        @default(now()) @map("created_at")
+  transaction_type TransactionType
+  bill             Bill            @relation(fields: [billId], references: [id])
 }

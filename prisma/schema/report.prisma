@@ -1,0 +1,11 @@
+model Report {
+    id            String    @id @default(uuid()) @map("id")
+    roomHistoryId String    @map("room_history_id")
+    renterId      String    @map("renter_id")
+    attachmentId  String?   @map("attachment_id") // Nullable field
+    description   String?   @map("description") // Nullable field
+    status        String    @default("pending") @map("status")
+    deletedAt     DateTime? @map("deleted_at") // Nullable field
+    createdAt     DateTime  @default(now()) @map("created_at")
+    updatedAt     DateTime  @updatedAt @map("updated_at")
+}
