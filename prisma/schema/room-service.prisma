@@ -13,8 +13,3 @@ model RoomService {
   roomHistory    RoomHistory    @relation(fields: [roomHistoryId], references: [id])
   ServiceUsage   ServiceUsage[]
 }
-
-model HouseService {
-  id          String        @id @default(uuid())
-  RoomService RoomService[]
-}

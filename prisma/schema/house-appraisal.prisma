@@ -1,0 +1,21 @@
+model RoomAppraisal {
+  @@map("room_appraisal")
+  id                  String    @id @default(uuid()) @map("id")
+  houseAppraisalId    String    @map("house_appraisal_id")
+  roomNumber          Int       @map("room_number")
+  name                String    @map("name")
+  floorNumber         Int       @map("floor_number")
+  furniture           String    @map("furniture")
+  width               Float     @map("width")
+  length              Float     @map("length")
+  description         String    @map("description")
+  landlordRentPrice   Float     @map("landlord_rent_price")
+  landlordDeposit     Float     @map("landlord_deposit")
+  hasMezzanine        Boolean   @map("has_mezzanine")
+  isHouse             Boolean   @map("is_house")
+  createdAt           DateTime  @map("created_at")
+  updatedAt           DateTime  @map("updated_at")
+  deletedAt           DateTime? @map("deleted_at")
+
+  houseAppraisal      HouseAppraisal @relation(fields: [houseAppraisalId], references: [id])
+}

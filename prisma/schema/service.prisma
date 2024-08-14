@@ -1,0 +1,30 @@
+model Service {
+  @@map("services")
+  id                String   @id @default(uuid()) @map("id")
+  houseId           String?  @map("house_id")
+  serviceScheduleId String?  @map("service_schedule_id")
+  serviceName       String   @map("service_name")
+  servicePrice      Float    @map("service_price")
+  serviceType       ServiceType @map("service_type")
+  unit              String   @map("unit")
+  billCycle         Int      @default(1) @map("bill_cycle")
+  isCompulsory      Boolean  @map("is_compulsory")
+  isManual          Boolean  @map("is_manual")
+  status            String   @default("available") @map("status")
+  isDeleted         Boolean  @default(false) @map("is_deleted")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime? @default(now()) @map("updated_at")
+  deletedAt         DateTime? @map("deleted_at")
+  
+  houseServices HouseService[]
+}
+
+enum ServiceType {
+  ELECTRICITY
+  WATER
+  INTERNET
+  PARKING
+  WASTE_COLLECTION
+  WASHING_MACHINE
+  CLEANING
+}

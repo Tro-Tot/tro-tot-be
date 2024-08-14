@@ -4,4 +4,6 @@ model TechnicalStaff {
   updatedAt DateTime @updatedAt @map("updated_at")
   userId    String   @map("user_id")
   user      User     @relation(fields: [userId], references: [id])
+
+  cooperativeRequests CooperativeRequest[]
 }

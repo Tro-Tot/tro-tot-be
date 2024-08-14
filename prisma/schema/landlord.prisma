@@ -4,4 +4,7 @@ model LandLord {
   updatedAt DateTime @updatedAt @map("updated_at")
   userId    String   @map("user_id")
   user      User     @relation(fields: [userId], references: [id])
+
+  cooperativeContracts CooperativeContract[]
+  cooperativeRequests CooperativeRequest[]
 }

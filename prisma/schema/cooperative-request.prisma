@@ -1,0 +1,37 @@
+model CooperativeRequest {
+  @@map("cooperative_request")
+  id                       String                @id @default(uuid()) @map("id")
+  cooperativeRequestStatus CooperativeRequestStatus 
+  cooperativeRequestStatusId  String       @unique         @map("cooperative_request_status_id")
+  landlordId               String                @map("landlord_id")
+  managerId                String                @map("manager_id")
+  technicalStaffId         String?               @map("technical_staff_id")
+  contactNumber            String                @map("contact_number")
+  city                     String                @map("city")
+  district                 String                @map("district")
+  street                   String                @map("street")
+  houseNumber              String                @map("house_number")
+  description              String                @map("description")
+  expectROI                Float?                @map("expect_roi")
+  length                   Float                 @map("length")
+  width                    Float                 @map("width")
+  expectMeetingDate        String                @map("expect_meeting_date")
+  isDeleted                Boolean               @default(false) @map("is_deleted")
+  createdAt                DateTime              @map("created_at")
+  updatedAt                DateTime              @map("updated_at")
+
+  manager                  Manager               @relation(fields: [managerId], references: [id])
+  landlord                 LandLord              @relation(fields: [landlordId], references: [id])
+  technicalStaff           TechnicalStaff?       @relation(fields: [technicalStaffId], references: [id])
+  houseAppraisals          HouseAppraisal[]      
+  cooperativeRequestSchedule CooperativeRequestSchedule?
+}
+
+enum CooperativeRequestStatus {
+  LANDLORD_SENT
+  MANAGER_RECEIVED
+  MANAGER_CANCELLED
+  TECHNICAL_STAFF_ASSIGNED
+  TECHNICAL_STAFF_APPRAISED
+  MANAGER_REPORTED
+}
