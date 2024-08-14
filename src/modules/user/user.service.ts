@@ -22,8 +22,8 @@ export class UserService {
       }
 
       //Delete the current image
-      if (user.avatar_url !== null) {
-        const filePath = `images/users/${user.id}/${user.avatar_url}`;
+      if (user.avatarUrl !== null) {
+        const filePath = `images/users/${user.id}/${user.avatarUrl}`;
         try {
           await this.imageService.deleteImage(filePath);
         } catch (error) {
@@ -38,7 +38,7 @@ export class UserService {
           id: user.id,
         },
         data: {
-          avatar_url: imageUrl,
+          avatarUrl: imageUrl,
         },
       });
 

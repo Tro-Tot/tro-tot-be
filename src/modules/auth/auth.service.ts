@@ -8,7 +8,13 @@ import { UserService } from '../user/user.service';
 import { LoginAuthDTO } from './dto/login-auth.dto';
 import { apiFailed, apiSuccess } from 'src/common/dto/api-response';
 import * as bcrypt from 'bcrypt';
-import { PrismaClient, RefreshToken, Renter, User } from '@prisma/client';
+import {
+  PrismaClient,
+  RefreshToken,
+  Renter,
+  RoleCode,
+  User,
+} from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { RefreshTokenService } from '../refresh-token/refresh-token.service';
@@ -22,6 +28,7 @@ import { CidDTO } from '../cid/dto/cid.dto';
 import { MailService } from '../mail/mail.service';
 import { OtpService } from '../otp/otp.service';
 import { ApiResponse } from 'src/common/dto/response.dto';
+import { RoleService } from '../role/role.service';
 
 @Injectable()
 export class AuthService {
@@ -353,6 +360,7 @@ export class AuthService {
     private blackListTokenService: BlacklistTokenService,
     private refreshTokenService: RefreshTokenService,
     private cidService: CidService,
+    private roleService: RoleService,
     private prisma: PrismaService,
     private readonly mailService: MailService,
     private readonly otpService: OtpService,
@@ -365,25 +373,26 @@ export class AuthService {
         user.password = await this.hashPassword(user.password);
 
         // TEST: apply Manager role id
-        user.role_id = '5';
+        const role = await this.roleService.findRoleByCode(RoleCode.MANAGER);
+        user.roleId = role.id;
 
         //Create User type
-        const userInput: any = {
+        const userInput: User = {
           username: user.username,
           email: user.email,
-          phone_number: user.phone_number,
+          phoneNumber: user.phoneNumber,
           password: user.password,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          date_of_birth: user.date_of_birth,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          dateOfBirth: user.dateOfBirth,
           gender: user.gender,
-          avatar_url: '',
-          is_verified: false,
-          is_deleted: undefined,
-          created_at: undefined,
-          updated_at: undefined,
-          role_id: user.role_id,
-          cid_id: undefined,
+          avatarUrl: '',
+          isVerified: false,
+          isDeleted: undefined,
+          createdAt: undefined,
+          updatedAt: undefined,
+          roleId: user.roleId,
+          cidId: undefined,
           id: undefined,
           status: undefined,
         };
@@ -437,25 +446,28 @@ export class AuthService {
         user.password = await this.hashPassword(user.password);
 
         // TEST: apply Technical Staff role id
-        user.role_id = '3';
+        const role = await this.roleService.findRoleByCode(
+          RoleCode.TECHNICAL_STAFF,
+        );
+        user.roleId = role.id;
 
         //Create User type
-        const userInput: any = {
+        const userInput: User = {
           username: user.username,
           email: user.email,
-          phone_number: user.phone_number,
+          phoneNumber: user.phoneNumber,
           password: user.password,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          date_of_birth: user.date_of_birth,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          dateOfBirth: user.dateOfBirth,
           gender: user.gender,
-          avatar_url: '',
-          is_verified: false,
-          is_deleted: undefined,
-          created_at: undefined,
-          updated_at: undefined,
-          role_id: user.role_id,
-          cid_id: undefined,
+          avatarUrl: '',
+          isVerified: false,
+          isDeleted: undefined,
+          createdAt: undefined,
+          updatedAt: undefined,
+          roleId: user.roleId,
+          cidId: undefined,
           id: undefined,
           status: undefined,
         };
@@ -509,25 +521,26 @@ export class AuthService {
         user.password = await this.hashPassword(user.password);
 
         // TEST: apply Staff role id
-        user.role_id = '4';
+        const role = await this.roleService.findRoleByCode(RoleCode.STAFF);
+        user.roleId = role.id;
 
         //Create User type
-        const userInput: any = {
+        const userInput: User = {
           username: user.username,
           email: user.email,
-          phone_number: user.phone_number,
+          phoneNumber: user.phoneNumber,
           password: user.password,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          date_of_birth: user.date_of_birth,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          dateOfBirth: user.dateOfBirth,
           gender: user.gender,
-          avatar_url: '',
-          is_verified: false,
-          is_deleted: undefined,
-          created_at: undefined,
-          updated_at: undefined,
-          role_id: user.role_id,
-          cid_id: undefined,
+          avatarUrl: '',
+          isVerified: false,
+          isDeleted: undefined,
+          createdAt: undefined,
+          updatedAt: undefined,
+          roleId: user.roleId,
+          cidId: undefined,
           id: undefined,
           status: undefined,
         };
@@ -579,25 +592,26 @@ export class AuthService {
         user.password = await this.hashPassword(user.password);
 
         // TEST: apply landlord role id
-        user.role_id = '2';
+        const role = await this.roleService.findRoleByCode(RoleCode.LANDLORD);
+        user.roleId = role.id;
 
         //Create User type
-        const userInput: any = {
+        const userInput: User = {
           username: user.username,
           email: user.email,
-          phone_number: user.phone_number,
+          phoneNumber: user.phoneNumber,
           password: user.password,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          date_of_birth: user.date_of_birth,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          dateOfBirth: user.dateOfBirth,
           gender: user.gender,
-          avatar_url: '',
-          is_verified: false,
-          is_deleted: undefined,
-          created_at: undefined,
-          updated_at: undefined,
-          role_id: user.role_id,
-          cid_id: undefined,
+          avatarUrl: '',
+          isVerified: false,
+          isDeleted: undefined,
+          createdAt: undefined,
+          updatedAt: undefined,
+          roleId: user.roleId,
+          cidId: undefined,
           id: undefined,
           status: undefined,
         };
@@ -650,28 +664,29 @@ export class AuthService {
         //Hash user's password
         user.password = await this.hashPassword(user.password);
 
-        // TEST: apply renter role id
-        user.role_id = '1';
+        //Apply renter role id
+        const role = await this.roleService.findRoleByCode(RoleCode.RENTER);
+        user.roleId = role.id;
 
         //Create User type
         const userInput: User = {
           username: user.username,
           email: user.email,
-          phone_number: user.phone_number,
+          phoneNumber: user.phoneNumber,
           password: user.password,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          date_of_birth: user.date_of_birth,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          dateOfBirth: user.dateOfBirth,
           gender: user.gender,
-          avatar_url: '',
-          is_verified: false,
-          is_deleted: undefined,
-          created_at: undefined,
-          updated_at: undefined,
-          role_id: user.role_id,
+          avatarUrl: '',
+          isVerified: false,
+          isDeleted: undefined,
+          createdAt: undefined,
+          updatedAt: undefined,
+          roleId: user.roleId,
           id: undefined,
           status: undefined,
-          cid_id: null,
+          cidId: null,
         };
         //Save the renter in DB
         const userResult = await this.prisma.user.create({ data: userInput });
@@ -770,11 +785,11 @@ export class AuthService {
     }
   }
 
-  generateAccessToken(user: { id: string; role_id: string }) {
+  generateAccessToken(user: { id: string; roleId: string }) {
     const accessTokenExpiresIn = this.config.get('JWT_ACCESS_TOKEN_EXPIRY');
     const secrect = this.config.get('JWT_SECRET');
     const accessToken = this.jwtService.sign(
-      { userId: user.id, role: user.role_id },
+      { userId: user.id, role: user.roleId },
       { secret: secrect, expiresIn: accessTokenExpiresIn },
     );
     return accessToken;

@@ -1,0 +1,10 @@
+model RoomHistory {
+    id       String    @id @default(uuid()) @map("id")
+    roomId   String    @map("room_id")
+    fromDate DateTime  @map("from_date")
+    toDate   DateTime? @map("to_date")
+
+    room Room @relation(fields: [roomId], references: [id])
+
+    RoomService RoomService[]
+}

@@ -18,17 +18,17 @@ export class CidDTO {
 
   @IsNotEmpty()
   @IsString()
-  issuing_authority: string;
+  issuingAuthority: string;
 
   @IsNotEmpty()
   @IsDateString()
-  issue_date: Date;
+  issueDate: Date;
 
   @IsNotEmpty()
   @IsString()
-  registered_address: string;
+  registeredAddress: string;
 
   @IsNotEmpty()
   @IsUUID()
-  user_id: string;
+  userId: string;
 }

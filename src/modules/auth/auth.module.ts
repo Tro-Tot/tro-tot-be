@@ -15,6 +15,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { CidModule } from '../cid/cid.module';
 import { MailService } from '../mail/mail.service';
 import { OtpService } from '../otp/otp.service';
+import { RoleModule } from '../role/role.module';
 
 @Module({
   controllers: [AuthController],
@@ -25,6 +26,7 @@ import { OtpService } from '../otp/otp.service';
     RefreshTokenModule,
     CidModule,
     BlacklistTokenModule,
+    RoleModule,
   ],
   providers: [
     AuthService,
