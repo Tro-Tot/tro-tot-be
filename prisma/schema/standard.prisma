@@ -1,6 +1,6 @@
 model Standard {
   @@map("standards")
-  id                String   @id @default(uuid()) @map("id")
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name              String   @map("name")
   description       String?  @map("description")
   isRefactorable    Boolean  @map("is_refactorable")

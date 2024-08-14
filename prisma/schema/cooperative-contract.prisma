@@ -1,8 +1,8 @@
 model CooperativeContract {
   @@map("cooperative_contracts")
-  id                          String    @id @default(uuid()) @map("id")
-  landlordId                  String    @map("landlord_id")
-  managerId                   String    @map("manager_id")
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  landlordId                  String    @map("landlord_id") @db.Uuid
+  managerId                   String    @map("manager_id") @db.Uuid
   companyRevenuePercentage    Float     @map("company_revenue_percentage")
   landlordRevenuePercentage   Float     @map("landlord_revenue_percentage")
   contractPdfUri              String    @map("contract_pdf_uri")

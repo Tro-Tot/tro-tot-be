@@ -1,32 +1,21 @@
-model HouseAppraisal {
-  @@map("house_appraisal")
-  id                    String    @id @default(uuid()) @map("id")
-  cooperativeRequestId  String?   @map("cooperative_request_id")
-  name                  String    @map("name")
-  city                  String    @map("city")
-  district              String    @map("district")
-  ward                  String    @map("ward")
-  street                String    @map("street")
-  houseNumber           String    @map("house_number")
-  latitude              Float     @map("latitude")
-  longitude             Float     @map("longitude")
-  houseType             String    @map("house_type")
-  numberOfFloor         Int       @map("number_of_floor")
-  numberOfRoom          Int       @map("number_of_room")
-  numberOfBathroom      Int       @map("number_of_bathroom")
-  furniture             String    @map("furniture")
-  width                 Float     @map("width")
-  length                Float     @map("length")
-  roadWidth             Float     @map("road_width")
-  description           String    @map("description")
-  legalDocument         String    @map("legal_document")
-  technicalNote         String    @map("technical_note")
-  createdAt             DateTime  @map("created_at")
-  updatedAt             DateTime  @map("updated_at")
-  deletedAt             DateTime? @map("deleted_at")
-  
-  cooperativeRequest    CooperativeRequest? @relation(fields: [cooperativeRequestId], references: [id])
-  roomAppraisals        RoomAppraisal[]
-  AppraisalReport AppraisalReport[]
-  HouseAppraisalStandard HouseAppraisalStandard[]
+model RoomAppraisal {
+  @@map("room_appraisal")
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  houseAppraisalId    String    @map("house_appraisal_id")  @db.Uuid
+  roomNumber          Int       @map("room_number")
+  name                String    @map("name")
+  floorNumber         Int       @map("floor_number")
+  furniture           String    @map("furniture")
+  width               Float     @map("width")
+  length              Float     @map("length")
+  description         String    @map("description")
+  landlordRentPrice   Float     @map("landlord_rent_price")
+  landlordDeposit     Float     @map("landlord_deposit")
+  hasMezzanine        Boolean   @map("has_mezzanine")
+  isHouse             Boolean   @map("is_house")
+  createdAt           DateTime  @map("created_at")
+  updatedAt           DateTime  @map("updated_at")
+  deletedAt           DateTime? @map("deleted_at")
+
+  houseAppraisal      HouseAppraisal @relation(fields: [houseAppraisalId], references: [id])
 }

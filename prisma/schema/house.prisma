@@ -1,7 +1,7 @@
 model House {
   @@map("houses")
-  id                   String   @id @default(uuid()) @map("id")
-  cooperativeContractId String   @map("cooperative_contract_id")
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  cooperativeContractId String   @map("cooperative_contract_id") @db.Uuid
   name                 String   @map("name")
   city                 String   @map("city")
   district             String   @map("district")

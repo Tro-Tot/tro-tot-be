@@ -1,11 +1,11 @@
 model CooperativeRequest {
   @@map("cooperative_request")
-  id                       String                @id @default(uuid()) @map("id")
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   cooperativeRequestStatus CooperativeRequestStatus 
-  cooperativeRequestStatusId  String       @unique         @map("cooperative_request_status_id")
-  landlordId               String                @map("landlord_id")
-  managerId                String                @map("manager_id")
-  technicalStaffId         String?               @map("technical_staff_id")
+  cooperativeRequestStatusId  String       @unique         @map("cooperative_request_status_id") 
+  landlordId               String                @map("landlord_id") @db.Uuid
+  managerId                String                @map("manager_id") @db.Uuid
+  technicalStaffId         String?               @map("technical_staff_id") @db.Uuid
   contactNumber            String                @map("contact_number")
   city                     String                @map("city")
   district                 String                @map("district")

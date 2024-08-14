@@ -1,6 +1,6 @@
 model ServiceSchedule {
   @@map("service_schedules")
-  id                String   @id @default(uuid()) @map("id")
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   dayOfMonth        Int      @map("day_of_month") //1-28
   createdAt         DateTime @default(now()) @map("created_at")
   updatedAt         DateTime? @default(now()) @map("updated_at")

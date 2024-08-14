@@ -1,8 +1,8 @@
 model HouseService {
   @@map("house_services")
-  id                String   @id @default(uuid()) @map("id")
-  serviceId         String?  @map("service_id")
-  houseId           String?  @map("house_id")
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  serviceId         String?  @map("service_id") @db.Uuid
+  houseId           String?  @map("house_id") @db.Uuid
   status HouseServiceStatus @default(ACTIVE) @map("status")
   isDeleted         Boolean  @default(false) @map("is_deleted")
   createdAt         DateTime @default(now()) @map("created_at")

@@ -1,6 +1,6 @@
 model Service {
   @@map("services")
-  id                String   @id @default(uuid()) @map("id")
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   houseId           String?  @map("house_id")
   serviceScheduleId String?  @map("service_schedule_id")
   serviceName       String   @map("service_name")

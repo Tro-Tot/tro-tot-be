@@ -1,7 +1,7 @@
 model CooperativeRequestSchedule {
   @@map("cooperative_request_schedule")
-  id                    String              @id @default(uuid()) @map("id")
-  cooperativeRequestId  String  @unique             @map("cooperative_request_id")
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  cooperativeRequestId  String  @unique             @map("cooperative_request_id") @db.Uuid
   from                  DateTime            @map("from")
   expectationEnd        DateTime            @map("expectation_end")
   createdAt             DateTime            @map("created_at")
