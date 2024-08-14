@@ -1,10 +1,15 @@
 model Bill {
-  id          String        @id @default(uuid()) @map("id")
-  status      String        @map("status")
-  dueDate     DateTime      @map("due_date")
-  createdAt   DateTime      @default(now()) @map("created_at")
-  updatedAt   DateTime      @updatedAt @map("updated_at")
-  BillItem    BillItem[]
-  Penalty     Penalty[]
-  Transaction Transaction[]
+  id      String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  status  String   @map("status")
+  dueDate DateTime @map("due_date")
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz()
+
+  billItems    BillItem[]
+  penalties    Penalty[]
+  transactions Transaction[]
+
+  @@map("bills")
 }

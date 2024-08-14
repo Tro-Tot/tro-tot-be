@@ -13,9 +13,10 @@ export class UserService {
       //Get the user
       const user: User = await this.findOneByUserId(userInput.id);
 
-      const imageUrl = await this.imageService.addAvatarToFirebase(
+      const imageUrl = await this.imageService.addImageToFirebase(
         file,
         user.id,
+        'users',
       );
       if (!imageUrl) {
         return apiFailed(404, 'Upload avatar failed');

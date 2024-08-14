@@ -1,14 +1,15 @@
 model AddRoomMemberRequest {
-    id            String @id @default(uuid()) @map("id")
-    roomHistoryId String @map("room_history_id")
-    renterId      String @map("renter_id")
+    id            String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    roomHistoryId String @map("room_history_id") @db.Uuid
+    renterId      String @map("renter_id") @db.Uuid
 
     status    String    @map("status")
-    isDeleted Boolean   @default(false) @map("is_deleted")
-    deletedAt DateTime? @map("deleted_at") // Nullable field
-    createdAt DateTime  @default(now()) @map("created_at")
-    updatedAt DateTime  @updatedAt @map("updated_at")
+    createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+    updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
+    deletedAt DateTime? @map("deleted_at") @db.Timestamptz() // Nullable field 
 
     roomHistory RoomHistory @relation(fields: [roomHistoryId], references: [id])
     renter      Renter      @relation(fields: [renterId], references: [id])
+
+    @@map("add_room_member_requests")
 }
