@@ -22,4 +22,8 @@ model Room {
 
     roomHistory RoomHistory[]
     house       House         @relation(fields: [houseId], references: [id])
+
+    RentalRequest RentalRequest[]
+
+    RoomVisitRequest RoomVisitRequest[]
 }

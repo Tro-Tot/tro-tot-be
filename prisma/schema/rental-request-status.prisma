@@ -1,0 +1,16 @@
+model RentalRequestStatus {
+    id         String     @id @default(uuid()) @map("id")
+    status     String     @default("pending") @map("status")
+    statusCode StatusCode @default(PENDING)
+    deletedAt  DateTime?  @map("deleted_at") // Nullable field
+    createdAt  DateTime   @default(now()) @map("created_at")
+    updatedAt  DateTime   @updatedAt @map("updated_at")
+
+    RentalRequest RentalRequest[]
+}
+
+enum StatusCode {
+    PENDING
+    APPROVE
+    DISAPPROVE
+}

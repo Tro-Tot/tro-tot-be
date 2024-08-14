@@ -1,0 +1,16 @@
+model RoomMemberRole {
+    id           String       @id @default(uuid()) @map("id")
+    roomRoleName String       @map("room_role_name")
+    roomRoleCode RoomRoleCode @map("room_role_code")
+    isDeleted    Boolean      @default(false) @map("is_deleted")
+    deletedAt    DateTime?    @map("deleted_at") // Nullable field
+    createdAt    DateTime     @default(now()) @map("created_at")
+    updatedAt    DateTime     @updatedAt @map("updated_at")
+
+    RoomMember RoomMember[]
+}
+
+enum RoomRoleCode {
+    CONTRACT_OWNER
+    MEMBER
+}

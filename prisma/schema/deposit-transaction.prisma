@@ -1,0 +1,8 @@
+model DepositTransaction {
+    id              String          @id @default(uuid()) @map("id")
+    depositBillId   String          @map("deposit_bill_id")
+    transactionType TransactionType @map("transaction_type") // Assuming `transaction_type` is a string
+
+    amount    Float    @map("amount")
+    createdAt DateTime @default(now()) @map("created_at")
+}

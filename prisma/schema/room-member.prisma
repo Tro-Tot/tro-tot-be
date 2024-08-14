@@ -1,0 +1,16 @@
+model RoomMember {
+    id               String  @id @default(uuid()) @map("id")
+    roomHistoryId    String  @map("room_history_id")
+    renterId         String  @map("renter_id")
+    roomMemberRoleId String  @map("room_role_id")
+    status           String  @map("status")
+    isDeleted        Boolean @default(false) @map("is_deleted")
+
+    deletedAt DateTime? @map("deleted_at") // Nullable field
+    createdAt DateTime  @default(now()) @map("created_at")
+    updatedAt DateTime  @updatedAt @map("updated_at")
+
+    roomHistory    RoomHistory    @relation(fields: [roomHistoryId], references: [id])
+    roomMemberRole RoomMemberRole @relation(fields: [roomMemberRoleId], references: [id])
+    renter         Renter         @relation(fields: [renterId], references: [id])
+}

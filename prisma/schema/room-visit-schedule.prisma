@@ -1,0 +1,11 @@
+model RoomVisitSchedule {
+    id                 String   @id @default(uuid()) @map("id")
+    roomVisitRequestId String   @map("room_visit_request_id")
+    status             String   @default("active") @map("status")
+    from               DateTime @map("from")
+    expectationEnd     DateTime @map("expectation_end")
+    createdAt          DateTime @default(now()) @map("created_at")
+    updatedAt          DateTime @updatedAt @map("updated_at")
+
+    roomVisitRequest RoomVisitRequest @relation(fields: [roomVisitRequestId], references: [id])
+}
