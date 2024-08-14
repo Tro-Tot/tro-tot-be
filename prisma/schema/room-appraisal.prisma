@@ -28,4 +28,5 @@ model HouseAppraisal {
   cooperativeRequest    CooperativeRequest? @relation(fields: [cooperativeRequestId], references: [id])
   roomAppraisals        RoomAppraisal[]
   AppraisalReport AppraisalReport[]
+  HouseAppraisalStandard HouseAppraisalStandard[]
 }
