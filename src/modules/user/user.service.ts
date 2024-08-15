@@ -9,6 +9,11 @@ import { PathConstants } from 'src/common/constant/path.constant';
 
 @Injectable()
 export class UserService {
+  constructor(
+    private prisma: PrismaService,
+    private readonly imageService: ImageService,
+  ) {}
+
   async addAvatar(file: Express.Multer.File, userInput: AuthenUser) {
     try {
       //Get the user
@@ -23,11 +28,14 @@ export class UserService {
         return apiFailed(404, 'Upload avatar failed');
       }
 
-      //Delete the current image
+      //Delete the current image in firebase
       if (user.avatarUrl !== null) {
-        const filePath = `images/${PathConstants.USER_PATH}/${user.id}/${user.avatarUrl}`;
         try {
-          await this.imageService.deleteImage(filePath);
+          await this.imageService.deleteImage(
+            user.id,
+            user.avatarUrl,
+            PathConstants.USER_PATH,
+          );
         } catch (error) {
           console.error('Error deleting image:', error);
           // Continue execution even if there is an error
@@ -48,21 +56,6 @@ export class UserService {
     } catch (error) {
       throw error;
     }
-  }
-  constructor(
-    private prisma: PrismaService,
-    private readonly imageService: ImageService,
-  ) {}
-
-  async addAvatars(files: Express.Multer.File[], userInput: AuthenUser) {
-    if (files.length <= 0) {
-      return apiFailed(400, 'No images found');
-    }
-    return this.imageService.handleArrayImages(
-      files,
-      userInput,
-      PathConstants.USER_PATH,
-    );
   }
 
   findOneByUserId(userId: string) {

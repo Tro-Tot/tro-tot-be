@@ -15,13 +15,14 @@ import {
   UsePipes,
 } from '@nestjs/common';
 
-import { ImageResponse, ImageService } from './image.service';
+import { ImageService } from './image.service';
 import { CreateImageDto } from './dto/create-image.dto';
 import { UpdateImageDto } from './dto/update-image.dto';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ApiResponse } from 'src/common/dto/response.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { GetImageDto } from './dto/get-image.dto';
+import { ImageResponse } from './dto/image-response.dto';
 
 @Controller('image')
 @ApiTags('images')
