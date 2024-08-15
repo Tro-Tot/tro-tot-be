@@ -17,42 +17,38 @@ import { AuthenUser } from '../auth/dto/authen-user.dto';
 import { apiFailed, apiGeneral } from 'src/common/dto/api-response';
 import { ApiResponse } from 'src/common/dto/response.dto';
 import { FirebaseError } from 'firebase/app';
-
-export interface ImageResponse {
-  successful: Array<{
-    fileName: string;
-    index: number;
-  }>;
-  failed: Array<{
-    fileName: string;
-    index: number;
-    error: any;
-  }>;
-}
+import { Constant } from 'src/common/constant/constant';
+import { ImageResponse } from './dto/image-response.dto';
+import { PathConstants } from 'src/common/constant/path.constant';
 
 @Injectable()
 export class ImageService {
+  private storage;
+  constructor(private firebaseService: FirebaseService) {
+    this.storage = getStorage();
+  }
+
   async addImageToFirebase(
     file: Express.Multer.File,
     id: string,
     pathInput: string,
   ): Promise<string> {
-    if (file.mimetype !== 'image/jpeg') {
+    if (!Constant.imageMimeTypes.test(file.mimetype)) {
       throw new HttpException(
-        'Only JPEG images are allowed.',
+        'Only image files are allowed.',
         HttpStatus.BAD_REQUEST,
       );
     }
 
     // Check if the file size is greater than or equal to 10 MB (10 * 1024 * 1024 bytes)
-    if (file.size >= 10 * 1024 * 1024) {
+    if (file.size >= Constant.FILE_SIZE) {
       throw new HttpException(
-        'File size exceeds the 5 MB limit.',
+        'File size exceeds the 10 MB limit.',
         HttpStatus.PAYLOAD_TOO_LARGE,
       );
     }
 
-    const path = `images/${pathInput}/${id}`;
+    const path = `${PathConstants.IMAGE_PATH}/${pathInput}/${id}`;
     const filename = `${Date.now()}-${file.originalname}`;
     const storageRef = ref(this.storage, `${path}/${filename}`);
     try {
@@ -207,7 +203,9 @@ export class ImageService {
     }
   }
 
-  async deleteImage(filePath: string) {
+  async deleteImage(id: string, fileName: string, pathInput: string) {
+    const filePath = `${PathConstants.IMAGE_PATH}/${pathInput}/${id}/${fileName}`;
+
     const storageRef = ref(this.storage, filePath);
     try {
       await deleteObject(storageRef);
@@ -217,79 +215,13 @@ export class ImageService {
     }
   }
 
-  private storage;
-  constructor(private firebaseService: FirebaseService) {
-    this.storage = getStorage();
-  }
-
-  async addAvatar(file: Express.Multer.File, user: AuthenUser) {
-    if (file.mimetype !== 'image/jpeg') {
-      throw new BadRequestException('Only JPEG images are allowed');
-    }
-    const filename = `${Date.now()}-${file.originalname}`;
-    const storageRef = ref(this.storage, `images/users/${user.id}/${filename}`);
-    try {
-      const snapshot = await uploadBytes(storageRef, file.buffer, {
-        contentType: file.mimetype,
-      });
-
-      // Create and return an Image object
-      const image = {
-        id: snapshot.metadata.name,
-        filename: filename,
-        createdAt: new Date(),
-      };
-
-      return image;
-    } catch (error) {
-      console.error('Error uploading file:', error);
-      throw error;
-    }
-  }
-
-  async createImage(file: Express.Multer.File) {
-    // Check if the file is a JPEG image
-    if (file.mimetype !== 'image/jpeg') {
-      throw new BadRequestException('Only JPEG images are allowed');
-    }
-
-    const filename = `${Date.now()}-${file.originalname}`;
-    const storageRef = ref(this.storage, `images/${filename}`);
-
-    try {
-      const snapshot = await uploadBytes(storageRef, file.buffer, {
-        contentType: file.mimetype,
-      });
-      // Create and return an Image object
-      const image = {
-        id: snapshot.metadata.name,
-        filename: filename,
-        createdAt: new Date(),
-      };
-
-      return image;
-    } catch (error) {
-      console.error('Error uploading file:', error);
-      throw error;
-    }
-  }
-
-  async getImages() {
-    const storageRef = ref(
-      this.storage,
-      `images/1722837247336-4d7a6fa6fabd931a57161c7b1bb8f725.jpg`,
-    );
-    const result = await getDownloadURL(storageRef);
-    return result;
-  }
-
   async getImageWithPathAndImageName(
     id: string,
     fileName: string,
     pathInput: string,
   ) {
     try {
-      const path = `images/${pathInput}/${id}/${fileName}`;
+      const path = `${PathConstants.IMAGE_PATH}/${pathInput}/${id}/${fileName}`;
       const storageRef = ref(this.storage, `${path}`);
       const result = await getDownloadURL(storageRef);
       return result;

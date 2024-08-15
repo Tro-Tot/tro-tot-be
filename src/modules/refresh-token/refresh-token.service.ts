@@ -8,6 +8,12 @@ import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
 export class RefreshTokenService {
+  constructor(
+    private prisma: PrismaService,
+    private config: ConfigService,
+    private jwtService: JwtService,
+  ) {}
+
   updateRefreshTokenStatus(refreshTokenInput: string, arg1: boolean) {
     return this.prisma.refreshToken.update({
       where: {
@@ -18,11 +24,6 @@ export class RefreshTokenService {
       },
     });
   }
-  constructor(
-    private prisma: PrismaService,
-    private config: ConfigService,
-    private jwtService: JwtService,
-  ) {}
 
   generateRefreshToken(user: { id: string; roleId: string }) {
     const refreshTokenExpiresIn = this.config.get('JWT_REFRESH_TOKEN_EXPIRY');

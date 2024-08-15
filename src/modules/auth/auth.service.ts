@@ -32,6 +32,18 @@ import { RoleService } from '../role/role.service';
 
 @Injectable()
 export class AuthService {
+  constructor(
+    private userService: UserService,
+    private config: ConfigService,
+    private jwtService: JwtService,
+    private blackListTokenService: BlacklistTokenService,
+    private refreshTokenService: RefreshTokenService,
+    private roleService: RoleService,
+    private prisma: PrismaService,
+    private readonly mailService: MailService,
+    private readonly otpService: OtpService,
+  ) {}
+
   async loginAdmin(body: LoginAuthDTO) {
     try {
       const user = await this.userService.findOneByUserName(body.username);
@@ -353,18 +365,6 @@ export class AuthService {
     }
   }
 
-  constructor(
-    private userService: UserService,
-    private config: ConfigService,
-    private jwtService: JwtService,
-    private blackListTokenService: BlacklistTokenService,
-    private refreshTokenService: RefreshTokenService,
-    private cidService: CidService,
-    private roleService: RoleService,
-    private prisma: PrismaService,
-    private readonly mailService: MailService,
-    private readonly otpService: OtpService,
-  ) {}
   async registerManager(user: SignUpDTO) {
     // Ensure the transaction either succeeds or fails completely
     return await this.prisma.$transaction(async (prisma) => {
