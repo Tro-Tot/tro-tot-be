@@ -1,0 +1,15 @@
+model ConfigurationCoefficient {
+  @@map("configuration_coefficients")
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name              String   @map("name")
+  code              ConfigurationCoefficientCode @map("code")
+  value             Float    @map("value")
+  unit              String   @map("unit")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime? @default(now()) @map("updated_at")
+  deletedAt         DateTime? @map("deleted_at")
+}
+
+enum ConfigurationCoefficientCode {
+  COOPERATION_PERCENTAGE
+}

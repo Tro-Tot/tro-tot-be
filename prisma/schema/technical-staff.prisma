@@ -9,4 +9,5 @@ model TechnicalStaff {
   user User @relation(fields: [userId], references: [id])
 
   @@map("technical_staffs")
+  CooperativeRequest CooperativeRequest[]
 }

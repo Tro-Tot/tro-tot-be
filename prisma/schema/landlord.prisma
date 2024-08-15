@@ -9,4 +9,6 @@ model LandLord {
   user User @relation(fields: [userId], references: [id])
 
   @@map("landlords")
+  cooperativeContracts CooperativeContract[]
+  cooperativeRequests CooperativeRequest[]
 }
