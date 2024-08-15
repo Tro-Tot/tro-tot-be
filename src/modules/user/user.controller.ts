@@ -36,6 +36,25 @@ export class UserController {
     return this.userService.addAvatar(file, user);
   }
 
+  @Get('/my')
+  @UseGuards(AuthGuard('jwt'))
+  async getMyProfile(@GetUser() user: AuthenUser) {
+    try {
+      const result = await this.userService.findOneByUserId(user.id);
+
+      if (result) {
+        return apiSuccess(200, result, 'Get user success');
+      } else {
+        return apiFailed(404, null, 'User not found');
+      }
+    } catch (e) {
+      if (e.code === 'P2025') {
+        return apiFailed(404, 'User not found');
+      }
+      return apiFailed(500, e, 'Internal server error');
+    }
+  }
+
   @Get('/by-username')
   async findOneByUserName(@Body() body: { username: string }) {
     try {

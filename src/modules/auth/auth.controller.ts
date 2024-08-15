@@ -31,16 +31,11 @@ import { VerifyOtpDTO } from './dto/verify-otp.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  // @Post('login')
-  // @UseGuards(AuthGuard('local'))
-  // async login(@Body() body: LoginAuthDTO, @Request() req) {
-  //   return r;
+  // @Post('/login')
+  // @UsePipes(new ValidationPipe())
+  // login(@Body() body: LoginAuthDTO) {
+  //   return this.authService.login(body);
   // }
-  @Post('/login')
-  @UsePipes(new ValidationPipe())
-  login(@Body() body: LoginAuthDTO) {
-    return this.authService.login(body);
-  }
 
   @Post('/renter/login')
   @UsePipes(new ValidationPipe())

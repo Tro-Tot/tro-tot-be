@@ -70,6 +70,13 @@ export class UserService {
       where: {
         id: userId,
       },
+      include: {
+        landLords: true,
+        managers: true,
+        renters: true,
+        staffs: true,
+        role: true,
+      },
     });
   }
 
