@@ -281,6 +281,19 @@ export class ImageService {
     const result = await getDownloadURL(storageRef);
     return result;
   }
+
+  async getImageWithPathAndImageName(
+    id: string,
+    fileName: string,
+    pathInput: string,
+  ) {
+    const path = `images/${pathInput}/${id}/${fileName}`;
+    console.log(path);
+    const storageRef = ref(this.storage, `${path}`);
+    const result = await getDownloadURL(storageRef);
+    return result;
+  }
+
   findAll() {
     return `This action returns all image`;
   }

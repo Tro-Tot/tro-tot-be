@@ -34,9 +34,18 @@ export class ImageController {
     return this.imageService.getImages();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.imageService.findOne(+id);
+  @Get(':id/')
+  async getImage(
+    @Param('id') id: string,
+    @Body('fileName') fileName: string,
+    @Body('pathInput') pathInput: string,
+  ) {
+    const result = await this.imageService.getImageWithPathAndImageName(
+      id,
+      fileName,
+      pathInput,
+    );
+    return result;
   }
 
   @Patch(':id')
