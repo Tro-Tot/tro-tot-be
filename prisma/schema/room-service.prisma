@@ -17,8 +17,3 @@ model RoomService {
 
   @@map("room_member_services")
 }
-
-model HouseService {
-  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  roomServices RoomService[]
-}
