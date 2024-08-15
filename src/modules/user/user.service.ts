@@ -5,6 +5,7 @@ import { AuthenUser } from '../auth/dto/authen-user.dto';
 import { ImageService } from '../image/image.service';
 import { apiFailed, apiSuccess, apiGeneral } from 'src/common/dto/api-response';
 import { ApiResponse } from 'src/common/dto/response.dto';
+import { PathConstants } from 'src/common/constant/path.constant';
 
 @Injectable()
 export class UserService {
@@ -16,7 +17,7 @@ export class UserService {
       const imageUrl = await this.imageService.addImageToFirebase(
         file,
         user.id,
-        'users',
+        PathConstants.USER_PATH,
       );
       if (!imageUrl) {
         return apiFailed(404, 'Upload avatar failed');
@@ -24,7 +25,7 @@ export class UserService {
 
       //Delete the current image
       if (user.avatarUrl !== null) {
-        const filePath = `images/users/${user.id}/${user.avatarUrl}`;
+        const filePath = `images/${PathConstants.USER_PATH}/${user.id}/${user.avatarUrl}`;
         try {
           await this.imageService.deleteImage(filePath);
         } catch (error) {
@@ -57,7 +58,11 @@ export class UserService {
     if (files.length <= 0) {
       return apiFailed(400, 'No images found');
     }
-    return this.imageService.handleArrayImages(files, userInput, 'users');
+    return this.imageService.handleArrayImages(
+      files,
+      userInput,
+      PathConstants.USER_PATH,
+    );
   }
 
   findOneByUserId(userId: string) {

@@ -30,11 +30,6 @@ export class ImageController {
   }
 
   @Get()
-  findAll() {
-    return this.imageService.getImages();
-  }
-
-  @Get(':id/')
   async getImage(
     @Param('id') id: string,
     @Body('fileName') fileName: string,
