@@ -12,7 +12,7 @@ import {
   UploadedFiles,
 } from '@nestjs/common';
 
-import { ImageService } from './image.service';
+import { ImageResponse, ImageService } from './image.service';
 import { CreateImageDto } from './dto/create-image.dto';
 import { UpdateImageDto } from './dto/update-image.dto';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
@@ -53,12 +53,13 @@ export class ImageController {
   // @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(FilesInterceptor('files', 10))
   async uploadAvatarArray(@UploadedFiles() files: Express.Multer.File[]) {
-    const result: ApiResponse = await this.imageService.handleArrayImages(
-      files,
-      'test',
-      'test',
-    );
-    console.log(result.data);
+    const result: ImageResponse =
+      await this.imageService.handleArrayImagesWithoutApiResponse(
+        files,
+        'test',
+        'test',
+      );
+    console.log(result);
     return 'test';
   }
 }
