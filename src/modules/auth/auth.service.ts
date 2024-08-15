@@ -794,7 +794,7 @@ export class AuthService {
     const accessTokenExpiresIn = this.config.get('JWT_ACCESS_TOKEN_EXPIRY');
     const secrect = this.config.get('JWT_SECRET');
     const accessToken = this.jwtService.sign(
-      { userId: user.id, role: user.roleId },
+      { userId: user.id },
       { secret: secrect, expiresIn: accessTokenExpiresIn },
     );
     return accessToken;
