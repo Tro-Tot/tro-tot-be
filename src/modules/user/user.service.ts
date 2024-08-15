@@ -5,9 +5,15 @@ import { AuthenUser } from '../auth/dto/authen-user.dto';
 import { ImageService } from '../image/image.service';
 import { apiFailed, apiSuccess, apiGeneral } from 'src/common/dto/api-response';
 import { ApiResponse } from 'src/common/dto/response.dto';
+import { PathConstants } from 'src/common/constant/path.constant';
 
 @Injectable()
 export class UserService {
+  constructor(
+    private prisma: PrismaService,
+    private readonly imageService: ImageService,
+  ) {}
+
   async addAvatar(file: Express.Multer.File, userInput: AuthenUser) {
     try {
       //Get the user
@@ -16,17 +22,20 @@ export class UserService {
       const imageUrl = await this.imageService.addImageToFirebase(
         file,
         user.id,
-        'users',
+        PathConstants.USER_PATH,
       );
       if (!imageUrl) {
         return apiFailed(404, 'Upload avatar failed');
       }
 
-      //Delete the current image
+      //Delete the current image in firebase
       if (user.avatarUrl !== null) {
-        const filePath = `images/users/${user.id}/${user.avatarUrl}`;
         try {
-          await this.imageService.deleteImage(filePath);
+          await this.imageService.deleteImage(
+            user.id,
+            user.avatarUrl,
+            PathConstants.USER_PATH,
+          );
         } catch (error) {
           console.error('Error deleting image:', error);
           // Continue execution even if there is an error
@@ -48,22 +57,18 @@ export class UserService {
       throw error;
     }
   }
-  constructor(
-    private prisma: PrismaService,
-    private readonly imageService: ImageService,
-  ) {}
-
-  async addAvatars(files: Express.Multer.File[], userInput: AuthenUser) {
-    if (files.length <= 0) {
-      return apiFailed(400, 'No images found');
-    }
-    return this.imageService.handleArrayImages(files, userInput, 'users');
-  }
 
   findOneByUserId(userId: string) {
     return this.prisma.user.findFirstOrThrow({
       where: {
         id: userId,
+      },
+      include: {
+        landLords: true,
+        managers: true,
+        renters: true,
+        staffs: true,
+        role: true,
       },
     });
   }

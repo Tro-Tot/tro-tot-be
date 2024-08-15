@@ -10,6 +10,9 @@ import {
   UploadedFile,
   UseGuards,
   UploadedFiles,
+  UseFilters,
+  ValidationPipe,
+  UsePipes,
 } from '@nestjs/common';
 
 import { ImageService } from './image.service';
@@ -17,26 +20,24 @@ import { CreateImageDto } from './dto/create-image.dto';
 import { UpdateImageDto } from './dto/update-image.dto';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ApiResponse } from 'src/common/dto/response.dto';
+import { ApiTags } from '@nestjs/swagger';
+import { GetImageDto } from './dto/get-image.dto';
+import { ImageResponse } from './dto/image-response.dto';
 
 @Controller('image')
+@ApiTags('images')
 export class ImageController {
   constructor(private readonly imageService: ImageService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('file'))
-  create(@UploadedFile() file: Express.Multer.File) {
-    // console.log(file);
-    return this.imageService.createImage(file);
-  }
-
-  @Get()
-  findAll() {
-    return this.imageService.getImages();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.imageService.findOne(+id);
+  @UsePipes(new ValidationPipe())
+  async getImage(@Body() body: GetImageDto) {
+    const result = await this.imageService.getImageWithPathAndImageName(
+      body.id,
+      body.fileName,
+      body.pathInput,
+    );
+    return result;
   }
 
   @Patch(':id')
@@ -53,12 +54,13 @@ export class ImageController {
   // @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(FilesInterceptor('files', 10))
   async uploadAvatarArray(@UploadedFiles() files: Express.Multer.File[]) {
-    const result: ApiResponse = await this.imageService.handleArrayImages(
-      files,
-      'test',
-      'test',
-    );
-    console.log(result.data);
+    const result: ImageResponse =
+      await this.imageService.handleArrayImagesWithoutApiResponse(
+        files,
+        'test',
+        'test',
+      );
+    console.log(result);
     return 'test';
   }
 }

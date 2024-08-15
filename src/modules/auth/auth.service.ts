@@ -32,6 +32,18 @@ import { RoleService } from '../role/role.service';
 
 @Injectable()
 export class AuthService {
+  constructor(
+    private userService: UserService,
+    private config: ConfigService,
+    private jwtService: JwtService,
+    private blackListTokenService: BlacklistTokenService,
+    private refreshTokenService: RefreshTokenService,
+    private roleService: RoleService,
+    private prisma: PrismaService,
+    private readonly mailService: MailService,
+    private readonly otpService: OtpService,
+  ) {}
+
   async loginAdmin(body: LoginAuthDTO) {
     try {
       const user = await this.userService.findOneByUserName(body.username);
@@ -353,18 +365,6 @@ export class AuthService {
     }
   }
 
-  constructor(
-    private userService: UserService,
-    private config: ConfigService,
-    private jwtService: JwtService,
-    private blackListTokenService: BlacklistTokenService,
-    private refreshTokenService: RefreshTokenService,
-    private cidService: CidService,
-    private roleService: RoleService,
-    private prisma: PrismaService,
-    private readonly mailService: MailService,
-    private readonly otpService: OtpService,
-  ) {}
   async registerManager(user: SignUpDTO) {
     // Ensure the transaction either succeeds or fails completely
     return await this.prisma.$transaction(async (prisma) => {
@@ -395,7 +395,7 @@ export class AuthService {
           cidId: undefined,
           id: undefined,
           status: undefined,
-          deleted_at: null,
+          deletedAt: null,
         };
         //Save the renter in DB
         const userResult = await this.prisma.user.create({ data: userInput });
@@ -408,6 +408,7 @@ export class AuthService {
           userId: userResult.id,
           createdAt: undefined,
           updatedAt: undefined,
+          deletedAt: undefined,
         };
 
         const renterResult = await this.prisma.manager.create({
@@ -471,7 +472,7 @@ export class AuthService {
           cidId: undefined,
           id: undefined,
           status: undefined,
-          deleted_at: null,
+          deletedAt: null,
         };
         //Save the renter in DB
         const userResult = await this.prisma.user.create({ data: userInput });
@@ -484,6 +485,7 @@ export class AuthService {
           userId: userResult.id,
           createdAt: undefined,
           updatedAt: undefined,
+          deletedAt: undefined,
         };
 
         const renterResult = await this.prisma.technicalStaff.create({
@@ -545,7 +547,7 @@ export class AuthService {
           cidId: undefined,
           id: undefined,
           status: undefined,
-          deleted_at: null,
+          deletedAt: null,
         };
         //Save the renter in DB
         const userResult = await this.prisma.user.create({ data: userInput });
@@ -558,6 +560,7 @@ export class AuthService {
           userId: userResult.id,
           createdAt: undefined,
           updatedAt: undefined,
+          deletedAt: undefined,
         };
 
         const renterResult = await this.prisma.staff.create({ data: renter });
@@ -617,7 +620,7 @@ export class AuthService {
           cidId: undefined,
           id: undefined,
           status: undefined,
-          deleted_at: null,
+          deletedAt: null,
         };
         //Save the renter in DB
         const userResult = await this.prisma.user.create({ data: userInput });
@@ -630,6 +633,7 @@ export class AuthService {
           userId: userResult.id,
           createdAt: undefined,
           updatedAt: undefined,
+          deletedAt: undefined,
         };
 
         const renterResult = await this.prisma.landLord.create({
@@ -691,7 +695,7 @@ export class AuthService {
           id: undefined,
           status: undefined,
           cidId: null,
-          deleted_at: null,
+          deletedAt: null,
         };
         //Save the renter in DB
         const userResult = await this.prisma.user.create({ data: userInput });
@@ -704,6 +708,7 @@ export class AuthService {
           userId: userResult.id,
           createdAt: undefined,
           updatedAt: undefined,
+          deletedAt: undefined,
         };
 
         const renterResult = await this.prisma.renter.create({ data: renter });
