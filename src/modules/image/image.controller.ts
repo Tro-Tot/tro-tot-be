@@ -10,6 +10,9 @@ import {
   UploadedFile,
   UseGuards,
   UploadedFiles,
+  UseFilters,
+  ValidationPipe,
+  UsePipes,
 } from '@nestjs/common';
 
 import { ImageResponse, ImageService } from './image.service';
@@ -17,28 +20,21 @@ import { CreateImageDto } from './dto/create-image.dto';
 import { UpdateImageDto } from './dto/update-image.dto';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ApiResponse } from 'src/common/dto/response.dto';
+import { ApiTags } from '@nestjs/swagger';
+import { GetImageDto } from './dto/get-image.dto';
 
 @Controller('image')
+@ApiTags('images')
 export class ImageController {
   constructor(private readonly imageService: ImageService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('file'))
-  create(@UploadedFile() file: Express.Multer.File) {
-    // console.log(file);
-    return this.imageService.createImage(file);
-  }
-
-  @Get()
-  async getImage(
-    @Param('id') id: string,
-    @Body('fileName') fileName: string,
-    @Body('pathInput') pathInput: string,
-  ) {
+  @UsePipes(new ValidationPipe())
+  async getImage(@Body() body: GetImageDto) {
     const result = await this.imageService.getImageWithPathAndImageName(
-      id,
-      fileName,
-      pathInput,
+      body.id,
+      body.fileName,
+      body.pathInput,
     );
     return result;
   }

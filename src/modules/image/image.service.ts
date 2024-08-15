@@ -16,6 +16,7 @@ import {
 import { AuthenUser } from '../auth/dto/authen-user.dto';
 import { apiFailed, apiGeneral } from 'src/common/dto/api-response';
 import { ApiResponse } from 'src/common/dto/response.dto';
+import { FirebaseError } from 'firebase/app';
 
 export interface ImageResponse {
   successful: Array<{
@@ -287,11 +288,20 @@ export class ImageService {
     fileName: string,
     pathInput: string,
   ) {
-    const path = `images/${pathInput}/${id}/${fileName}`;
-    console.log(path);
-    const storageRef = ref(this.storage, `${path}`);
-    const result = await getDownloadURL(storageRef);
-    return result;
+    try {
+      const path = `images/${pathInput}/${id}/${fileName}`;
+      const storageRef = ref(this.storage, `${path}`);
+      const result = await getDownloadURL(storageRef);
+      return result;
+    } catch (error) {
+      if (error instanceof FirebaseError) {
+        if (error.code === 'storage/object-not-found') {
+          console.log(error);
+          return apiFailed(400, error.message);
+        }
+      }
+      throw error;
+    }
   }
 
   findAll() {
