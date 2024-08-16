@@ -32,6 +32,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
     const user: AuthenUser = {
       id: payload.userId,
       accessToken: '',
+      role: payload?.role,
       user: undefined,
       refreshToken: refreshToken,
     };

@@ -15,6 +15,7 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
+
       secretOrKey: config.get('JWT_SECRET'),
       passReqToCallback: true,
     });
@@ -31,10 +32,10 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
     if (isBlacklisted) {
       throw new UnauthorizedException('This token has been blacklisted'); // Handle blacklisted token appropriately
     }
-
     const user: AuthenUser = {
       id: payload.userId,
       accessToken: token,
+      role: payload.role,
       user: undefined,
       refreshToken: '',
     };

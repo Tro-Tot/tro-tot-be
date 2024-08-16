@@ -17,7 +17,7 @@ import { apiSuccess, apiFailed } from 'src/common/dto/api-response';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { RefreshTokenStrategy } from './strategy/refresh-token.stategy';
-import { GetUser } from './decorator/get_user.decorator';
+import { GetUser } from '../../common/decorator/get_user.decorator';
 import { AuthenUser } from './dto/authen-user.dto';
 import { Logout } from './dto/logout.dto';
 import { SignUpDTO } from './dto/sign-up.dto';

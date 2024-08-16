@@ -11,6 +11,10 @@ import { RefreshTokenModule } from './modules/refresh-token/refresh-token.module
 import { CidModule } from './modules/cid/cid.module';
 import { OtpModule } from './modules/otp/otp.module';
 import { ImageModule } from './modules/image/image.module';
+import { RoomModule } from './modules/room/room.module';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from './common/guard/roles.guard';
+import { AuthGuard } from '@nestjs/passport';
 
 @Module({
   imports: [
@@ -24,6 +28,7 @@ import { ImageModule } from './modules/image/image.module';
     CidModule,
     ImageModule,
     OtpModule,
+    RoomModule,
   ],
   controllers: [AppController],
   providers: [AppService],
