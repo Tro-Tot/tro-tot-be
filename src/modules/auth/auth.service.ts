@@ -12,6 +12,7 @@ import {
   PrismaClient,
   RefreshToken,
   Renter,
+  Role,
   RoleCode,
   User,
 } from '@prisma/client';
@@ -398,7 +399,14 @@ export class AuthService {
           deletedAt: null,
         };
         //Save the renter in DB
-        const userResult = await this.prisma.user.create({ data: userInput });
+        const userResult = await this.prisma.user.create({
+          data: {
+            ...userInput,
+          },
+          include: {
+            role: true, // Include the role object in the result
+          },
+        });
         if (!userResult) {
           return apiFailed(400, 'Created User failed');
         }
@@ -475,7 +483,14 @@ export class AuthService {
           deletedAt: null,
         };
         //Save the renter in DB
-        const userResult = await this.prisma.user.create({ data: userInput });
+        const userResult = await this.prisma.user.create({
+          data: {
+            ...userInput,
+          },
+          include: {
+            role: true, // Include the role object in the result
+          },
+        });
         if (!userResult) {
           return apiFailed(400, 'Created User failed');
         }
@@ -550,7 +565,14 @@ export class AuthService {
           deletedAt: null,
         };
         //Save the renter in DB
-        const userResult = await this.prisma.user.create({ data: userInput });
+        const userResult = await this.prisma.user.create({
+          data: {
+            ...userInput,
+          },
+          include: {
+            role: true, // Include the role object in the result
+          },
+        });
         if (!userResult) {
           return apiFailed(400, 'Created User failed');
         }
@@ -623,7 +645,14 @@ export class AuthService {
           deletedAt: null,
         };
         //Save the renter in DB
-        const userResult = await this.prisma.user.create({ data: userInput });
+        const userResult = await this.prisma.user.create({
+          data: {
+            ...userInput,
+          },
+          include: {
+            role: true, // Include the role object in the result
+          },
+        });
         if (!userResult) {
           return apiFailed(400, 'Created User failed');
         }
@@ -698,7 +727,14 @@ export class AuthService {
           deletedAt: null,
         };
         //Save the renter in DB
-        const userResult = await this.prisma.user.create({ data: userInput });
+        const userResult = await this.prisma.user.create({
+          data: {
+            ...userInput,
+          },
+          include: {
+            role: true, // Include the role object in the result
+          },
+        });
         if (!userResult) {
           return apiFailed(400, 'Created User failed');
         }
@@ -795,11 +831,12 @@ export class AuthService {
     }
   }
 
-  generateAccessToken(user: { id: string; roleId: string }) {
+  generateAccessToken(user: { id: string; role: Role }) {
+    console.log(user);
     const accessTokenExpiresIn = this.config.get('JWT_ACCESS_TOKEN_EXPIRY');
     const secrect = this.config.get('JWT_SECRET');
     const accessToken = this.jwtService.sign(
-      { userId: user.id },
+      { userId: user.id, role: user.role.code },
       { secret: secrect, expiresIn: accessTokenExpiresIn },
     );
     return accessToken;
