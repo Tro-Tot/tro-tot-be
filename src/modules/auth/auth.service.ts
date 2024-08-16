@@ -46,7 +46,7 @@ export class AuthService {
 
   async loginAdmin(body: LoginAuthDTO) {
     try {
-      const user = await this.userService.findOneByUserName(body.username);
+      const user = await this.handleFindUser(body.email);
       if (!user) {
         return apiFailed(404, 'Account not found');
       }
@@ -55,13 +55,13 @@ export class AuthService {
       if (isMatch) {
         //Change to admin late
         //Check Role
-        const checkIsRenter = await this.prisma.renter.findFirst({
+        const checkIsAdmin = await this.prisma.renter.findFirst({
           where: {
             userId: user.id,
           },
         });
 
-        if (!checkIsRenter) {
+        if (!checkIsAdmin) {
           return apiFailed(404, 'Account not found');
         }
 
@@ -102,7 +102,7 @@ export class AuthService {
 
   async loginRenter(body: LoginAuthDTO) {
     try {
-      const user = await this.userService.findOneByUserName(body.username);
+      const user = await this.handleFindUser(body.email);
       if (!user) {
         return apiFailed(404, 'Account not found');
       }
@@ -157,7 +157,7 @@ export class AuthService {
 
   async loginLandlord(body: LoginAuthDTO) {
     try {
-      const user = await this.userService.findOneByUserName(body.username);
+      const user = await this.handleFindUser(body.email);
       if (!user) {
         return apiFailed(404, 'Account not found');
       }
@@ -165,13 +165,13 @@ export class AuthService {
 
       if (isMatch) {
         //Check Role
-        const checkIsRenter = await this.prisma.landLord.findFirst({
+        const checkIsLandlord = await this.prisma.landLord.findFirst({
           where: {
             userId: user.id,
           },
         });
 
-        if (!checkIsRenter) {
+        if (!checkIsLandlord) {
           return apiFailed(404, 'Account not found');
         }
 
@@ -212,7 +212,7 @@ export class AuthService {
 
   async loginStaff(body: LoginAuthDTO) {
     try {
-      const user = await this.userService.findOneByUserName(body.username);
+      const user = await this.handleFindUser(body.email);
       if (!user) {
         return apiFailed(404, 'Account not found');
       }
@@ -220,13 +220,13 @@ export class AuthService {
 
       if (isMatch) {
         //Check role
-        const checkIsRenter = await this.prisma.staff.findFirst({
+        const checkIsStaff = await this.prisma.staff.findFirst({
           where: {
             userId: user.id,
           },
         });
 
-        if (!checkIsRenter) {
+        if (!checkIsStaff) {
           return apiFailed(404, 'Account not found');
         }
 
@@ -267,16 +267,19 @@ export class AuthService {
 
   async loginManager(body: LoginAuthDTO) {
     try {
-      const user = await this.userService.findOneByUserName(body.username);
+      const user = await this.handleFindUser(body.email);
+      if (!user) {
+        return apiFailed(404, 'Account not found');
+      }
       const isMatch = await this.validatePassword(user.password, body.password);
 
-      const checkIsRenter = await this.prisma.manager.findFirst({
+      const checkIsManager = await this.prisma.manager.findFirst({
         where: {
           userId: user.id,
         },
       });
 
-      if (!checkIsRenter) {
+      if (!checkIsManager) {
         return apiFailed(404, 'Access denied');
       }
 
@@ -317,16 +320,19 @@ export class AuthService {
 
   async loginTechnicalStaff(body: LoginAuthDTO) {
     try {
-      const user = await this.userService.findOneByUserName(body.username);
+      const user = await this.handleFindUser(body.email);
+      if (!user) {
+        return apiFailed(404, 'Account not found');
+      }
       const isMatch = await this.validatePassword(user.password, body.password);
 
-      const checkIsRenter = await this.prisma.technicalStaff.findFirst({
+      const checkIsTechnicalStaff = await this.prisma.technicalStaff.findFirst({
         where: {
           userId: user.id,
         },
       });
 
-      if (!checkIsRenter) {
+      if (!checkIsTechnicalStaff) {
         return apiFailed(404, 'Account not found');
       }
 
@@ -376,26 +382,18 @@ export class AuthService {
         const role = await this.roleService.findRoleByCode(RoleCode.MANAGER);
         user.roleId = role.id;
 
-        //Create User type
         const userInput: User = {
-          username: user.username,
-          email: user.email,
-          phoneNumber: user.phoneNumber,
-          password: user.password,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          dateOfBirth: user.dateOfBirth,
-          gender: user.gender,
-          avatarUrl: '',
+          ...user,
+          id: undefined,
+          isDeleted: false,
           isVerified: false,
-          isDeleted: undefined,
+          avatarUrl: user.avatarUrl || '',
+          cidId: user.cidId || undefined,
+          roleId: role.id,
+          status: 'active',
           createdAt: undefined,
           updatedAt: undefined,
-          roleId: user.roleId,
-          cidId: undefined,
-          id: undefined,
-          status: undefined,
-          deletedAt: null,
+          deletedAt: undefined,
         };
         //Save the renter in DB
         const userResult = await this.prisma.user.create({ data: userInput });
@@ -455,24 +453,17 @@ export class AuthService {
 
         //Create User type
         const userInput: User = {
-          username: user.username,
-          email: user.email,
-          phoneNumber: user.phoneNumber,
-          password: user.password,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          dateOfBirth: user.dateOfBirth,
-          gender: user.gender,
-          avatarUrl: '',
+          ...user,
+          id: undefined,
+          isDeleted: false,
           isVerified: false,
-          isDeleted: undefined,
+          avatarUrl: user.avatarUrl || '',
+          cidId: user.cidId || undefined,
+          roleId: role.id,
+          status: 'active',
           createdAt: undefined,
           updatedAt: undefined,
-          roleId: user.roleId,
-          cidId: undefined,
-          id: undefined,
-          status: undefined,
-          deletedAt: null,
+          deletedAt: undefined,
         };
         //Save the renter in DB
         const userResult = await this.prisma.user.create({ data: userInput });
@@ -530,24 +521,17 @@ export class AuthService {
 
         //Create User type
         const userInput: User = {
-          username: user.username,
-          email: user.email,
-          phoneNumber: user.phoneNumber,
-          password: user.password,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          dateOfBirth: user.dateOfBirth,
-          gender: user.gender,
-          avatarUrl: '',
+          ...user,
+          id: undefined,
+          isDeleted: false,
           isVerified: false,
-          isDeleted: undefined,
+          avatarUrl: user.avatarUrl || '',
+          cidId: user.cidId || undefined,
+          roleId: role.id,
+          status: 'active',
           createdAt: undefined,
           updatedAt: undefined,
-          roleId: user.roleId,
-          cidId: undefined,
-          id: undefined,
-          status: undefined,
-          deletedAt: null,
+          deletedAt: undefined,
         };
         //Save the renter in DB
         const userResult = await this.prisma.user.create({ data: userInput });
@@ -603,24 +587,17 @@ export class AuthService {
 
         //Create User type
         const userInput: User = {
-          username: user.username,
-          email: user.email,
-          phoneNumber: user.phoneNumber,
-          password: user.password,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          dateOfBirth: user.dateOfBirth,
-          gender: user.gender,
-          avatarUrl: '',
+          ...user,
+          id: undefined,
+          isDeleted: false,
           isVerified: false,
-          isDeleted: undefined,
+          avatarUrl: user.avatarUrl || undefined,
+          cidId: user.cidId || '',
+          roleId: role.id,
+          status: 'active',
           createdAt: undefined,
           updatedAt: undefined,
-          roleId: user.roleId,
-          cidId: undefined,
-          id: undefined,
-          status: undefined,
-          deletedAt: null,
+          deletedAt: undefined,
         };
         //Save the renter in DB
         const userResult = await this.prisma.user.create({ data: userInput });
@@ -678,24 +655,17 @@ export class AuthService {
 
         //Create User type
         const userInput: User = {
-          username: user.username,
-          email: user.email,
-          phoneNumber: user.phoneNumber,
-          password: user.password,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          dateOfBirth: user.dateOfBirth,
-          gender: user.gender,
-          avatarUrl: '',
+          ...user,
+          id: undefined,
+          isDeleted: false,
           isVerified: false,
-          isDeleted: undefined,
+          avatarUrl: user.avatarUrl || '',
+          cidId: user.cidId || undefined,
+          roleId: role.id,
+          status: 'active',
           createdAt: undefined,
           updatedAt: undefined,
-          roleId: user.roleId,
-          id: undefined,
-          status: undefined,
-          cidId: null,
-          deletedAt: null,
+          deletedAt: undefined,
         };
         //Save the renter in DB
         const userResult = await this.prisma.user.create({ data: userInput });
@@ -896,6 +866,12 @@ export class AuthService {
 
     await this.mailService.sendResetPassword(email, resetPasswordUrl);
     return apiSuccess(200, null, 'Email sent');
+  }
+
+  async handleFindUser(email: string) {
+    return this.userService.findOne({
+      email,
+    });
   }
 
   async resetPassword(token: string, newPassword: string) {

@@ -20,6 +20,7 @@ import { Auth } from 'firebase-admin/lib/auth/auth';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../auth/decorator/get_user.decorator';
 import { AuthenUser } from '../auth/dto/authen-user.dto';
+import { JwtAuthGuard } from '../auth/strategy/test';
 
 @Controller('user')
 @ApiTags('user')
@@ -37,7 +38,7 @@ export class UserController {
   }
 
   @Get('/my')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   async getMyProfile(@GetUser() user: AuthenUser) {
     try {
       const result = await this.userService.findOneByUserId(user.id);
