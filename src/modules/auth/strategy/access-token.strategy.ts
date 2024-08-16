@@ -26,7 +26,6 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
       ExtractJwt.fromExtractors([ExtractJwt.fromAuthHeaderAsBearerToken()])(
         req,
       ) || ''; // Extract the JWT from request
-    console.log(token);
     // Check if token is blacklisted before returning user data
     const isBlacklisted =
       await this.blackListTokenService.isTokenBlacklisted(token);

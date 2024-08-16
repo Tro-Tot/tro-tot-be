@@ -806,7 +806,7 @@ export class AuthService {
 
         //Error if refresh token with status true not exist
         if (!isRefreshTokenMatches) {
-          return apiFailed(400, 'Refresh token is invalid', null);
+          return apiFailed(401, 'Refresh token is invalid', 'UNAUTHORIZED');
         }
 
         //Change status of old refreshToken to false
@@ -831,12 +831,12 @@ export class AuthService {
           'Refresh token successfully',
         );
       }
-      return apiFailed(403, 'Access Denied', null);
+      return apiFailed(403, 'Access Denied', 'ACCESS_DENIED');
     } catch (e) {
       if (e.code === 'P2025') {
-        return apiFailed(400, 'Refresh token is invalid', null);
+        return apiFailed(401, 'Refresh token is invalid', 'UNAUTHORIZED');
       }
-      return apiFailed(400, 'Refresh token is invalid', e);
+      return apiFailed(500, 'Internal server error', e);
     }
   }
 

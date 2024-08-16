@@ -20,7 +20,7 @@ import { Auth } from 'firebase-admin/lib/auth/auth';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../auth/decorator/get_user.decorator';
 import { AuthenUser } from '../auth/dto/authen-user.dto';
-import { JwtAuthGuard } from '../auth/strategy/test';
+import { JwtAuthGuard } from '../auth/strategy/jwt-auth.guard';
 
 @Controller('user')
 @ApiTags('user')
