@@ -214,6 +214,7 @@ export class AuthService {
   async loginStaff(body: LoginAuthDTO) {
     try {
       const user = await this.handleFindUser(body.email);
+      console.log(user);
       if (!user) {
         return apiFailed(404, 'Account not found');
       }
@@ -746,7 +747,7 @@ export class AuthService {
 
   async login(body: LoginAuthDTO) {
     try {
-      const user = await this.handleFindUser(body.email);
+      const user: User = await this.handleFindUser(body.email);
       const isMatch = await this.validatePassword(user.password, body.password);
 
       if (isMatch) {
@@ -801,7 +802,7 @@ export class AuthService {
     }
   }
 
-  generateAccessToken(user: { id: string; role: Role }) {
+  generateAccessToken(user: { id: string; role?: Role }) {
     console.log(user);
     const accessTokenExpiresIn = this.config.get('JWT_ACCESS_TOKEN_EXPIRY');
     const secrect = this.config.get('JWT_SECRET');

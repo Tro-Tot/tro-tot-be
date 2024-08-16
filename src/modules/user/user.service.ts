@@ -15,7 +15,12 @@ export class UserService {
   ) {}
 
   async findOne(query: Prisma.UserWhereInput): Promise<User | undefined> {
-    return await this.prisma.user.findFirst({ where: query });
+    return await this.prisma.user.findFirst({
+      where: query,
+      include: {
+        role: true,
+      },
+    });
   }
 
   async addAvatar(file: Express.Multer.File, userInput: AuthenUser) {
