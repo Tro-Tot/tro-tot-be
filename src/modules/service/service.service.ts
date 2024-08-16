@@ -1,5 +1,7 @@
 import { Prisma, Service } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
+import { CreateServiceDTO } from './dto/create-service.dto';
+import { UpdateServiceDTO } from './dto/update-service.dto';
 
 export class ServiceService {
   constructor(private readonly prismaService: PrismaService) {}
@@ -14,19 +16,20 @@ export class ServiceService {
     });
   }
 
-  async createService(service: Service): Promise<Service> {
+  async createService(service: CreateServiceDTO): Promise<Service> {
     return this.prismaService.service.create({
       data: service,
     });
   }
 
-  async createServices(
-    services: Service[],
-  ): Promise<{ createdServices: Service[]; failedServices: Service[] }> {
+  async createServices(createServiceDTOs: CreateServiceDTO[]): Promise<{
+    createdServices: Service[];
+    failedServices: CreateServiceDTO[];
+  }> {
     let createdServices: Service[] = [];
-    let failedServices: Service[] = [];
+    let failedServices: CreateServiceDTO[] = [];
     Promise.all(
-      services.map(async (service) => {
+      createServiceDTOs.map(async (service) => {
         try {
           const createdService = await this.prismaService.service.create({
             data: service,
@@ -40,10 +43,13 @@ export class ServiceService {
     return { createdServices, failedServices };
   }
 
-  async updateService(id: string, service: Service): Promise<Service> {
+  async updateService(
+    id: string,
+    updateServiceDTO: UpdateServiceDTO,
+  ): Promise<Service> {
     return this.prismaService.service.update({
       where: { id },
-      data: service,
+      data: updateServiceDTO,
     });
   }
 

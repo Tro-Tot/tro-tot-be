@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { User } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import { AuthenUser } from '../auth/dto/authen-user.dto';
 import { ImageService } from '../image/image.service';
 import { apiFailed, apiSuccess, apiGeneral } from 'src/common/dto/api-response';
@@ -13,6 +13,15 @@ export class UserService {
     private prisma: PrismaService,
     private readonly imageService: ImageService,
   ) {}
+
+  async findOne(query: Prisma.UserWhereInput): Promise<User | undefined> {
+    return await this.prisma.user.findFirst({
+      where: query,
+      include: {
+        role: true,
+      },
+    });
+  }
 
   async addAvatar(file: Express.Multer.File, userInput: AuthenUser) {
     try {
@@ -101,6 +110,9 @@ export class UserService {
     return await this.prisma.user.findFirst({
       where: {
         email: email,
+      },
+      include: {
+        role: true,
       },
     });
   }
