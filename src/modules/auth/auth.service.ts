@@ -710,7 +710,7 @@ export class AuthService {
 
   async login(body: LoginAuthDTO) {
     try {
-      const user = await this.userService.findOneByUserName(body.username);
+      const user = await this.handleFindUser(body.email);
       const isMatch = await this.validatePassword(user.password, body.password);
 
       if (isMatch) {
