@@ -11,6 +11,7 @@ import { RefreshTokenModule } from './modules/refresh-token/refresh-token.module
 import { CidModule } from './modules/cid/cid.module';
 import { OtpModule } from './modules/otp/otp.module';
 import { ImageModule } from './modules/image/image.module';
+import { ServiceModule } from './modules/service/service.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ImageModule } from './modules/image/image.module';
     CidModule,
     ImageModule,
     OtpModule,
+    ServiceModule,
   ],
   controllers: [AppController],
   providers: [AppService],

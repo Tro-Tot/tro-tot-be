@@ -1,14 +1,14 @@
 model RenterContractAttachment {
-    id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-    name             String   @map("name")
-    renterContractId String   @map("contract_id") @db.Uuid
-    fileType         FileType @map("file_type")
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name             String   @map("name")
+  renterContractId String   @map("contract_id") @db.Uuid
+  fileType         FileType @map("file_type")
 
-    createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz()
-    updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
-    deletedAt DateTime? @map("deleted_at") @db.Timestamptz()
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz()
 
-    renterContract RenterContract @relation(fields: [renterContractId], references: [id])
+  renterContract RenterContract @relation(fields: [renterContractId], references: [id])
 
-    @@map("renter_contract_attachment")
+  @@map("renter_contract_attachment")
 }

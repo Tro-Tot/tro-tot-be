@@ -1,18 +1,18 @@
 model RoomMemberRole {
-    id           String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-    roomRoleName String       @map("room_role_name")
-    roomRoleCode RoomRoleCode @map("room_role_code")
+  id           String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  roomRoleName String       @map("room_role_name")
+  roomRoleCode RoomRoleCode @map("room_role_code")
 
-    createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz()
-    updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
-    deletedAt DateTime? @map("deleted_at") @db.Timestamptz()
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz()
 
-    roomMembers RoomMember[]
+  roomMembers RoomMember[]
 
-    @@map("room_member_roles")
+  @@map("room_member_roles")
 }
 
 enum RoomRoleCode {
-    CONTRACT_OWNER
-    MEMBER
+  CONTRACT_OWNER
+  MEMBER
 }

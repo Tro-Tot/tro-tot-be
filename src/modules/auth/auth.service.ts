@@ -925,11 +925,6 @@ export class AuthService {
   }
 
   async verifyOtp(email: string, otp: string) {
-    const isVerified = await this.otpService.verifyOTP(email, otp);
-    return apiSuccess(
-      200,
-      { isVerified },
-      isVerified ? 'OTP verified' : 'OTP not verified',
-    );
+    return this.otpService.verifyOTP(email, otp);
   }
 }
