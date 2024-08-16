@@ -25,6 +25,7 @@ import { SendResetPasswordDTO } from './dto/send-reset-password.dto';
 import { ResetPasswordDTO } from './dto/reset-password.dto';
 import { EmailDTO } from './dto/email.dto';
 import { VerifyOtpDTO } from './dto/verify-otp.dto';
+import { RefreshJwtAuthGuard } from './strategy/refresh-jwt-auth.guard';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -107,7 +108,7 @@ export class AuthController {
   }
 
   @Get('/refresh-token')
-  @UseGuards(AuthGuard('jwt-refresh'))
+  @UseGuards(RefreshJwtAuthGuard)
   refreshToken(@GetUser() user: AuthenUser) {
     return this.authService.refreshToken(user.refreshToken, user.id);
   }

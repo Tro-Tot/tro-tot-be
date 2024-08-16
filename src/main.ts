@@ -11,6 +11,7 @@ import {
 import { AllExceptionsFilter } from './common/filter/all-exceptions.filter';
 import { PrismaExceptionFilter } from './common/filter/prisma-exception.filter';
 import { ValidationPipeExceptionFilter } from './common/filter/validation-pipe-exception.filter';
+import { AuthExceptionFilter } from './common/filter/auth-exception.filter';
 
 async function bootstrap() {
   const logger = new Logger('main.ts');
@@ -35,6 +36,7 @@ async function bootstrap() {
     new AllExceptionsFilter(app.get(HttpAdapterHost)),
     new ValidationPipeExceptionFilter(app.get(HttpAdapterHost)),
     new PrismaExceptionFilter(app.get(HttpAdapterHost)),
+    new AuthExceptionFilter(app.get(HttpAdapterHost)),
   );
 
   const config = new DocumentBuilder()
