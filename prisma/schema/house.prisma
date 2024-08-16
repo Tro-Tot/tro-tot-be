@@ -1,31 +1,32 @@
 model House {
-  @@map("houses")
-  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  cooperativeContractId String   @map("cooperative_contract_id") @db.Uuid
-  name                 String   @map("name")
-  city                 String   @map("city")
-  district             String   @map("district")
-  ward                 String   @map("ward")
-  street               String   @map("street")
-  houseNumber          String   @map("house_number")
-  latitude             Float    @map("latitude")
-  longitude            Float    @map("longitude")
-  houseType            String   @map("house_type")
-  numberOfFloor        Int      @map("number_of_floor")
-  numberOfRoom         Int      @map("number_of_room")
-  numberOfBathroom     Int      @map("number_of_bathroom")
-  mainDoorDirection    String   @map("main_door_direction")
-  furniture            String   @map("furniture")
-  width                Float    @map("width")
-  length               Float    @map("length")
-  roadWidth            Float    @map("road_width")
-  description          Float    @map("description")
-  legalDocument        String   @map("legal_document")
-  createdAt            DateTime @map("created_at")
-  updatedAt            DateTime @map("updated_at")
-  deletedAt            DateTime @map("deleted_at")
+  id                    String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  cooperativeContractId String              @map("cooperative_contract_id") @db.Uuid
+  name                  String              @map("name")
+  city                  String              @map("city")
+  district              String              @map("district")
+  ward                  String              @map("ward")
+  street                String              @map("street")
+  houseNumber           String              @map("house_number")
+  latitude              Float               @map("latitude")
+  longitude             Float               @map("longitude")
+  houseType             String              @map("house_type")
+  numberOfFloor         Int                 @map("number_of_floor")
+  numberOfRoom          Int                 @map("number_of_room")
+  numberOfBathroom      Int                 @map("number_of_bathroom")
+  mainDoorDirection     String              @map("main_door_direction")
+  furniture             String              @map("furniture")
+  width                 Float               @map("width")
+  length                Float               @map("length")
+  roadWidth             Float               @map("road_width")
+  description           Float               @map("description")
+  legalDocument         String              @map("legal_document")
+  createdAt             DateTime            @map("created_at")
+  updatedAt             DateTime            @map("updated_at")
+  deletedAt             DateTime            @map("deleted_at")
+  houseServices         HouseService[]
+  cooperativeContract   CooperativeContract @relation(fields: [cooperativeContractId], references: [id])
+  rooms                 Room[]
+  attachments           Attachment[]        @relation("HouseAttachments")
 
-  cooperativeContract  CooperativeContract @relation(fields: [cooperativeContractId], references: [id])
-  rooms Room[]
-  houseServices HouseService[]
+  @@map("houses")
 }

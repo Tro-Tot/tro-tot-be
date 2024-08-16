@@ -14,6 +14,7 @@ import { ImageModule } from './modules/image/image.module';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './common/guard/roles.guard';
 import { AuthGuard } from '@nestjs/passport';
+import { PrismaService } from 'prisma/prisma.service';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { AuthGuard } from '@nestjs/passport';
     // RoomModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, PrismaService, RolesGuard],
+  exports: [PrismaService],
 })
 export class AppModule {}

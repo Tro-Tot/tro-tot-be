@@ -745,46 +745,6 @@ export class AuthService {
     });
   }
 
-  async login(body: LoginAuthDTO) {
-    try {
-      const user: User = await this.handleFindUser(body.email);
-      const isMatch = await this.validatePassword(user.password, body.password);
-
-      if (isMatch) {
-        const accessToken = await this.generateAccessToken(user);
-        const refreshTokenResult =
-          await this.refreshTokenService.generateRefreshToken(user);
-
-        let refreshToken;
-        if (refreshTokenResult?.refreshToken) {
-          refreshToken = refreshTokenResult.refreshToken;
-        }
-        //If access token or refresh token is not generated
-        if (accessToken === undefined || refreshToken === undefined) {
-          return apiFailed(
-            500,
-            'Internal server error',
-            'Internal server error',
-          );
-        }
-
-        return apiSuccess(
-          200,
-          { accessToken, refreshToken, user },
-          'Login success',
-        );
-      } else {
-        return apiFailed(401, 'Password not match', ['password']);
-      }
-    } catch (e) {
-      if (e.code === 'P2025') {
-        return apiFailed(404, 'User not found', ['username']);
-      }
-      console.log(e);
-      return apiFailed(500, e, 'Internal server error');
-    }
-  }
-
   async handleLogout(user: AuthenUser, logout: Logout) {
     try {
       const jwt = this.decodeJwt(user.accessToken);

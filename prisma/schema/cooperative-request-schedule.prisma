@@ -1,12 +1,12 @@
 model CooperativeRequestSchedule {
-  @@map("cooperative_request_schedule")
-  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  cooperativeRequestId  String  @unique             @map("cooperative_request_id") @db.Uuid
-  from                  DateTime            @map("from")
-  expectationEnd        DateTime            @map("expectation_end")
-  createdAt             DateTime            @map("created_at")
-  updatedAt             DateTime            @map("updated_at")
-  deletedAt             DateTime?           @map("deleted_at")
+  id                   String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  cooperativeRequestId String             @unique @map("cooperative_request_id") @db.Uuid
+  from                 DateTime           @map("from")
+  expectationEnd       DateTime           @map("expectation_end")
+  createdAt            DateTime           @map("created_at")
+  updatedAt            DateTime           @map("updated_at")
+  deletedAt            DateTime?          @map("deleted_at")
+  cooperativeRequest   CooperativeRequest @relation(fields: [cooperativeRequestId], references: [id])
 
-  cooperativeRequest    CooperativeRequest  @relation(fields: [cooperativeRequestId], references: [id])
+  @@map("cooperative_request_schedule")
 }
