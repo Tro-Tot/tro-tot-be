@@ -219,7 +219,7 @@ export class ImageService {
     id: string,
     fileName: string,
     pathInput: string,
-  ) {
+  ): Promise<string> {
     try {
       const path = `${PathConstants.IMAGE_PATH}/${pathInput}/${id}/${fileName}`;
       const storageRef = ref(this.storage, `${path}`);
@@ -229,7 +229,7 @@ export class ImageService {
       if (error instanceof FirebaseError) {
         if (error.code === 'storage/object-not-found') {
           console.log(error);
-          return apiFailed(400, error.message);
+          throw error;
         }
       }
       throw error;

@@ -1,14 +1,22 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
-import { Prisma, Room } from '@prisma/client';
+import { Attachment, FileType, Prisma, Room } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { apiSuccess } from 'src/common/dto/api-response';
 import { ApiResponse } from 'src/common/dto/response.dto';
-
+import { ImageService } from '../image/image.service';
+import { PathConstants } from 'src/common/constant/path.constant';
+import { ImageResponse } from '../image/dto/image-response.dto';
+import { AttachmentService } from '../attachment/attachment.service';
+import { CreateAttachmentDto } from '../attachment/dto/create-attachment.dto';
 @Injectable()
 export class RoomService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private imageService: ImageService,
+    private attachmentService: AttachmentService,
+  ) {}
 
   async create(createRoomDto: CreateRoomDto) {
     try {
@@ -70,6 +78,9 @@ export class RoomService {
             houseId: houseId,
           },
           orderBy,
+          include: {
+            attachments: true,
+          },
         }),
         this.prismaService.room.count({
           where: {
@@ -138,8 +149,65 @@ export class RoomService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} room`;
+  async uploadImages(roomId, files: Express.Multer.File[]) {
+    try {
+      const { successful, failed } =
+        await this.imageService.handleArrayImagesWithoutApiResponse(
+          files,
+          roomId,
+          PathConstants.ROOM_PATH,
+        );
+
+      const imagesUrl = await Promise.all(
+        successful.map(async (image) => {
+          const imageUrl = await this.imageService.getImageWithPathAndImageName(
+            roomId,
+            image.fileName,
+            PathConstants.ROOM_PATH,
+          );
+          return {
+            imageUrl,
+            fileName: image.fileName,
+          };
+        }),
+      );
+
+      const attactmentDto: any = {
+        id: undefined,
+        fileName: '',
+        fileUrl: '',
+        fileType: FileType.IMAGE,
+        createdAt: undefined,
+        updatedAt: undefined,
+        deletedAt: undefined,
+        houseId: undefined,
+      };
+
+      for (const image of imagesUrl) {
+        attactmentDto.fileUrl = image.imageUrl;
+        attactmentDto.fileName = image.fileName;
+        const result =
+          await this.attachmentService.createAttachment(attactmentDto);
+        console.log(result);
+      }
+
+      return apiSuccess(
+        201,
+        { successful, failed },
+        'Upload Image successfully',
+      );
+    } catch (error) {}
+  }
+
+  async findOne(id: string) {
+    console.log(id);
+    const result = await this.prismaService.room.findFirst({
+      where: {
+        id,
+      },
+    });
+    console.log(result);
+    return result;
   }
 
   update(id: number, updateRoomDto: UpdateRoomDto) {

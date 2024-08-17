@@ -10,6 +10,8 @@ import {
   UsePipes,
   ValidationPipe,
   Query,
+  UseInterceptors,
+  UploadedFiles,
 } from '@nestjs/common';
 import { RoomService } from './room.service';
 import { CreateRoomDto } from './dto/create-room.dto';
@@ -20,6 +22,7 @@ import { RoleCode } from '@prisma/client';
 import { GetUser } from 'src/common/decorator/get_user.decorator';
 import { RolesGuard } from 'src/common/guard/roles.guard';
 import { JwtAuthGuard } from '../auth/strategy/jwt-auth.guard';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('room')
 export class RoomController {
@@ -33,9 +36,9 @@ export class RoomController {
     return this.roomService.create(createRoomDto);
   }
 
-  @Get()
-  findAll() {
-    return this.roomService.findAll();
+  @Get(':id')
+  findAll(@Param('id') id: string) {
+    return this.roomService.findOne(id);
   }
 
   @Get('/house/:houseId')
@@ -64,6 +67,16 @@ export class RoomController {
     @Query() query?: Record<string, string>,
   ) {
     return this.roomService.findAllRoomByRoomIdGeneral(query, houseId);
+  }
+
+  @Post(':id/images')
+  // @UseGuards(AuthGuard('jwt'))
+  @UseInterceptors(FilesInterceptor('files', 10))
+  async uploadAvatarArray(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Param('id') roomId: string,
+  ) {
+    return this.roomService.uploadImages(roomId, files);
   }
 
   @Patch(':id')
