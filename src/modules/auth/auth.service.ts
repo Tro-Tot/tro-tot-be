@@ -90,7 +90,7 @@ export class AuthService {
           'Login success',
         );
       } else {
-        return apiFailed(401, 'Password not match', ['password']);
+        return apiFailed(400, 'Password not match', ['password']);
       }
     } catch (e) {
       if (e.code === 'P2025') {
@@ -145,7 +145,7 @@ export class AuthService {
           'Login success',
         );
       } else {
-        return apiFailed(401, 'Password not match', ['password']);
+        return apiFailed(400, 'Password not match', ['password']);
       }
     } catch (e) {
       if (e.code === 'P2025') {
@@ -200,7 +200,7 @@ export class AuthService {
           'Login success',
         );
       } else {
-        return apiFailed(401, 'Password not match', ['password']);
+        return apiFailed(400, 'Password not match', ['password']);
       }
     } catch (e) {
       if (e.code === 'P2025') {
@@ -256,7 +256,7 @@ export class AuthService {
           'Login success',
         );
       } else {
-        return apiFailed(401, 'Password not match', ['password']);
+        return apiFailed(400, 'Password not match', ['password']);
       }
     } catch (e) {
       if (e.code === 'P2025') {
@@ -309,7 +309,7 @@ export class AuthService {
           'Login success',
         );
       } else {
-        return apiFailed(401, 'Password not match', ['password']);
+        return apiFailed(400, 'Password not match', ['password']);
       }
     } catch (e) {
       if (e.code === 'P2025') {
@@ -362,7 +362,7 @@ export class AuthService {
           'Login success',
         );
       } else {
-        return apiFailed(401, 'Password not match', ['password']);
+        return apiFailed(400, 'Password not match', ['password']);
       }
     } catch (e) {
       if (e.code === 'P2025') {
@@ -407,7 +407,7 @@ export class AuthService {
           },
         });
         if (!userResult) {
-          return apiFailed(400, 'Created User failed');
+          return apiFailed(500, 'Created User failed');
         }
         //Create the renter schema
         const renter: Renter = {
@@ -422,7 +422,7 @@ export class AuthService {
           data: renter,
         });
         if (!renterResult) {
-          return apiFailed(400, 'Created User failed');
+          return apiFailed(500, 'Created User failed');
         }
 
         const accessToken = await this.generateAccessToken(userResult);
@@ -484,7 +484,7 @@ export class AuthService {
           },
         });
         if (!userResult) {
-          return apiFailed(400, 'Created User failed');
+          return apiFailed(500, 'Created User failed');
         }
         //Create the renter schema
         const renter: Renter = {
@@ -499,7 +499,7 @@ export class AuthService {
           data: renter,
         });
         if (!renterResult) {
-          return apiFailed(400, 'Created User failed');
+          return apiFailed(500, 'Created User failed');
         }
 
         const accessToken = await this.generateAccessToken(userResult);
@@ -559,7 +559,7 @@ export class AuthService {
           },
         });
         if (!userResult) {
-          return apiFailed(400, 'Created User failed');
+          return apiFailed(500, 'Created User failed');
         }
         //Create the renter schema
         const renter: Renter = {
@@ -572,7 +572,7 @@ export class AuthService {
 
         const renterResult = await this.prisma.staff.create({ data: renter });
         if (!renterResult) {
-          return apiFailed(400, 'Created User failed');
+          return apiFailed(500, 'Created User failed');
         }
 
         const accessToken = await this.generateAccessToken(userResult);
@@ -632,7 +632,7 @@ export class AuthService {
           },
         });
         if (!userResult) {
-          return apiFailed(400, 'Created User failed');
+          return apiFailed(500, 'Created User failed');
         }
         //Create the renter schema
         const renter: Renter = {
@@ -647,7 +647,7 @@ export class AuthService {
           data: renter,
         });
         if (!renterResult) {
-          return apiFailed(400, 'Created User failed');
+          return apiFailed(500, 'Created User failed');
         }
 
         const accessToken = await this.generateAccessToken(userResult);
@@ -707,7 +707,7 @@ export class AuthService {
           },
         });
         if (!userResult) {
-          return apiFailed(400, 'Created User failed');
+          return apiFailed(500, 'Created User failed');
         }
         //Create the renter schema
         const renter: Renter = {
@@ -720,7 +720,7 @@ export class AuthService {
 
         const renterResult = await this.prisma.renter.create({ data: renter });
         if (!renterResult) {
-          return apiFailed(400, 'Created User failed');
+          return apiFailed(500, 'Created User failed');
         }
 
         const accessToken = await this.generateAccessToken(userResult);
@@ -774,7 +774,7 @@ export class AuthService {
           'Login success',
         );
       } else {
-        return apiFailed(401, 'Password not match', ['password']);
+        return apiFailed(400, 'Password not match', ['password']);
       }
     } catch (e) {
       if (e.code === 'P2025') {
@@ -798,7 +798,7 @@ export class AuthService {
       );
       return apiSuccess(200, result, 'Logout successfully');
     } catch (e) {
-      return apiSuccess(400, {}, 'Logout failed');
+      return apiSuccess(500, {}, 'Logout failed');
     }
   }
 
@@ -933,7 +933,7 @@ export class AuthService {
 
   async sendVerifyOtp(email: string): Promise<ApiResponse> {
     if (await this.isEmailExist(email)) {
-      return apiFailed(400, 'Email already registered');
+      return apiFailed(409, 'Email already registered');
     }
     return await this.otpService.sendOTP(email);
   }
