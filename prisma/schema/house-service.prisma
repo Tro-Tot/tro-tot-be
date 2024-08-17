@@ -16,6 +16,6 @@ model HouseService {
 
 enum HouseServiceStatus {
   ACTIVE
-  INACTIVE
+  UNREGISTRABLE
   TERMINATED
 }

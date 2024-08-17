@@ -15,6 +15,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './common/guard/roles.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { PrismaService } from 'prisma/prisma.service';
+import { RoomModule } from './modules/room/room.module';
 
 @Module({
   imports: [
@@ -28,7 +29,7 @@ import { PrismaService } from 'prisma/prisma.service';
     CidModule,
     ImageModule,
     OtpModule,
-    // RoomModule,
+    RoomModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService, RolesGuard],

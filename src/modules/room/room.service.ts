@@ -12,20 +12,18 @@ export class RoomService {
     try {
       const room: Room = {
         ...createRoomDto,
-        attachmentId: undefined,
         isOccupied: createRoomDto.isOccupied || false,
         status: createRoomDto.status || 'active',
-        id: '',
+        id: undefined,
         index: 0,
         createdAt: undefined,
         updatedAt: undefined,
         deletedAt: undefined,
-        description: '',
+        description: createRoomDto.description || null,
       };
 
-      // Truyền đối tượng room trực tiếp mà không sử dụng spread
       const roomResult = await this.prismaService.room.create({
-        data: room, // Truyền dữ liệu vào hàm create của Prisma
+        data: room,
       });
 
       return roomResult;

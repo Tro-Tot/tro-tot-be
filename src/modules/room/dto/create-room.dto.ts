@@ -57,6 +57,11 @@ export class CreateRoomDto {
   @IsNumber()
   numberOfPeople: number;
 
+  @ApiProperty({ description: 'Room description', type: String })
+  @IsOptional()
+  @IsString()
+  description?: string;
+
   @ApiProperty({ description: 'Has Mezzanine', type: Boolean })
   @IsBoolean()
   hasMezzanine: boolean;

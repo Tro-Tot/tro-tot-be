@@ -1,14 +1,14 @@
 model Attachment {
   id         String     @id @default(uuid()) @map("id")
-  parentId   String     @map("parent_id") @db.Uuid
-  parentType ParentType @map("parent_type")
   fileName   String     @map("file_name")
   fileType   FileType   @map("file_type")
   createdAt  DateTime   @default(now()) @map("created_at")
   updatedAt  DateTime   @updatedAt @map("updated_at")
   deletedAt  DateTime?  @map("deleted_at")
-  House      House?     @relation("HouseAttachments", fields: [parentId], references: [id], map: "house_attachmentId")
-  Room       Room?      @relation("RoomAttachments", fields: [parentId], references: [id], map: "room_attachmentId")
+  parentType ParentType @map("parent_type")
+  parentId   String     @map("parent_id") @db.Uuid
+  house      House      @relation("HouseAttachments", fields: [parentId], references: [id], map: "house_attachmentId")
+  room       Room       @relation("RoomAttachments", fields: [parentId], references: [id], map: "room_attachmentId")
 
   @@map("attachments")
 }
