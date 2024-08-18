@@ -359,10 +359,11 @@ export class AuthService {
   ) {}
   async registerManager(user: SignUpDTO) {
     // Ensure the transaction either succeeds or fails completely
-    return await this.prisma.$transaction(async (prisma) => {
-      try {
-        //Hash user's password
-        user.password = await this.hashPassword(user.password);
+    return await this.prisma.$transaction(
+      async (prisma) => {
+        try {
+          //Hash user's password
+          user.password = await this.hashPassword(user.password);
 
         // TEST: apply Manager role id
         user.role_id = '5';
@@ -407,26 +408,31 @@ export class AuthService {
           return apiFailed(400, 'Created User failed');
         }
 
-        const accessToken = await this.generateAccessToken(userResult);
+          const accessToken = await this.generateAccessToken(userResult);
 
-        //Generate refresh token and store it
-        const refreshTokenResult =
-          await this.refreshTokenService.generateRefreshToken(userResult);
+          //Generate refresh token and store it
+          const refreshTokenResult =
+            await this.refreshTokenService.generateRefreshToken(userResult);
 
-        let refreshToken;
-        if (refreshTokenResult?.refreshToken) {
-          refreshToken = refreshTokenResult.refreshToken;
+          let refreshToken;
+          if (refreshTokenResult?.refreshToken) {
+            refreshToken = refreshTokenResult.refreshToken;
+          }
+
+          return apiSuccess(
+            201,
+            { accessToken, refreshToken, user: userResult },
+            'Created user successfully',
+          );
+        } catch (error) {
+          throw error;
         }
-
-        return apiSuccess(
-          201,
-          { accessToken, refreshToken, user: userResult },
-          'Created user successfully',
-        );
-      } catch (error) {
-        throw error;
-      }
-    });
+      },
+      {
+        //After 10s will break
+        timeout: 10000,
+      },
+    );
   }
 
   async registerTechnicalStaff(user: SignUpDTO) {
@@ -744,13 +750,8 @@ export class AuthService {
       } else {
         return apiFailed(401, 'Password not match', ['password']);
       }
-    } catch (e) {
-      if (e.code === 'P2025') {
-        return apiFailed(404, 'User not found', ['username']);
-      }
-      console.log(e);
-      return apiFailed(500, e, 'Internal server error');
     }
+    return result;
   }
 
   async handleLogout(user: AuthenUser, logout: Logout) {

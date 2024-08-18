@@ -78,37 +78,38 @@ export class AuthController {
     return this.authService.loginRenter(body);
   }
 
+  //SIGN UP FLOW
   @Post('/sign-up/renter')
   @UsePipes(new ValidationPipe())
   renterSignUp(@Body() body: SignUpDTO) {
-    return this.authService.registerRenter(body);
+    return this.authService.registerGeneral(body, RoleCode.RENTER);
   }
 
   @Post('/sign-up/landlord')
   @UsePipes(new ValidationPipe())
   landlordSignUp(@Body() body: SignUpDTO) {
-    return this.authService.registerLandlord(body);
+    return this.authService.registerGeneral(body, RoleCode.LANDLORD);
   }
 
   //To-do: Need Authen Manager to do this
   @Post('/sign-up/staff')
   @UsePipes(new ValidationPipe())
   staffSignUp(@Body() body: SignUpDTO) {
-    return this.authService.registerStaff(body);
+    return this.authService.registerGeneral(body, RoleCode.STAFF);
   }
 
   //To-do: Need Authen Manager to do this
   @Post('/sign-up/technical-staff')
   @UsePipes(new ValidationPipe())
   technicalStaffSignUp(@Body() body: SignUpDTO) {
-    return this.authService.registerTechnicalStaff(body);
+    return this.authService.registerGeneral(body, RoleCode.TECHNICAL_STAFF);
   }
 
   //To-do: Need Authen Manager to do this
   @Post('/sign-up/manager')
   @UsePipes(new ValidationPipe())
   managerSignUp(@Body() body: SignUpDTO) {
-    return this.authService.registerManager(body);
+    return this.authService.registerGeneral(body, RoleCode.MANAGER);
   }
 
   @Get('/refresh-token')
