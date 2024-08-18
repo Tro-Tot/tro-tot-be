@@ -9,6 +9,7 @@ import { LoginAuthDTO } from './dto/login-auth.dto';
 import { apiFailed, apiSuccess } from 'src/common/dto/api-response';
 import * as bcrypt from 'bcrypt';
 import {
+  Prisma,
   PrismaClient,
   RefreshToken,
   Renter,
@@ -30,6 +31,7 @@ import { MailService } from '../mail/mail.service';
 import { OtpService } from '../otp/otp.service';
 import { ApiResponse } from 'src/common/dto/response.dto';
 import { RoleService } from '../role/role.service';
+import { DefaultArgs } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class AuthService {
@@ -156,416 +158,153 @@ export class AuthService {
     return checkRoleSchema;
   }
 
-  async registerManager(user: SignUpDTO) {
+  async registerGeneral(user: SignUpDTO, roleInput: RoleCode) {
     // Ensure the transaction either succeeds or fails completely
-    return await this.prisma.$transaction(async (prisma) => {
-      try {
-        //Hash user's password
-        user.password = await this.hashPassword(user.password);
+    return await this.prisma.$transaction(
+      async (prisma) => {
+        try {
+          //Hash user's password
+          user.password = await this.hashPassword(user.password);
 
-        // TEST: apply Manager role id
-        const role = await this.roleService.findRoleByCode(RoleCode.MANAGER);
-        user.roleId = role.id;
+          //Apply renter role id
+          const role = await this.roleService.findRoleByCode(roleInput);
+          user.roleId = role.id;
 
-        const userInput: User = {
-          ...user,
-          id: undefined,
-          isDeleted: false,
-          isVerified: false,
-          avatarUrl: user.avatarUrl || '',
-          cidId: user.cidId || undefined,
-          roleId: role.id,
-          status: 'active',
-          createdAt: undefined,
-          updatedAt: undefined,
-          deletedAt: undefined,
-        };
-        //Save the renter in DB
-        const userResult = await this.prisma.user.create({
-          data: {
-            ...userInput,
-          },
-          include: {
-            role: true, // Include the role object in the result
-          },
-        });
-        if (!userResult) {
-          return apiFailed(500, 'Created User failed');
-        }
-        //Create the renter schema
-        const renter: Renter = {
-          id: undefined,
-          userId: userResult.id,
-          createdAt: undefined,
-          updatedAt: undefined,
-          deletedAt: undefined,
-        };
+          //Create User type
+          const userInput: User = {
+            ...user,
+            id: undefined,
+            isDeleted: false,
+            isVerified: false,
+            avatarUrl: user.avatarUrl || '',
+            cidId: user.cidId || undefined,
+            roleId: role.id,
+            status: 'active',
+            createdAt: undefined,
+            updatedAt: undefined,
+            deletedAt: undefined,
+          };
+          //Save the renter in DB
+          const userResult = await this.prisma.user.create({
+            data: {
+              ...userInput,
+            },
+            include: {
+              role: true, // Include the role object in the result
+            },
+          });
+          if (!userResult) {
+            return apiFailed(500, 'Created User failed');
+          }
 
-        const renterResult = await this.prisma.manager.create({
-          data: renter,
-        });
-        if (!renterResult) {
-          return apiFailed(500, 'Created User failed');
-        }
-
-        const accessToken = await this.generateAccessToken(userResult);
-
-        //Generate refresh token and store it
-        const refreshTokenResult =
-          await this.refreshTokenService.generateRefreshToken(userResult);
-
-        let refreshToken;
-        if (refreshTokenResult?.refreshToken) {
-          refreshToken = refreshTokenResult.refreshToken;
-        }
-
-        return apiSuccess(
-          201,
-          { accessToken, refreshToken, user: userResult },
-          'Created user successfully',
-        );
-      } catch (error) {
-        throw error;
-      }
-    });
-  }
-
-  async registerTechnicalStaff(user: SignUpDTO) {
-    // Ensure the transaction either succeeds or fails completely
-    return await this.prisma.$transaction(async (prisma) => {
-      try {
-        //Hash user's password
-        user.password = await this.hashPassword(user.password);
-
-        // TEST: apply Technical Staff role id
-        const role = await this.roleService.findRoleByCode(
-          RoleCode.TECHNICAL_STAFF,
-        );
-        user.roleId = role.id;
-
-        //Create User type
-        const userInput: User = {
-          ...user,
-          id: undefined,
-          isDeleted: false,
-          isVerified: false,
-          avatarUrl: user.avatarUrl || '',
-          cidId: user.cidId || undefined,
-          roleId: role.id,
-          status: 'active',
-          createdAt: undefined,
-          updatedAt: undefined,
-          deletedAt: undefined,
-        };
-        //Save the renter in DB
-        const userResult = await this.prisma.user.create({
-          data: {
-            ...userInput,
-          },
-          include: {
-            role: true, // Include the role object in the result
-          },
-        });
-        if (!userResult) {
-          return apiFailed(500, 'Created User failed');
-        }
-        //Create the renter schema
-        const renter: Renter = {
-          id: undefined,
-          userId: userResult.id,
-          createdAt: undefined,
-          updatedAt: undefined,
-          deletedAt: undefined,
-        };
-
-        const renterResult = await this.prisma.technicalStaff.create({
-          data: renter,
-        });
-        if (!renterResult) {
-          return apiFailed(500, 'Created User failed');
-        }
-
-        const accessToken = await this.generateAccessToken(userResult);
-
-        //Generate refresh token and store it
-        const refreshTokenResult =
-          await this.refreshTokenService.generateRefreshToken(userResult);
-
-        let refreshToken;
-        if (refreshTokenResult?.refreshToken) {
-          refreshToken = refreshTokenResult.refreshToken;
-        }
-
-        return apiSuccess(
-          201,
-          { accessToken, refreshToken, user: userResult },
-          'Created user successfully',
-        );
-      } catch (error) {
-        throw error;
-      }
-    });
-  }
-
-  async registerStaff(user: SignUpDTO) {
-    // Ensure the transaction either succeeds or fails completely
-    return await this.prisma.$transaction(async (prisma) => {
-      try {
-        //Hash user's password
-        user.password = await this.hashPassword(user.password);
-
-        // TEST: apply Staff role id
-        const role = await this.roleService.findRoleByCode(RoleCode.STAFF);
-        user.roleId = role.id;
-
-        //Create User type
-        const userInput: User = {
-          ...user,
-          id: undefined,
-          isDeleted: false,
-          isVerified: false,
-          avatarUrl: user.avatarUrl || '',
-          cidId: user.cidId || undefined,
-          roleId: role.id,
-          status: 'active',
-          createdAt: undefined,
-          updatedAt: undefined,
-          deletedAt: undefined,
-        };
-        //Save the renter in DB
-        const userResult = await this.prisma.user.create({
-          data: {
-            ...userInput,
-          },
-          include: {
-            role: true, // Include the role object in the result
-          },
-        });
-        if (!userResult) {
-          return apiFailed(500, 'Created User failed');
-        }
-        //Create the renter schema
-        const renter: Renter = {
-          id: undefined,
-          userId: userResult.id,
-          createdAt: undefined,
-          updatedAt: undefined,
-          deletedAt: undefined,
-        };
-
-        const renterResult = await this.prisma.staff.create({ data: renter });
-        if (!renterResult) {
-          return apiFailed(500, 'Created User failed');
-        }
-
-        const accessToken = await this.generateAccessToken(userResult);
-
-        //Generate refresh token and store it
-        const refreshTokenResult =
-          await this.refreshTokenService.generateRefreshToken(userResult);
-
-        let refreshToken;
-        if (refreshTokenResult?.refreshToken) {
-          refreshToken = refreshTokenResult.refreshToken;
-        }
-
-        return apiSuccess(
-          201,
-          { accessToken, refreshToken, user: userResult },
-          'Created user successfully',
-        );
-      } catch (error) {
-        throw error;
-      }
-    });
-  }
-
-  async registerLandlord(user: SignUpDTO) {
-    // Ensure the transaction either succeeds or fails completely
-    return await this.prisma.$transaction(async (prisma) => {
-      try {
-        //Hash user's password
-        user.password = await this.hashPassword(user.password);
-
-        // TEST: apply landlord role id
-        const role = await this.roleService.findRoleByCode(RoleCode.LANDLORD);
-        user.roleId = role.id;
-
-        //Create User type
-        const userInput: User = {
-          ...user,
-          id: undefined,
-          isDeleted: false,
-          isVerified: false,
-          avatarUrl: user.avatarUrl || undefined,
-          cidId: user.cidId || '',
-          roleId: role.id,
-          status: 'active',
-          createdAt: undefined,
-          updatedAt: undefined,
-          deletedAt: undefined,
-        };
-        //Save the renter in DB
-        const userResult = await this.prisma.user.create({
-          data: {
-            ...userInput,
-          },
-          include: {
-            role: true, // Include the role object in the result
-          },
-        });
-        if (!userResult) {
-          return apiFailed(500, 'Created User failed');
-        }
-        //Create the renter schema
-        const renter: Renter = {
-          id: undefined,
-          userId: userResult.id,
-          createdAt: undefined,
-          updatedAt: undefined,
-          deletedAt: undefined,
-        };
-
-        const renterResult = await this.prisma.landLord.create({
-          data: renter,
-        });
-        if (!renterResult) {
-          return apiFailed(500, 'Created User failed');
-        }
-
-        const accessToken = await this.generateAccessToken(userResult);
-
-        //Generate refresh token and store it
-        const refreshTokenResult =
-          await this.refreshTokenService.generateRefreshToken(userResult);
-
-        let refreshToken;
-        if (refreshTokenResult?.refreshToken) {
-          refreshToken = refreshTokenResult.refreshToken;
-        }
-
-        return apiSuccess(
-          201,
-          { accessToken, refreshToken, user: userResult },
-          'Created user successfully',
-        );
-      } catch (error) {
-        throw error;
-      }
-    });
-  }
-
-  async registerRenter(user: SignUpDTO) {
-    // Ensure the transaction either succeeds or fails completely
-    return await this.prisma.$transaction(async (prisma) => {
-      try {
-        //Hash user's password
-        user.password = await this.hashPassword(user.password);
-
-        //Apply renter role id
-        const role = await this.roleService.findRoleByCode(RoleCode.RENTER);
-        user.roleId = role.id;
-
-        //Create User type
-        const userInput: User = {
-          ...user,
-          id: undefined,
-          isDeleted: false,
-          isVerified: false,
-          avatarUrl: user.avatarUrl || '',
-          cidId: user.cidId || undefined,
-          roleId: role.id,
-          status: 'active',
-          createdAt: undefined,
-          updatedAt: undefined,
-          deletedAt: undefined,
-        };
-        //Save the renter in DB
-        const userResult = await this.prisma.user.create({
-          data: {
-            ...userInput,
-          },
-          include: {
-            role: true, // Include the role object in the result
-          },
-        });
-        if (!userResult) {
-          return apiFailed(500, 'Created User failed');
-        }
-        //Create the renter schema
-        const renter: Renter = {
-          id: undefined,
-          userId: userResult.id,
-          createdAt: undefined,
-          updatedAt: undefined,
-          deletedAt: undefined,
-        };
-
-        const renterResult = await this.prisma.renter.create({ data: renter });
-        if (!renterResult) {
-          return apiFailed(500, 'Created User failed');
-        }
-
-        const accessToken = await this.generateAccessToken(userResult);
-
-        //Generate refresh token and store it
-        const refreshTokenResult =
-          await this.refreshTokenService.generateRefreshToken(userResult);
-
-        let refreshToken;
-        if (refreshTokenResult?.refreshToken) {
-          refreshToken = refreshTokenResult.refreshToken;
-        }
-
-        return apiSuccess(
-          201,
-          { accessToken, refreshToken, user: userResult },
-          'Created user successfully',
-        );
-      } catch (error) {
-        throw error;
-      }
-    });
-  }
-
-  async login(body: LoginAuthDTO) {
-    try {
-      const user: User = await this.handleFindUser(body.email);
-      const isMatch = await this.validatePassword(user.password, body.password);
-
-      if (isMatch) {
-        const accessToken = await this.generateAccessToken(user);
-        const refreshTokenResult =
-          await this.refreshTokenService.generateRefreshToken(user);
-
-        let refreshToken;
-        if (refreshTokenResult?.refreshToken) {
-          refreshToken = refreshTokenResult.refreshToken;
-        }
-        //If access token or refresh token is not generated
-        if (accessToken === undefined || refreshToken === undefined) {
-          return apiFailed(
-            500,
-            'Internal server error',
-            'Internal server error',
+          const schemaResult = await this.addRoleSchema(
+            prisma,
+            userResult.id,
+            roleInput,
           );
-        }
+          if (!schemaResult) {
+            return apiFailed(500, 'Created User failed');
+          }
 
-        return apiSuccess(
-          200,
-          { accessToken, refreshToken, user },
-          'Login success',
-        );
-      } else {
-        return apiFailed(400, 'Password not match', ['password']);
+          const accessToken = await this.generateAccessToken(userResult);
+
+          //Generate refresh token and store it
+          const refreshTokenResult =
+            await this.refreshTokenService.generateRefreshToken(userResult);
+
+          let refreshToken;
+          if (refreshTokenResult?.refreshToken) {
+            refreshToken = refreshTokenResult.refreshToken;
+          }
+
+          return apiSuccess(
+            201,
+            { accessToken, refreshToken, user: userResult },
+            'Created user successfully',
+          );
+        } catch (error) {
+          throw error;
+        }
+      },
+      {
+        //After 10s will break
+        timeout: 10000,
+      },
+    );
+  }
+
+  async addRoleSchema(
+    prisma: Omit<
+      PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
+      '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
+    >,
+    userId: string,
+    role: RoleCode,
+  ) {
+    const schema: any = {
+      id: undefined,
+      userId: userId,
+      createdAt: undefined,
+      updatedAt: undefined,
+      deletedAt: undefined,
+    };
+    let result = null;
+    switch (role) {
+      case RoleCode.RENTER: {
+        result = await prisma.renter.create({
+          data: {
+            ...schema,
+          },
+        });
+        break;
       }
-    } catch (e) {
-      if (e.code === 'P2025') {
-        return apiFailed(404, 'User not found', ['username']);
+      case RoleCode.STAFF: {
+        result = await prisma.staff.create({
+          data: {
+            ...schema,
+          },
+        });
+        break;
       }
-      console.log(e);
-      return apiFailed(500, e, 'Internal server error');
+      // Admin hasn't done yet
+      case RoleCode.ADMIN: {
+        // checkRoleSchema = !!(await this.prisma.staff.findFirst({
+        //   where: {
+        //     userId: userId,
+        //   },
+        // }));
+        break;
+      }
+      case RoleCode.TECHNICAL_STAFF: {
+        result = await prisma.technicalStaff.create({
+          data: {
+            ...schema,
+          },
+        });
+        break;
+      }
+      case RoleCode.MANAGER: {
+        result = await prisma.manager.create({
+          data: {
+            ...schema,
+          },
+        });
+        break;
+      }
+      case RoleCode.LANDLORD: {
+        result = await prisma.landLord.create({
+          data: {
+            ...schema,
+          },
+        });
+        break;
+      }
+      default: {
+        result = null;
+        break;
+      }
     }
+    return result;
   }
 
   async handleLogout(user: AuthenUser, logout: Logout) {
