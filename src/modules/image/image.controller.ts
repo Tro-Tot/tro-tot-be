@@ -60,7 +60,6 @@ export class ImageController {
         'test',
         'test',
       );
-    console.log(result);
     return 'test';
   }
 }

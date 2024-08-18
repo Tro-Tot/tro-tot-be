@@ -26,6 +26,7 @@ import { ResetPasswordDTO } from './dto/reset-password.dto';
 import { EmailDTO } from './dto/email.dto';
 import { VerifyOtpDTO } from './dto/verify-otp.dto';
 import { RefreshJwtAuthGuard } from './strategy/refresh-jwt-auth.guard';
+import { RoleCode } from '@prisma/client';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -41,37 +42,37 @@ export class AuthController {
   @Post('/renter/login')
   @UsePipes(new ValidationPipe())
   renterLogin(@Body() body: LoginAuthDTO) {
-    return this.authService.loginRenter(body);
+    return this.authService.loginGeneral(body, RoleCode.RENTER);
   }
 
   @Post('/manager/login')
   @UsePipes(new ValidationPipe())
   managerLogin(@Body() body: LoginAuthDTO) {
-    return this.authService.loginManager(body);
+    return this.authService.loginGeneral(body, RoleCode.MANAGER);
   }
 
   @Post('/staff/login')
   @UsePipes(new ValidationPipe())
   staffLogin(@Body() body: LoginAuthDTO) {
-    return this.authService.loginStaff(body);
+    return this.authService.loginGeneral(body, RoleCode.STAFF);
   }
 
   @Post('/technical-staff/login')
   @UsePipes(new ValidationPipe())
   technicalStaffLogin(@Body() body: LoginAuthDTO) {
-    return this.authService.loginTechnicalStaff(body);
+    return this.authService.loginGeneral(body, RoleCode.TECHNICAL_STAFF);
   }
 
   @Post('/admin/login')
   @UsePipes(new ValidationPipe({}))
   adminLogin(@Body() body: LoginAuthDTO) {
-    return this.authService.loginAdmin(body);
+    return this.authService.loginGeneral(body, RoleCode.ADMIN);
   }
 
   @Post('/landlord/login')
   @UsePipes(new ValidationPipe())
   landlordLogin(@Body() body: LoginAuthDTO) {
-    return this.authService.loginRenter(body);
+    return this.authService.loginGeneral(body, RoleCode.LANDLORD);
   }
 
   @Post('/sign-up/renter')

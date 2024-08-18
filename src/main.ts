@@ -26,9 +26,7 @@ async function bootstrap() {
   });
 
   class CustomValidationPipe extends ValidationPipe {
-    catch(exception: any, host: ArgumentsHost) {
-      console.log(exception);
-    }
+    catch(exception: any, host: ArgumentsHost) {}
   }
 
   app.useGlobalPipes(new CustomValidationPipe());
