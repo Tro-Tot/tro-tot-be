@@ -16,6 +16,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Reflector } from '@nestjs/core';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { CreateServiceDTO } from './dto/create-service.dto';
+import { UpdateServiceDTO } from './dto/update-service.dto';
 
 @Controller('service')
 @ApiTags('service')
@@ -43,9 +44,7 @@ export class ServiceController {
 
   @Post('bulk')
   @Roles(RoleCode.MANAGER)
-  async createServices(
-    @Body() services: Service[],
-  ): Promise<{
+  async createServices(@Body() services: Service[]): Promise<{
     createdServices: Service[];
     failedServices: CreateServiceDTO[];
   }> {
@@ -56,9 +55,9 @@ export class ServiceController {
   @Roles(RoleCode.MANAGER)
   async updateService(
     @Param('id') id: string,
-    @Body() service: Service,
+    @Body() updateServiceDTO: UpdateServiceDTO,
   ): Promise<Service> {
-    return this.serviceService.updateService(id, service);
+    return this.serviceService.updateService(id, updateServiceDTO);
   }
 
   @Delete(':id')

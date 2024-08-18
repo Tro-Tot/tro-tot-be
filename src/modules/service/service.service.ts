@@ -1,13 +1,40 @@
-import { Prisma, Service } from '@prisma/client';
+import { Prisma, Service, ServiceType } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { CreateServiceDTO } from './dto/create-service.dto';
 import { UpdateServiceDTO } from './dto/update-service.dto';
+import { SortByEnum } from 'src/common/enum/sort-by.enum';
 
 export class ServiceService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async getServices(): Promise<Service[]> {
     return this.prismaService.service.findMany();
+  }
+
+  //Phi Doing
+  async searchServices(
+    pageSize: number = 10,
+    pageNumber: number = 0,
+    sortBy: string = undefined,
+    sortOrder: SortByEnum,
+    houseId: string,
+    serviceScheduleId: string,
+    serviceName: string,
+    servicePrice: number,
+    serviceType: ServiceType,
+    unit: string,
+    billCycle: number,
+    isCompulsory: boolean,
+    isManual: boolean,
+    status: string,
+  ) {
+    const services = await this.prismaService.service.findMany({
+      where: {
+        OR: [],
+      },
+      take: pageSize,
+      skip: pageNumber,
+    });
   }
 
   async getService(id: string): Promise<Service> {

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ServiceType } from '@prisma/client';
+import { ServiceStatus, ServiceType } from '@prisma/client';
 import {
   IsBoolean,
   IsEnum,
@@ -11,10 +11,6 @@ import {
 } from 'class-validator';
 
 export class CreateServiceDTO {
-  @ApiProperty()
-  @IsUUID()
-  houseId: string;
-
   @ApiProperty()
   @IsUUID()
   serviceScheduleId: string;
@@ -50,6 +46,6 @@ export class CreateServiceDTO {
   isManual: boolean;
 
   @ApiProperty()
-  @IsString()
-  status: string;
+  @IsEnum(ServiceStatus)
+  status: ServiceStatus;
 }
