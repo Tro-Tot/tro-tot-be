@@ -1,5 +1,5 @@
 enum FileType {
-    IMAGE
-    PDF
-    VIDEO
+  IMAGE
+  PDF
+  VIDEO
 }

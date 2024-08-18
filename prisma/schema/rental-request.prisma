@@ -1,16 +1,16 @@
 model RentalRequest {
-    id                    String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-    roomId                String @map("room_id") @db.Uuid
-    renterId              String @map("renter_id") @db.Uuid
-    rentalRequestStatusId String @map("rental_request_status_id") @db.Uuid
+  id                    String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  roomId                String @map("room_id") @db.Uuid
+  renterId              String @map("renter_id") @db.Uuid
+  rentalRequestStatusId String @map("rental_request_status_id") @db.Uuid
 
-    createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz()
-    updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
-    deletedAt DateTime? @map("deleted_at") @db.Timestamptz() // Nullable field
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz() // Nullable field
 
-    room                Room                @relation(fields: [roomId], references: [id])
-    renter              Renter              @relation(fields: [renterId], references: [id])
-    rentalRequestStatus RentalRequestStatus @relation(fields: [rentalRequestStatusId], references: [id])
+  room                Room                @relation(fields: [roomId], references: [id])
+  renter              Renter              @relation(fields: [renterId], references: [id])
+  rentalRequestStatus RentalRequestStatus @relation(fields: [rentalRequestStatusId], references: [id])
 
-    @@map("rental_requests")
+  @@map("rental_requests")
 }

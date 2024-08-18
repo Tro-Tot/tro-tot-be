@@ -14,6 +14,7 @@ import { ImageModule } from './modules/image/image.module';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './common/guard/roles.guard';
 import { AuthGuard } from '@nestjs/passport';
+import { ServiceModule } from './modules/service/service.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { AuthGuard } from '@nestjs/passport';
     ImageModule,
     OtpModule,
     // RoomModule,
+    ServiceModule,
   ],
   controllers: [AppController],
   providers: [AppService],

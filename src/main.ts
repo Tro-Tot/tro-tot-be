@@ -12,6 +12,7 @@ import { AllExceptionsFilter } from './common/filter/all-exceptions.filter';
 import { PrismaExceptionFilter } from './common/filter/prisma-exception.filter';
 import { ValidationPipeExceptionFilter } from './common/filter/validation-pipe-exception.filter';
 import { AuthExceptionFilter } from './common/filter/auth-exception.filter';
+import { StatusCodeInterceptor } from './common/interceptor/status-code.interceptor';
 
 async function bootstrap() {
   const logger = new Logger('main.ts');
@@ -38,6 +39,8 @@ async function bootstrap() {
     new PrismaExceptionFilter(app.get(HttpAdapterHost)),
     new AuthExceptionFilter(app.get(HttpAdapterHost)),
   );
+
+  app.useGlobalInterceptors(new StatusCodeInterceptor());
 
   const config = new DocumentBuilder()
     .setTitle('trotot API')

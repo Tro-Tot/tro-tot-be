@@ -6,9 +6,9 @@ model LandLord {
   updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz() // Nullable field
 
-  user User @relation(fields: [userId], references: [id])
+  user                 User                  @relation(fields: [userId], references: [id])
+  cooperativeContracts CooperativeContract[]
+  cooperativeRequests  CooperativeRequest[]
 
   @@map("landlords")
-  cooperativeContracts CooperativeContract[]
-  cooperativeRequests CooperativeRequest[]
 }
