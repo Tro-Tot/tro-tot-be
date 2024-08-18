@@ -45,7 +45,7 @@ export class AuthService {
     private readonly otpService: OtpService,
   ) {}
 
-  async loginAdmin(body: LoginAuthDTO) {
+  async loginGeneral(body: LoginAuthDTO, role: RoleCode) {
     try {
       const user = await this.handleFindUser(body.email);
       if (!user) {
@@ -53,324 +53,107 @@ export class AuthService {
       }
       const isMatch = await this.validatePassword(user.password, body.password);
 
+      const checkRoleSchema = await this.checkRoleSchema(user.id, role);
+
+      if (!checkRoleSchema) {
+        return apiFailed(HttpStatus.NOT_FOUND, 'Account not found');
+      }
+
       if (isMatch) {
-        //Change to admin late
-        //Check Role
-        const checkIsAdmin = await this.prisma.renter.findFirst({
+        const accessToken = await this.generateAccessToken(user);
+        const refreshTokenResult =
+          await this.refreshTokenService.generateRefreshToken(user);
+
+        let refreshToken;
+        if (refreshTokenResult?.refreshToken) {
+          refreshToken = refreshTokenResult.refreshToken;
+        }
+        //If access token or refresh token is not generated
+        if (accessToken === undefined || refreshToken === undefined) {
+          return apiFailed(
+            500,
+            'Internal server error',
+            'Internal server error',
+          );
+        }
+
+        return apiSuccess(
+          200,
+          { accessToken, refreshToken, user },
+          'Login success',
+        );
+      } else {
+        return apiFailed(400, 'Password not match', ['password']);
+      }
+    } catch (e) {
+      if (e.code === 'P2025') {
+        return apiFailed(404, 'User not found', ['username']);
+      }
+      console.log(e);
+      return apiFailed(500, e, 'Internal server error');
+    }
+  }
+
+  //Use to check if roleSchema eg staffs, renters,... exist
+  async checkRoleSchema(userId: string, role: RoleCode) {
+    let checkRoleSchema = false;
+
+    switch (role) {
+      case RoleCode.RENTER: {
+        checkRoleSchema = !!(await this.prisma.renter.findFirst({
           where: {
-            userId: user.id,
+            userId: userId,
           },
-        });
-
-        if (!checkIsAdmin) {
-          return apiFailed(404, 'Account not found');
-        }
-
-        //Generate JWT
-        const accessToken = await this.generateAccessToken(user);
-        const refreshTokenResult =
-          await this.refreshTokenService.generateRefreshToken(user);
-
-        let refreshToken;
-        if (refreshTokenResult?.refreshToken) {
-          refreshToken = refreshTokenResult.refreshToken;
-        }
-        //If access token or refresh token is not generated
-        if (accessToken === undefined || refreshToken === undefined) {
-          return apiFailed(
-            500,
-            'Internal server error',
-            'Internal server error',
-          );
-        }
-
-        return apiSuccess(
-          200,
-          { accessToken, refreshToken, user },
-          'Login success',
-        );
-      } else {
-        return apiFailed(400, 'Password not match', ['password']);
+        }));
+        break;
       }
-    } catch (e) {
-      if (e.code === 'P2025') {
-        return apiFailed(404, 'User not found', ['username']);
-      }
-      console.log(e);
-      return apiFailed(500, e, 'Internal server error');
-    }
-  }
-
-  async loginRenter(body: LoginAuthDTO) {
-    try {
-      const user = await this.handleFindUser(body.email);
-      if (!user) {
-        return apiFailed(404, 'Account not found');
-      }
-      const isMatch = await this.validatePassword(user.password, body.password);
-
-      if (isMatch) {
-        //Check Role
-        const checkIsRenter = await this.prisma.renter.findFirst({
+      case RoleCode.STAFF: {
+        checkRoleSchema = !!(await this.prisma.staff.findFirst({
           where: {
-            userId: user.id,
+            userId: userId,
           },
-        });
-
-        if (!checkIsRenter) {
-          return apiFailed(404, 'Account not found');
-        }
-
-        //Generate JWT
-        const accessToken = await this.generateAccessToken(user);
-        const refreshTokenResult =
-          await this.refreshTokenService.generateRefreshToken(user);
-
-        let refreshToken;
-        if (refreshTokenResult?.refreshToken) {
-          refreshToken = refreshTokenResult.refreshToken;
-        }
-        //If access token or refresh token is not generated
-        if (accessToken === undefined || refreshToken === undefined) {
-          return apiFailed(
-            500,
-            'Internal server error',
-            'Internal server error',
-          );
-        }
-
-        return apiSuccess(
-          200,
-          { accessToken, refreshToken, user },
-          'Login success',
-        );
-      } else {
-        return apiFailed(400, 'Password not match', ['password']);
+        }));
+        break;
       }
-    } catch (e) {
-      if (e.code === 'P2025') {
-        return apiFailed(404, 'User not found', ['username']);
+      // Admin hasn't done yet
+      case RoleCode.ADMIN: {
+        // checkRoleSchema = !!(await this.prisma.staff.findFirst({
+        //   where: {
+        //     userId: userId,
+        //   },
+        // }));
+        break;
       }
-      console.log(e);
-      return apiFailed(500, e, 'Internal server error');
-    }
-  }
-
-  async loginLandlord(body: LoginAuthDTO) {
-    try {
-      const user = await this.handleFindUser(body.email);
-      if (!user) {
-        return apiFailed(404, 'Account not found');
-      }
-      const isMatch = await this.validatePassword(user.password, body.password);
-
-      if (isMatch) {
-        //Check Role
-        const checkIsLandlord = await this.prisma.landLord.findFirst({
+      case RoleCode.TECHNICAL_STAFF: {
+        checkRoleSchema = !!(await this.prisma.technicalStaff.findFirst({
           where: {
-            userId: user.id,
+            userId: userId,
           },
-        });
-
-        if (!checkIsLandlord) {
-          return apiFailed(404, 'Account not found');
-        }
-
-        //Generate JWT
-        const accessToken = await this.generateAccessToken(user);
-        const refreshTokenResult =
-          await this.refreshTokenService.generateRefreshToken(user);
-
-        let refreshToken;
-        if (refreshTokenResult?.refreshToken) {
-          refreshToken = refreshTokenResult.refreshToken;
-        }
-        //If access token or refresh token is not generated
-        if (accessToken === undefined || refreshToken === undefined) {
-          return apiFailed(
-            500,
-            'Internal server error',
-            'Internal server error',
-          );
-        }
-
-        return apiSuccess(
-          200,
-          { accessToken, refreshToken, user },
-          'Login success',
-        );
-      } else {
-        return apiFailed(400, 'Password not match', ['password']);
+        }));
+        break;
       }
-    } catch (e) {
-      if (e.code === 'P2025') {
-        return apiFailed(404, 'User not found', ['username']);
-      }
-      console.log(e);
-      return apiFailed(500, e, 'Internal server error');
-    }
-  }
-
-  async loginStaff(body: LoginAuthDTO) {
-    try {
-      const user = await this.handleFindUser(body.email);
-      console.log(user);
-      if (!user) {
-        return apiFailed(404, 'Account not found');
-      }
-      const isMatch = await this.validatePassword(user.password, body.password);
-
-      if (isMatch) {
-        //Check role
-        const checkIsStaff = await this.prisma.staff.findFirst({
+      case RoleCode.MANAGER: {
+        checkRoleSchema = !!(await this.prisma.manager.findFirst({
           where: {
-            userId: user.id,
+            userId: userId,
           },
-        });
-
-        if (!checkIsStaff) {
-          return apiFailed(404, 'Account not found');
-        }
-
-        //Generate JWT
-        const accessToken = await this.generateAccessToken(user);
-        const refreshTokenResult =
-          await this.refreshTokenService.generateRefreshToken(user);
-
-        let refreshToken;
-        if (refreshTokenResult?.refreshToken) {
-          refreshToken = refreshTokenResult.refreshToken;
-        }
-        //If access token or refresh token is not generated
-        if (accessToken === undefined || refreshToken === undefined) {
-          return apiFailed(
-            500,
-            'Internal server error',
-            'Internal server error',
-          );
-        }
-
-        return apiSuccess(
-          200,
-          { accessToken, refreshToken, user },
-          'Login success',
-        );
-      } else {
-        return apiFailed(400, 'Password not match', ['password']);
+        }));
+        break;
       }
-    } catch (e) {
-      if (e.code === 'P2025') {
-        return apiFailed(404, 'User not found', ['username']);
+      case RoleCode.LANDLORD: {
+        checkRoleSchema = !!(await this.prisma.landLord.findFirst({
+          where: {
+            userId: userId,
+          },
+        }));
+        break;
       }
-      console.log(e);
-      return apiFailed(500, e, 'Internal server error');
+      default: {
+        checkRoleSchema = false;
+        break;
+      }
     }
-  }
-
-  async loginManager(body: LoginAuthDTO) {
-    try {
-      const user = await this.handleFindUser(body.email);
-      if (!user) {
-        return apiFailed(404, 'Account not found');
-      }
-      const isMatch = await this.validatePassword(user.password, body.password);
-
-      const checkIsManager = await this.prisma.manager.findFirst({
-        where: {
-          userId: user.id,
-        },
-      });
-
-      if (!checkIsManager) {
-        return apiFailed(404, 'Access denied');
-      }
-
-      if (isMatch) {
-        const accessToken = await this.generateAccessToken(user);
-        const refreshTokenResult =
-          await this.refreshTokenService.generateRefreshToken(user);
-
-        let refreshToken;
-        if (refreshTokenResult?.refreshToken) {
-          refreshToken = refreshTokenResult.refreshToken;
-        }
-        //If access token or refresh token is not generated
-        if (accessToken === undefined || refreshToken === undefined) {
-          return apiFailed(
-            500,
-            'Internal server error',
-            'Internal server error',
-          );
-        }
-
-        return apiSuccess(
-          200,
-          { accessToken, refreshToken, user },
-          'Login success',
-        );
-      } else {
-        return apiFailed(400, 'Password not match', ['password']);
-      }
-    } catch (e) {
-      if (e.code === 'P2025') {
-        return apiFailed(404, 'User not found', ['username']);
-      }
-      console.log(e);
-      return apiFailed(500, e, 'Internal server error');
-    }
-  }
-
-  async loginTechnicalStaff(body: LoginAuthDTO) {
-    try {
-      const user = await this.handleFindUser(body.email);
-      if (!user) {
-        return apiFailed(404, 'Account not found');
-      }
-      const isMatch = await this.validatePassword(user.password, body.password);
-
-      const checkIsTechnicalStaff = await this.prisma.technicalStaff.findFirst({
-        where: {
-          userId: user.id,
-        },
-      });
-
-      if (!checkIsTechnicalStaff) {
-        return apiFailed(404, 'Account not found');
-      }
-
-      if (isMatch) {
-        const accessToken = await this.generateAccessToken(user);
-        const refreshTokenResult =
-          await this.refreshTokenService.generateRefreshToken(user);
-
-        let refreshToken;
-        if (refreshTokenResult?.refreshToken) {
-          refreshToken = refreshTokenResult.refreshToken;
-        }
-        //If access token or refresh token is not generated
-        if (accessToken === undefined || refreshToken === undefined) {
-          return apiFailed(
-            500,
-            'Internal server error',
-            'Internal server error',
-          );
-        }
-
-        return apiSuccess(
-          200,
-          { accessToken, refreshToken, user },
-          'Login success',
-        );
-      } else {
-        return apiFailed(400, 'Password not match', ['password']);
-      }
-    } catch (e) {
-      if (e.code === 'P2025') {
-        return apiFailed(404, 'User not found', ['username']);
-      }
-      console.log(e);
-      return apiFailed(500, e, 'Internal server error');
-    }
+    return checkRoleSchema;
   }
 
   async registerManager(user: SignUpDTO) {
@@ -803,7 +586,6 @@ export class AuthService {
   }
 
   generateAccessToken(user: { id: string; role?: Role }) {
-    console.log(user);
     const accessTokenExpiresIn = this.config.get('JWT_ACCESS_TOKEN_EXPIRY');
     const secrect = this.config.get('JWT_SECRET');
     const accessToken = this.jwtService.sign(
@@ -820,7 +602,6 @@ export class AuthService {
 
   async hashPassword(password: string) {
     try {
-      console.log(this.config.get('BCRYPT_SALT_ROUNDS'));
       const saltRounds = Number(this.config.get('BCRYPT_SALT_ROUNDS'));
       const hash = await bcrypt.hash(password, saltRounds);
       return hash;
