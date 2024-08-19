@@ -68,8 +68,5 @@ export class CreateRoomDto {
   @IsBoolean()
   hasMezzanine: boolean;
 
-  @ApiProperty({ description: 'Status', type: String, default: 'available' })
-  @IsEnum(RoomStatus)
-  @IsOptional()
   status?: RoomStatus;
 }

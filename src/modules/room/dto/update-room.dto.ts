@@ -71,7 +71,7 @@ export class UpdateRoomDto {
   @IsOptional()
   hasMezzanine?: boolean;
 
-  @ApiProperty({ description: 'Status', type: String, default: 'available' })
+  @ApiProperty({ description: 'Status', type: String, default: RoomStatus })
   @IsEnum(RoomStatus)
   @IsOptional()
   status?: RoomStatus;
