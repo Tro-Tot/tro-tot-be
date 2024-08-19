@@ -1,10 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { RoomStatus } from '@prisma/client';
 import {
   IsString,
   IsUUID,
   IsOptional,
   IsNumber,
   IsBoolean,
+  IsEnum,
 } from 'class-validator';
 
 export class CreateRoomDto {
@@ -66,13 +68,8 @@ export class CreateRoomDto {
   @IsBoolean()
   hasMezzanine: boolean;
 
-  @ApiProperty({ description: 'Is Occupied', type: Boolean, default: false })
-  @IsBoolean()
-  @IsOptional()
-  isOccupied?: boolean;
-
   @ApiProperty({ description: 'Status', type: String, default: 'available' })
-  @IsString()
+  @IsEnum(RoomStatus)
   @IsOptional()
-  status?: string;
+  status?: RoomStatus;
 }

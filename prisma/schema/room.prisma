@@ -12,9 +12,8 @@ model Room {
   rentPrice         Float              @map("rent_price")
   numberOfPeople    Int                @map("number_of_people")
   hasMezzanine      Boolean            @map("has_mezzanine")
-  isOccupied        Boolean            @default(false) @map("is_occupied")
-  index             Int                @default(autoincrement()) @map("index")
-  status            String             @default("available") @map("status")
+  index             Int                @unique @default(autoincrement()) @map("index")
+  status            RoomStatus         @default(UNAVAILABLE) @map("status")
   createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt         DateTime?          @updatedAt @map("updated_at") @db.Timestamptz(6)
   deletedAt         DateTime?          @map("deleted_at") @db.Timestamptz(6)
@@ -26,4 +25,15 @@ model Room {
   house             House              @relation(fields: [houseId], references: [id])
 
   @@map("rooms")
+}
+
+enum RoomStatus {
+  AVAILABLE // Room is available for booking
+  UNDER_MAINTENANCE // Room is temporarily unavailable due to maintenance
+  OUT_OF_SERVICE // Room is permanently or indefinitely unavailable
+  RESERVED // Room has been booked but not yet occupied
+  UNAVAILABLE // Room is not in use but not permanently unavailable
+  OCCUPIED // Room is currently occupied
+
+  @@map("room_statuses")
 }

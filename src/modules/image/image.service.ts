@@ -139,7 +139,6 @@ export class ImageService {
     path,
   ): Promise<ImageResponse> {
     try {
-      //Upload and get all image promise
       const uploadPromises = files.map((file: Express.Multer.File, index) => {
         return this.addImageToFirebase(file, id, path)
           .then((result) => ({
@@ -162,7 +161,11 @@ export class ImageService {
       const results = await Promise.allSettled(uploadPromises);
 
       //successful and failed array data
-      const successful: { fileName: string; index: number }[] = [];
+      const successful: {
+        fileName: string;
+        index: number;
+        displayName: string;
+      }[] = [];
       const failed: { fileName: string; index: number; error: string }[] = [];
 
       //Filter status and map message
@@ -170,6 +173,7 @@ export class ImageService {
         if (result.status === 'fulfilled') {
           if (result.value.status === 'fulfilled') {
             successful.push({
+              displayName: result.value.file.originalname,
               fileName: result.value.value,
               index: result.value.index,
             });
@@ -186,8 +190,9 @@ export class ImageService {
       });
 
       const imageResponse: ImageResponse = {
-        successful: successful.map(({ fileName, index }) => ({
+        successful: successful.map(({ fileName, index, displayName }) => ({
           fileName,
+          displayName,
           index,
         })),
         failed: failed.map(({ fileName, index, error }) => ({
@@ -199,7 +204,7 @@ export class ImageService {
 
       return imageResponse;
     } catch (error) {
-      return error;
+      throw error;
     }
   }
 

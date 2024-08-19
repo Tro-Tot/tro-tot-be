@@ -12,6 +12,7 @@ import {
   Query,
   UseInterceptors,
   UploadedFiles,
+  UseFilters,
 } from '@nestjs/common';
 import { RoomService } from './room.service';
 import { CreateRoomDto } from './dto/create-room.dto';
@@ -23,6 +24,7 @@ import { GetUser } from 'src/common/decorator/get_user.decorator';
 import { RolesGuard } from 'src/common/guard/roles.guard';
 import { JwtAuthGuard } from '../auth/strategy/jwt-auth.guard';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { UpdateAttachmentDto } from '../attachment/dto/update-attachment.dto';
 
 @Controller('room')
 export class RoomController {
@@ -57,11 +59,11 @@ export class RoomController {
       where: where ? JSON.parse(where) : undefined,
       orderBy: orderBy ? JSON.parse(orderBy) : undefined,
     };
-    return this.roomService.findAllRoomByRoomId(params, houseId);
+    return this.roomService.findAllRoomByHouseId(params, houseId);
   }
 
   //Test general where endpoint
-  @Get('/house/:houseId/Test')
+  @Get('/house/:houseId/test')
   findAllRoomByRoomIdTest(
     @Param('houseId') houseId: string,
     @Query() query?: Record<string, string>,
@@ -69,19 +71,42 @@ export class RoomController {
     return this.roomService.findAllRoomByRoomIdGeneral(query, houseId);
   }
 
-  @Post(':id/images')
+  @Post(':id/image')
   // @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(FilesInterceptor('files', 10))
-  async uploadAvatarArray(
+  async uploadImagesArray(
     @UploadedFiles() files: Express.Multer.File[],
     @Param('id') roomId: string,
   ) {
     return this.roomService.uploadImages(roomId, files);
   }
 
+  @Patch(':id/image/:imageId')
+  @UsePipes(new ValidationPipe({ whitelist: true }))
+  // @UseGuards(AuthGuard('jwt'))
+  async updateImage(
+    @Param('id') roomId: string,
+    @Param('imageId') attachmentId: string,
+    @Body() updatedAttachment: UpdateAttachmentDto,
+  ) {
+    return this.roomService.updateImage(attachmentId, updatedAttachment);
+  }
+
+  @Delete(':id/image/:imageId')
+  @UsePipes(new ValidationPipe({ whitelist: true }))
+  // @UseGuards(AuthGuard('jwt'))
+  async deleteImage(
+    @Param('id') roomId: string,
+    @Param('imageId') attachmentId: string,
+    @Body() updatedAttachment: UpdateAttachmentDto,
+  ) {
+    return this.roomService.deletedImage(roomId, attachmentId);
+  }
+
   @Patch(':id')
+  @UsePipes(new ValidationPipe({ whitelist: true }))
   update(@Param('id') id: string, @Body() updateRoomDto: UpdateRoomDto) {
-    return this.roomService.update(+id, updateRoomDto);
+    return this.roomService.update(id, updateRoomDto);
   }
 
   @Delete(':id')

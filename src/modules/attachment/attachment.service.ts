@@ -15,17 +15,16 @@ export class AttachmentService {
 
   async createAttachment(createAttachmentDto: Attachment) {
     try {
-      console.log(createAttachmentDto);
       const result = await this.prismaService.attachment.create({
         data: {
           fileName: createAttachmentDto.fileName,
           fileType: createAttachmentDto.fileType,
           fileUrl: createAttachmentDto.fileUrl,
+          displayName: createAttachmentDto.displayName,
           roomId: createAttachmentDto.roomId,
           houseId: undefined,
         },
       });
-      console.log(result);
       return result;
     } catch (error) {
       console.log(error);
@@ -33,19 +32,24 @@ export class AttachmentService {
     }
   }
 
-  findAll() {
-    return `This action returns all attachment`;
+  update(id: string, updateAttachmentDto: UpdateAttachmentDto) {
+    return this.prismaService.attachment.update({
+      where: {
+        id,
+      },
+      data: updateAttachmentDto,
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} attachment`;
+  delete(id: string) {
+    return this.prismaService.attachment.delete({
+      where: { id },
+    });
   }
 
-  update(id: number, updateAttachmentDto: UpdateAttachmentDto) {
-    return `This action updates a #${id} attachment`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} attachment`;
+  deleteRoomAttachment(id: string, roomId: string) {
+    return this.prismaService.attachment.delete({
+      where: { id: id, roomId: roomId },
+    });
   }
 }
