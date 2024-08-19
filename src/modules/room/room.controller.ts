@@ -27,14 +27,16 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { UpdateAttachmentDto } from '../attachment/dto/update-attachment.dto';
 import { IsRoomExist } from './pipe/is-room-exist.pipe';
 import { IsAttachmentExist } from '../attachment/pipe/is-attachment-exist.pipe';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('room')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(RoleCode.TECHNICAL_STAFF, RoleCode.MANAGER)
+@ApiTags('rooms')
 export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(RoleCode.TECHNICAL_STAFF)
   @UsePipes(new ValidationPipe())
   create(@Body() createRoomDto: CreateRoomDto) {
     return this.roomService.create(createRoomDto);
