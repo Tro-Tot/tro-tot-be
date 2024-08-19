@@ -52,4 +52,13 @@ export class AttachmentService {
       where: { id: id, roomId: roomId },
     });
   }
+  async findOne(id: string) {
+    try {
+      return this.prismaService.attachment.findFirstOrThrow({
+        where: { id },
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
 }

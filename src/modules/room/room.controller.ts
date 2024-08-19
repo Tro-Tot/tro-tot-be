@@ -19,12 +19,14 @@ import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles } from 'src/common/decorator/roles.decorator';
-import { RoleCode } from '@prisma/client';
+import { RoleCode, RoomStatus } from '@prisma/client';
 import { GetUser } from 'src/common/decorator/get_user.decorator';
 import { RolesGuard } from 'src/common/guard/roles.guard';
 import { JwtAuthGuard } from '../auth/strategy/jwt-auth.guard';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { UpdateAttachmentDto } from '../attachment/dto/update-attachment.dto';
+import { IsRoomExist } from './pipe/is-room-exist.pipe';
+import { IsAttachmentExist } from '../attachment/pipe/is-attachment-exist.pipe';
 
 @Controller('room')
 export class RoomController {
@@ -76,7 +78,7 @@ export class RoomController {
   @UseInterceptors(FilesInterceptor('files', 10))
   async uploadImagesArray(
     @UploadedFiles() files: Express.Multer.File[],
-    @Param('id') roomId: string,
+    @Param('id', IsRoomExist) roomId: string,
   ) {
     return this.roomService.uploadImages(roomId, files);
   }
@@ -85,8 +87,8 @@ export class RoomController {
   @UsePipes(new ValidationPipe({ whitelist: true }))
   // @UseGuards(AuthGuard('jwt'))
   async updateImage(
-    @Param('id') roomId: string,
-    @Param('imageId') attachmentId: string,
+    @Param('id', IsRoomExist) roomId: string,
+    @Param('imageId', IsAttachmentExist) attachmentId: string,
     @Body() updatedAttachment: UpdateAttachmentDto,
   ) {
     return this.roomService.updateImage(attachmentId, updatedAttachment);
@@ -96,17 +98,26 @@ export class RoomController {
   @UsePipes(new ValidationPipe({ whitelist: true }))
   // @UseGuards(AuthGuard('jwt'))
   async deleteImage(
-    @Param('id') roomId: string,
-    @Param('imageId') attachmentId: string,
-    @Body() updatedAttachment: UpdateAttachmentDto,
+    @Param('id', IsRoomExist) roomId: string,
+    @Param('imageId', IsAttachmentExist) attachmentId: string,
   ) {
     return this.roomService.deletedImage(roomId, attachmentId);
   }
 
   @Patch(':id')
   @UsePipes(new ValidationPipe({ whitelist: true }))
-  update(@Param('id') id: string, @Body() updateRoomDto: UpdateRoomDto) {
+  update(
+    @Param('id', IsRoomExist) id: string,
+    @Body() updateRoomDto: UpdateRoomDto,
+  ) {
     return this.roomService.update(id, updateRoomDto);
+  }
+
+  @Patch(':id/status')
+  @UsePipes(new ValidationPipe({ whitelist: true }))
+  //No need to use IsRoomExist because already check in updateRoomStatus
+  updateRoomStatus(@Param('id') id: string, @Body() roomStatus: RoomStatus) {
+    return this.roomService.updateRoomStatus(id, roomStatus);
   }
 
   @Delete(':id')

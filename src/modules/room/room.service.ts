@@ -296,7 +296,8 @@ export class RoomService {
     return `This action removes a #${id} room`;
   }
 
-  async changeRoomStatus(id: string, roomStatus: RoomStatus) {
+  //TODO: need to check more to make sure can change status
+  async updateRoomStatus(id: string, roomStatus: RoomStatus) {
     try {
       //Check if room exist
       const room = await this.prismaService.room.findFirstOrThrow({
@@ -304,29 +305,18 @@ export class RoomService {
           id,
         },
       });
-      if (!room) {
-        return apiFailed(HttpStatus.BAD_REQUEST, 'Room not found');
-      }
 
-      //Check is room occupied
-      if (room.status === RoomStatus.OCCUPIED) {
-        return apiFailed(
-          HttpStatus.CONFLICT,
-          'Room is occupied, can not disabled',
-        );
-      }
-
-      switch (room.status) {
+      switch (room.status as RoomStatus) {
         case RoomStatus.AVAILABLE: {
           await this.handleUpdateRoomStatus(id, roomStatus);
           break;
         }
-        // case RoomStatus.OCCUPIED: {
-        //   return apiFailed(
-        //     HttpStatus.CONFLICT,
-        //     'Room is occupied, can not change status',
-        //   );
-        // }
+        case RoomStatus.OCCUPIED: {
+          return apiFailed(
+            HttpStatus.CONFLICT,
+            'Room is occupied, can not change status',
+          );
+        }
         case RoomStatus.OUT_OF_SERVICE: {
           // Add your logic here
           break;
@@ -352,7 +342,9 @@ export class RoomService {
       //TODO: Notify
 
       //Change room status
-    } catch (error) {}
+    } catch (error) {
+      throw error;
+    }
   }
 
   handleUpdateRoomStatus(id: string, roomStatus: RoomStatus) {
