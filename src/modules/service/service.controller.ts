@@ -42,9 +42,9 @@ export class ServiceController {
     return this.serviceService.createService(createServiceDTO);
   }
 
-  @Post('bulk')
+  @Post('/bulk')
   @Roles(RoleCode.MANAGER)
-  async createServices(@Body() services: Service[]): Promise<{
+  async createServices(@Body() services: CreateServiceDTO[]): Promise<{
     createdServices: Service[];
     failedServices: CreateServiceDTO[];
   }> {

@@ -1,12 +1,10 @@
 model RentalRequestStatus {
-  id         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  status     String     @default("pending") @map("status")
-  statusCode StatusCode @default(PENDING)
-
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz()
-  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
-  deletedAt DateTime? @map("deleted_at") @db.Timestamptz() // Nullable field
-
+  id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  status         String          @default("pending") @map("status")
+  statusCode     StatusCode      @default(PENDING)
+  createdAt      DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime?       @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt      DateTime?       @map("deleted_at") @db.Timestamptz(6)
   rentalRequests RentalRequest[]
 
   @@map("rental_requests_statuses")

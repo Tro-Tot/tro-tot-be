@@ -1,14 +1,13 @@
 model Report {
-  id            String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  roomHistoryId String  @map("room_history_id") @db.Uuid
-  renterId      String  @map("renter_id") @db.Uuid
-  attachmentId  String? @map("attachment_id") @db.Uuid // Nullable field
-  description   String? @map("description") // Nullable field
-  status        String  @default("pending") @map("status")
-
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz()
-  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
-  deletedAt DateTime? @map("deleted_at") @db.Timestamptz() // Nullable field
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  roomHistoryId String    @map("room_history_id") @db.Uuid
+  renterId      String    @map("renter_id") @db.Uuid
+  attachmentId  String?   @map("attachment_id") @db.Uuid
+  description   String?   @map("description")
+  status        String    @default("pending") @map("status")
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt     DateTime? @map("deleted_at") @db.Timestamptz(6)
 
   @@map("reports")
 }

@@ -1,13 +1,12 @@
 model HouseAppraisalStandard {
-  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  houseAppraisalId String    @map("house_appraisal") @db.Uuid
-  standardId       String    @map("standard_id") @db.Uuid
-  createdAt        DateTime  @map("created_at")
-  updatedAt        DateTime  @map("updated_at")
-  deletedAt        DateTime? @map("deleted_at")
-
-  standard       Standard       @relation(fields: [standardId], references: [id])
-  houseAppraisal HouseAppraisal @relation(fields: [houseAppraisalId], references: [id])
+  id               String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  houseAppraisalId String         @map("house_appraisal") @db.Uuid
+  standardId       String         @map("standard_id") @db.Uuid
+  createdAt        DateTime       @map("created_at")
+  updatedAt        DateTime       @map("updated_at")
+  deletedAt        DateTime?      @map("deleted_at")
+  houseAppraisal   HouseAppraisal @relation(fields: [houseAppraisalId], references: [id])
+  standard         Standard       @relation(fields: [standardId], references: [id])
 
   @@map("house_appraisal_standard")
 }
