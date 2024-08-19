@@ -28,6 +28,7 @@ import { UpdateAttachmentDto } from '../attachment/dto/update-attachment.dto';
 import { IsRoomExist } from './pipe/is-room-exist.pipe';
 import { IsAttachmentExist } from '../attachment/pipe/is-attachment-exist.pipe';
 import { ApiTags } from '@nestjs/swagger';
+import { Public } from 'src/common/decorator/is-public.decorator';
 
 @Controller('room')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -68,6 +69,7 @@ export class RoomController {
 
   //Test general where endpoint
   @Get('/house/:houseId/test')
+  @Public()
   findAllRoomByRoomIdTest(
     @Param('houseId') houseId: string,
     @Query() query?: Record<string, string>,
@@ -76,7 +78,6 @@ export class RoomController {
   }
 
   @Post(':id/image')
-  // @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(FilesInterceptor('files', 10))
   async uploadImagesArray(
     @UploadedFiles() files: Express.Multer.File[],

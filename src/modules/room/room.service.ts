@@ -306,7 +306,7 @@ export class RoomService {
         },
       });
 
-      switch (room.status as RoomStatus) {
+      switch (room.status) {
         case RoomStatus.AVAILABLE: {
           await this.handleUpdateRoomStatus(id, roomStatus);
           break;
