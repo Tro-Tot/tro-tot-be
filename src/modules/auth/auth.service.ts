@@ -9,6 +9,7 @@ import { LoginAuthDTO } from './dto/login-auth.dto';
 import { apiFailed, apiSuccess } from 'src/common/dto/api-response';
 import * as bcrypt from 'bcrypt';
 import {
+  Prisma,
   PrismaClient,
   RefreshToken,
   Renter,
@@ -30,6 +31,7 @@ import { MailService } from '../mail/mail.service';
 import { OtpService } from '../otp/otp.service';
 import { ApiResponse } from 'src/common/dto/response.dto';
 import { RoleService } from '../role/role.service';
+import { DefaultArgs } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class AuthService {
@@ -45,7 +47,7 @@ export class AuthService {
     private readonly otpService: OtpService,
   ) {}
 
-  async loginAdmin(body: LoginAuthDTO) {
+  async loginGeneral(body: LoginAuthDTO, role: RoleCode) {
     try {
       const user = await this.handleFindUser(body.email);
       if (!user) {
@@ -53,401 +55,110 @@ export class AuthService {
       }
       const isMatch = await this.validatePassword(user.password, body.password);
 
+      const checkRoleSchema = await this.checkRoleSchema(user.id, role);
+
+      if (!checkRoleSchema) {
+        return apiFailed(HttpStatus.NOT_FOUND, 'Account not found');
+      }
+
       if (isMatch) {
-        //Change to admin late
-        //Check Role
-        const checkIsAdmin = await this.prisma.renter.findFirst({
+        const accessToken = await this.generateAccessToken(user);
+        const refreshTokenResult =
+          await this.refreshTokenService.generateRefreshToken(user);
+
+        let refreshToken;
+        if (refreshTokenResult?.refreshToken) {
+          refreshToken = refreshTokenResult.refreshToken;
+        }
+        //If access token or refresh token is not generated
+        if (accessToken === undefined || refreshToken === undefined) {
+          return apiFailed(
+            500,
+            'Internal server error',
+            'Internal server error',
+          );
+        }
+
+        return apiSuccess(
+          200,
+          { accessToken, refreshToken, user },
+          'Login success',
+        );
+      } else {
+        return apiFailed(400, 'Password not match', ['password']);
+      }
+    } catch (e) {
+      if (e.code === 'P2025') {
+        return apiFailed(404, 'User not found', ['username']);
+      }
+      console.log(e);
+      return apiFailed(500, e, 'Internal server error');
+    }
+  }
+
+  //Use to check if roleSchema eg staffs, renters,... exist
+  async checkRoleSchema(userId: string, role: RoleCode) {
+    let checkRoleSchema = false;
+
+    switch (role) {
+      case RoleCode.RENTER: {
+        checkRoleSchema = !!(await this.prisma.renter.findFirst({
           where: {
-            userId: user.id,
+            userId: userId,
           },
-        });
-
-        if (!checkIsAdmin) {
-          return apiFailed(404, 'Account not found');
-        }
-
-        //Generate JWT
-        const accessToken = await this.generateAccessToken(user);
-        const refreshTokenResult =
-          await this.refreshTokenService.generateRefreshToken(user);
-
-        let refreshToken;
-        if (refreshTokenResult?.refreshToken) {
-          refreshToken = refreshTokenResult.refreshToken;
-        }
-        //If access token or refresh token is not generated
-        if (accessToken === undefined || refreshToken === undefined) {
-          return apiFailed(
-            500,
-            'Internal server error',
-            'Internal server error',
-          );
-        }
-
-        return apiSuccess(
-          200,
-          { accessToken, refreshToken, user },
-          'Login success',
-        );
-      } else {
-        return apiFailed(401, 'Password not match', ['password']);
+        }));
+        break;
       }
-    } catch (e) {
-      if (e.code === 'P2025') {
-        return apiFailed(404, 'User not found', ['username']);
-      }
-      console.log(e);
-      return apiFailed(500, e, 'Internal server error');
-    }
-  }
-
-  async loginRenter(body: LoginAuthDTO) {
-    try {
-      const user = await this.handleFindUser(body.email);
-      if (!user) {
-        return apiFailed(404, 'Account not found');
-      }
-      const isMatch = await this.validatePassword(user.password, body.password);
-
-      if (isMatch) {
-        //Check Role
-        const checkIsRenter = await this.prisma.renter.findFirst({
+      case RoleCode.STAFF: {
+        checkRoleSchema = !!(await this.prisma.staff.findFirst({
           where: {
-            userId: user.id,
+            userId: userId,
           },
-        });
-
-        if (!checkIsRenter) {
-          return apiFailed(404, 'Account not found');
-        }
-
-        //Generate JWT
-        const accessToken = await this.generateAccessToken(user);
-        const refreshTokenResult =
-          await this.refreshTokenService.generateRefreshToken(user);
-
-        let refreshToken;
-        if (refreshTokenResult?.refreshToken) {
-          refreshToken = refreshTokenResult.refreshToken;
-        }
-        //If access token or refresh token is not generated
-        if (accessToken === undefined || refreshToken === undefined) {
-          return apiFailed(
-            500,
-            'Internal server error',
-            'Internal server error',
-          );
-        }
-
-        return apiSuccess(
-          200,
-          { accessToken, refreshToken, user },
-          'Login success',
-        );
-      } else {
-        return apiFailed(401, 'Password not match', ['password']);
+        }));
+        break;
       }
-    } catch (e) {
-      if (e.code === 'P2025') {
-        return apiFailed(404, 'User not found', ['username']);
+      // Admin hasn't done yet
+      case RoleCode.ADMIN: {
+        // checkRoleSchema = !!(await this.prisma.staff.findFirst({
+        //   where: {
+        //     userId: userId,
+        //   },
+        // }));
+        break;
       }
-      console.log(e);
-      return apiFailed(500, e, 'Internal server error');
-    }
-  }
-
-  async loginLandlord(body: LoginAuthDTO) {
-    try {
-      const user = await this.handleFindUser(body.email);
-      if (!user) {
-        return apiFailed(404, 'Account not found');
-      }
-      const isMatch = await this.validatePassword(user.password, body.password);
-
-      if (isMatch) {
-        //Check Role
-        const checkIsLandlord = await this.prisma.landLord.findFirst({
+      case RoleCode.TECHNICAL_STAFF: {
+        checkRoleSchema = !!(await this.prisma.technicalStaff.findFirst({
           where: {
-            userId: user.id,
+            userId: userId,
           },
-        });
-
-        if (!checkIsLandlord) {
-          return apiFailed(404, 'Account not found');
-        }
-
-        //Generate JWT
-        const accessToken = await this.generateAccessToken(user);
-        const refreshTokenResult =
-          await this.refreshTokenService.generateRefreshToken(user);
-
-        let refreshToken;
-        if (refreshTokenResult?.refreshToken) {
-          refreshToken = refreshTokenResult.refreshToken;
-        }
-        //If access token or refresh token is not generated
-        if (accessToken === undefined || refreshToken === undefined) {
-          return apiFailed(
-            500,
-            'Internal server error',
-            'Internal server error',
-          );
-        }
-
-        return apiSuccess(
-          200,
-          { accessToken, refreshToken, user },
-          'Login success',
-        );
-      } else {
-        return apiFailed(401, 'Password not match', ['password']);
+        }));
+        break;
       }
-    } catch (e) {
-      if (e.code === 'P2025') {
-        return apiFailed(404, 'User not found', ['username']);
-      }
-      console.log(e);
-      return apiFailed(500, e, 'Internal server error');
-    }
-  }
-
-  async loginStaff(body: LoginAuthDTO) {
-    try {
-      const user = await this.handleFindUser(body.email);
-      console.log(user);
-      if (!user) {
-        return apiFailed(404, 'Account not found');
-      }
-      const isMatch = await this.validatePassword(user.password, body.password);
-
-      if (isMatch) {
-        //Check role
-        const checkIsStaff = await this.prisma.staff.findFirst({
+      case RoleCode.MANAGER: {
+        checkRoleSchema = !!(await this.prisma.manager.findFirst({
           where: {
-            userId: user.id,
+            userId: userId,
           },
-        });
-
-        if (!checkIsStaff) {
-          return apiFailed(404, 'Account not found');
-        }
-
-        //Generate JWT
-        const accessToken = await this.generateAccessToken(user);
-        const refreshTokenResult =
-          await this.refreshTokenService.generateRefreshToken(user);
-
-        let refreshToken;
-        if (refreshTokenResult?.refreshToken) {
-          refreshToken = refreshTokenResult.refreshToken;
-        }
-        //If access token or refresh token is not generated
-        if (accessToken === undefined || refreshToken === undefined) {
-          return apiFailed(
-            500,
-            'Internal server error',
-            'Internal server error',
-          );
-        }
-
-        return apiSuccess(
-          200,
-          { accessToken, refreshToken, user },
-          'Login success',
-        );
-      } else {
-        return apiFailed(401, 'Password not match', ['password']);
+        }));
+        break;
       }
-    } catch (e) {
-      if (e.code === 'P2025') {
-        return apiFailed(404, 'User not found', ['username']);
-      }
-      console.log(e);
-      return apiFailed(500, e, 'Internal server error');
-    }
-  }
-
-  async loginManager(body: LoginAuthDTO) {
-    try {
-      const user = await this.handleFindUser(body.email);
-      if (!user) {
-        return apiFailed(404, 'Account not found');
-      }
-      const isMatch = await this.validatePassword(user.password, body.password);
-
-      const checkIsManager = await this.prisma.manager.findFirst({
-        where: {
-          userId: user.id,
-        },
-      });
-
-      if (!checkIsManager) {
-        return apiFailed(404, 'Access denied');
-      }
-
-      if (isMatch) {
-        const accessToken = await this.generateAccessToken(user);
-        const refreshTokenResult =
-          await this.refreshTokenService.generateRefreshToken(user);
-
-        let refreshToken;
-        if (refreshTokenResult?.refreshToken) {
-          refreshToken = refreshTokenResult.refreshToken;
-        }
-        //If access token or refresh token is not generated
-        if (accessToken === undefined || refreshToken === undefined) {
-          return apiFailed(
-            500,
-            'Internal server error',
-            'Internal server error',
-          );
-        }
-
-        return apiSuccess(
-          200,
-          { accessToken, refreshToken, user },
-          'Login success',
-        );
-      } else {
-        return apiFailed(401, 'Password not match', ['password']);
-      }
-    } catch (e) {
-      if (e.code === 'P2025') {
-        return apiFailed(404, 'User not found', ['username']);
-      }
-      console.log(e);
-      return apiFailed(500, e, 'Internal server error');
-    }
-  }
-
-  async loginTechnicalStaff(body: LoginAuthDTO) {
-    try {
-      const user = await this.handleFindUser(body.email);
-      if (!user) {
-        return apiFailed(404, 'Account not found');
-      }
-      const isMatch = await this.validatePassword(user.password, body.password);
-
-      const checkIsTechnicalStaff = await this.prisma.technicalStaff.findFirst({
-        where: {
-          userId: user.id,
-        },
-      });
-
-      if (!checkIsTechnicalStaff) {
-        return apiFailed(404, 'Account not found');
-      }
-
-      if (isMatch) {
-        const accessToken = await this.generateAccessToken(user);
-        const refreshTokenResult =
-          await this.refreshTokenService.generateRefreshToken(user);
-
-        let refreshToken;
-        if (refreshTokenResult?.refreshToken) {
-          refreshToken = refreshTokenResult.refreshToken;
-        }
-        //If access token or refresh token is not generated
-        if (accessToken === undefined || refreshToken === undefined) {
-          return apiFailed(
-            500,
-            'Internal server error',
-            'Internal server error',
-          );
-        }
-
-        return apiSuccess(
-          200,
-          { accessToken, refreshToken, user },
-          'Login success',
-        );
-      } else {
-        return apiFailed(401, 'Password not match', ['password']);
-      }
-    } catch (e) {
-      if (e.code === 'P2025') {
-        return apiFailed(404, 'User not found', ['username']);
-      }
-      console.log(e);
-      return apiFailed(500, e, 'Internal server error');
-    }
-  }
-
-  async registerManager(user: SignUpDTO) {
-    // Ensure the transaction either succeeds or fails completely
-    return await this.prisma.$transaction(async (prisma) => {
-      try {
-        //Hash user's password
-        user.password = await this.hashPassword(user.password);
-
-        // TEST: apply Manager role id
-        const role = await this.roleService.findRoleByCode(RoleCode.MANAGER);
-        user.roleId = role.id;
-
-        const userInput: User = {
-          ...user,
-          id: undefined,
-          isDeleted: false,
-          isVerified: false,
-          avatarUrl: user.avatarUrl || '',
-          cidId: user.cidId || undefined,
-          roleId: role.id,
-          status: 'active',
-          createdAt: undefined,
-          updatedAt: undefined,
-          deletedAt: undefined,
-        };
-        //Save the renter in DB
-        const userResult = await this.prisma.user.create({
-          data: {
-            ...userInput,
+      case RoleCode.LANDLORD: {
+        checkRoleSchema = !!(await this.prisma.landLord.findFirst({
+          where: {
+            userId: userId,
           },
-          include: {
-            role: true, // Include the role object in the result
-          },
-        });
-        if (!userResult) {
-          return apiFailed(400, 'Created User failed');
-        }
-        //Create the renter schema
-        const renter: Renter = {
-          id: undefined,
-          userId: userResult.id,
-          createdAt: undefined,
-          updatedAt: undefined,
-          deletedAt: undefined,
-        };
-
-        const renterResult = await this.prisma.manager.create({
-          data: renter,
-        });
-        if (!renterResult) {
-          return apiFailed(400, 'Created User failed');
-        }
-
-        const accessToken = await this.generateAccessToken(userResult);
-
-        //Generate refresh token and store it
-        const refreshTokenResult =
-          await this.refreshTokenService.generateRefreshToken(userResult);
-
-        let refreshToken;
-        if (refreshTokenResult?.refreshToken) {
-          refreshToken = refreshTokenResult.refreshToken;
-        }
-
-        return apiSuccess(
-          201,
-          { accessToken, refreshToken, user: userResult },
-          'Created user successfully',
-        );
-      } catch (error) {
-        throw error;
+        }));
+        break;
       }
-    });
+      default: {
+        checkRoleSchema = false;
+        break;
+      }
+    }
+    return checkRoleSchema;
   }
 
-  async registerTechnicalStaff(user: SignUpDTO) {
+  async registerGeneral(user: SignUpDTO, roleInput: RoleCode) {
     // Ensure the transaction either succeeds or fails completely
     return await this.prisma.$transaction(
       async (prisma) => {
@@ -455,10 +166,8 @@ export class AuthService {
           //Hash user's password
           user.password = await this.hashPassword(user.password);
 
-          // TEST: apply Technical Staff role id
-          const role = await this.roleService.findRoleByCode(
-            RoleCode.TECHNICAL_STAFF,
-          );
+          //Apply renter role id
+          const role = await this.roleService.findRoleByCode(roleInput);
           user.roleId = role.id;
 
           //Create User type
@@ -476,7 +185,7 @@ export class AuthService {
             deletedAt: undefined,
           };
           //Save the renter in DB
-          const userResult = await prisma.user.create({
+          const userResult = await this.prisma.user.create({
             data: {
               ...userInput,
             },
@@ -485,22 +194,16 @@ export class AuthService {
             },
           });
           if (!userResult) {
-            return apiFailed(400, 'Created User failed');
+            return apiFailed(500, 'Created User failed');
           }
-          //Create the renter schema
-          const renter: Renter = {
-            id: undefined,
-            userId: userResult.id,
-            createdAt: undefined,
-            updatedAt: undefined,
-            deletedAt: undefined,
-          };
 
-          const renterResult = await prisma.technicalStaff.create({
-            data: renter,
-          });
-          if (!renterResult) {
-            return apiFailed(400, 'Created User failed');
+          const schemaResult = await this.addRoleSchema(
+            prisma,
+            userResult.id,
+            roleInput,
+          );
+          if (!schemaResult) {
+            return apiFailed(500, 'Created User failed');
           }
 
           const accessToken = await this.generateAccessToken(userResult);
@@ -524,231 +227,39 @@ export class AuthService {
         }
       },
       {
-        timeout: 10000, // Increase timeout to 10 seconds
-        maxWait: 5000, // Wait up to 5 seconds for a lock/resource
+        //After 10s will break
+        timeout: 10000,
       },
     );
   }
 
-  async registerStaff(user: SignUpDTO) {
-    // Ensure the transaction either succeeds or fails completely
-    return await this.prisma.$transaction(async (prisma) => {
-      try {
-        //Hash user's password
-        user.password = await this.hashPassword(user.password);
-
-        // TEST: apply Staff role id
-        const role = await this.roleService.findRoleByCode(RoleCode.STAFF);
-        user.roleId = role.id;
-
-        //Create User type
-        const userInput: User = {
-          ...user,
-          id: undefined,
-          isDeleted: false,
-          isVerified: false,
-          avatarUrl: user.avatarUrl || '',
-          cidId: user.cidId || undefined,
-          roleId: role.id,
-          status: 'active',
-          createdAt: undefined,
-          updatedAt: undefined,
-          deletedAt: undefined,
-        };
-        //Save the renter in DB
-        const userResult = await this.prisma.user.create({
+  async addRoleSchema(
+    prisma: Omit<
+      PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
+      '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
+    >,
+    userId: string,
+    role: RoleCode,
+  ) {
+    const schema: any = {
+      id: undefined,
+      userId: userId,
+      createdAt: undefined,
+      updatedAt: undefined,
+      deletedAt: undefined,
+    };
+    let result = null;
+    switch (role) {
+      case RoleCode.RENTER: {
+        result = await prisma.renter.create({
           data: {
-            ...userInput,
-          },
-          include: {
-            role: true, // Include the role object in the result
+            ...schema,
           },
         });
-        if (!userResult) {
-          return apiFailed(400, 'Created User failed');
-        }
-        //Create the renter schema
-        const renter: Renter = {
-          id: undefined,
-          userId: userResult.id,
-          createdAt: undefined,
-          updatedAt: undefined,
-          deletedAt: undefined,
-        };
-
-        const renterResult = await this.prisma.staff.create({ data: renter });
-        if (!renterResult) {
-          return apiFailed(400, 'Created User failed');
-        }
-
-        const accessToken = await this.generateAccessToken(userResult);
-
-        //Generate refresh token and store it
-        const refreshTokenResult =
-          await this.refreshTokenService.generateRefreshToken(userResult);
-
-        let refreshToken;
-        if (refreshTokenResult?.refreshToken) {
-          refreshToken = refreshTokenResult.refreshToken;
-        }
-
-        return apiSuccess(
-          201,
-          { accessToken, refreshToken, user: userResult },
-          'Created user successfully',
-        );
-      } catch (error) {
-        throw error;
+        break;
       }
-    });
-  }
-
-  async registerLandlord(user: SignUpDTO) {
-    // Ensure the transaction either succeeds or fails completely
-    return await this.prisma.$transaction(async (prisma) => {
-      try {
-        //Hash user's password
-        user.password = await this.hashPassword(user.password);
-
-        // TEST: apply landlord role id
-        const role = await this.roleService.findRoleByCode(RoleCode.LANDLORD);
-        user.roleId = role.id;
-
-        //Create User type
-        const userInput: User = {
-          ...user,
-          id: undefined,
-          isDeleted: false,
-          isVerified: false,
-          avatarUrl: user.avatarUrl || undefined,
-          cidId: user.cidId || '',
-          roleId: role.id,
-          status: 'active',
-          createdAt: undefined,
-          updatedAt: undefined,
-          deletedAt: undefined,
-        };
-        //Save the renter in DB
-        const userResult = await this.prisma.user.create({
-          data: {
-            ...userInput,
-          },
-          include: {
-            role: true, // Include the role object in the result
-          },
-        });
-        if (!userResult) {
-          return apiFailed(400, 'Created User failed');
-        }
-        //Create the renter schema
-        const renter: Renter = {
-          id: undefined,
-          userId: userResult.id,
-          createdAt: undefined,
-          updatedAt: undefined,
-          deletedAt: undefined,
-        };
-
-        const renterResult = await this.prisma.landLord.create({
-          data: renter,
-        });
-        if (!renterResult) {
-          return apiFailed(400, 'Created User failed');
-        }
-
-        const accessToken = await this.generateAccessToken(userResult);
-
-        //Generate refresh token and store it
-        const refreshTokenResult =
-          await this.refreshTokenService.generateRefreshToken(userResult);
-
-        let refreshToken;
-        if (refreshTokenResult?.refreshToken) {
-          refreshToken = refreshTokenResult.refreshToken;
-        }
-
-        return apiSuccess(
-          201,
-          { accessToken, refreshToken, user: userResult },
-          'Created user successfully',
-        );
-      } catch (error) {
-        throw error;
-      }
-    });
-  }
-
-  async registerRenter(user: SignUpDTO) {
-    // Ensure the transaction either succeeds or fails completely
-    return await this.prisma.$transaction(async (prisma) => {
-      try {
-        //Hash user's password
-        user.password = await this.hashPassword(user.password);
-
-        //Apply renter role id
-        const role = await this.roleService.findRoleByCode(RoleCode.RENTER);
-        user.roleId = role.id;
-
-        //Create User type
-        const userInput: User = {
-          ...user,
-          id: undefined,
-          isDeleted: false,
-          isVerified: false,
-          avatarUrl: user.avatarUrl || '',
-          cidId: user.cidId || undefined,
-          roleId: role.id,
-          status: 'active',
-          createdAt: undefined,
-          updatedAt: undefined,
-          deletedAt: undefined,
-        };
-        //Save the renter in DB
-        const userResult = await this.prisma.user.create({
-          data: {
-            ...userInput,
-          },
-          include: {
-            role: true, // Include the role object in the result
-          },
-        });
-        if (!userResult) {
-          return apiFailed(400, 'Created User failed');
-        }
-        //Create the renter schema
-        const renter: Renter = {
-          id: undefined,
-          userId: userResult.id,
-          createdAt: undefined,
-          updatedAt: undefined,
-          deletedAt: undefined,
-        };
-
-        const renterResult = await this.prisma.renter.create({ data: renter });
-        if (!renterResult) {
-          return apiFailed(400, 'Created User failed');
-        }
-
-        const accessToken = await this.generateAccessToken(userResult);
-
-        //Generate refresh token and store it
-        const refreshTokenResult =
-          await this.refreshTokenService.generateRefreshToken(userResult);
-
-        let refreshToken;
-        if (refreshTokenResult?.refreshToken) {
-          refreshToken = refreshTokenResult.refreshToken;
-        }
-
-        return apiSuccess(
-          201,
-          { accessToken, refreshToken, user: userResult },
-          'Created user successfully',
-        );
-      } catch (error) {
-        throw error;
-      }
-    });
+    }
+    return result;
   }
 
   async handleLogout(user: AuthenUser, logout: Logout) {
@@ -764,12 +275,11 @@ export class AuthService {
       );
       return apiSuccess(200, result, 'Logout successfully');
     } catch (e) {
-      return apiSuccess(400, {}, 'Logout failed');
+      return apiSuccess(500, {}, 'Logout failed');
     }
   }
 
   generateAccessToken(user: { id: string; role?: Role }) {
-    console.log(user);
     const accessTokenExpiresIn = this.config.get('JWT_ACCESS_TOKEN_EXPIRY');
     const secrect = this.config.get('JWT_SECRET');
     const accessToken = this.jwtService.sign(
@@ -786,7 +296,6 @@ export class AuthService {
 
   async hashPassword(password: string) {
     try {
-      console.log(this.config.get('BCRYPT_SALT_ROUNDS'));
       const saltRounds = Number(this.config.get('BCRYPT_SALT_ROUNDS'));
       const hash = await bcrypt.hash(password, saltRounds);
       return hash;
@@ -899,17 +408,12 @@ export class AuthService {
 
   async sendVerifyOtp(email: string): Promise<ApiResponse> {
     if (await this.isEmailExist(email)) {
-      return apiFailed(400, 'Email already registered');
+      return apiFailed(409, 'Email already registered');
     }
     return await this.otpService.sendOTP(email);
   }
 
   async verifyOtp(email: string, otp: string) {
-    const isVerified = await this.otpService.verifyOTP(email, otp);
-    return apiSuccess(
-      200,
-      { isVerified },
-      isVerified ? 'OTP verified' : 'OTP not verified',
-    );
+    return this.otpService.verifyOTP(email, otp);
   }
 }

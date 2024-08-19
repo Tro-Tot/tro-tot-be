@@ -1,28 +1,29 @@
 model CooperativeRequest {
-  id                         String                      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id                         String                   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   cooperativeRequestStatus   CooperativeRequestStatus
-  cooperativeRequestStatusId String                      @unique @map("cooperative_request_status_id")
-  landlordId                 String                      @map("landlord_id") @db.Uuid
-  managerId                  String                      @map("manager_id") @db.Uuid
-  technicalStaffId           String?                     @map("technical_staff_id") @db.Uuid
-  contactNumber              String                      @map("contact_number")
-  city                       String                      @map("city")
-  district                   String                      @map("district")
-  street                     String                      @map("street")
-  houseNumber                String                      @map("house_number")
-  description                String                      @map("description")
-  expectROI                  Float?                      @map("expect_roi")
-  length                     Float                       @map("length")
-  width                      Float                       @map("width")
-  expectMeetingDate          String                      @map("expect_meeting_date")
-  isDeleted                  Boolean                     @default(false) @map("is_deleted")
-  createdAt                  DateTime                    @map("created_at")
-  updatedAt                  DateTime                    @map("updated_at")
-  landlord                   LandLord                    @relation(fields: [landlordId], references: [id])
+  cooperativeRequestStatusId String                   @unique @map("cooperative_request_status_id")
+  landlordId                 String                   @map("landlord_id") @db.Uuid
+  managerId                  String                   @map("manager_id") @db.Uuid
+  technicalStaffId           String?                  @map("technical_staff_id") @db.Uuid
+  contactNumber              String                   @map("contact_number")
+  city                       String                   @map("city")
+  district                   String                   @map("district")
+  street                     String                   @map("street")
+  houseNumber                String                   @map("house_number")
+  description                String                   @map("description")
+  expectROI                  Float?                   @map("expect_roi")
+  length                     Float                    @map("length")
+  width                      Float                    @map("width")
+  expectMeetingDate          String                   @map("expect_meeting_date")
+  isDeleted                  Boolean                  @default(false) @map("is_deleted")
+  createdAt                  DateTime                 @map("created_at")
+  updatedAt                  DateTime                 @map("updated_at")
+
   manager                    Manager                     @relation(fields: [managerId], references: [id])
+  landlord                   LandLord                    @relation(fields: [landlordId], references: [id])
   technicalStaff             TechnicalStaff?             @relation(fields: [technicalStaffId], references: [id])
-  cooperativeRequestSchedule CooperativeRequestSchedule?
   houseAppraisals            HouseAppraisal[]
+  cooperativeRequestSchedule CooperativeRequestSchedule?
 
   @@map("cooperative_request")
 }

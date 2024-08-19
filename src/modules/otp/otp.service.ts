@@ -1,4 +1,9 @@
-import { HttpStatus, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpStatus,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { MailService } from '../mail/mail.service';
 import { PrismaService } from 'prisma/prisma.service';
 import { Constant } from 'src/common/constant/constant';
@@ -24,10 +29,9 @@ export class OtpService {
       },
     });
     const isSent = await this.mailService.sendOTP(email, otp);
-    if (isSent) {
-      return apiSuccess(HttpStatus.OK, true, 'OTP sent successfully');
-    }
-    return apiSuccess(HttpStatus.OK, false, 'Failed to send OTP');
+    if (!isSent)
+      return apiFailed(HttpStatus.INTERNAL_SERVER_ERROR, 'Failed to send OTP');
+    return apiSuccess(HttpStatus.OK, true, 'OTP sent successfully');
   }
 
   async verifyOTP(email: string, otp: string): Promise<ApiResponse> {
@@ -39,7 +43,7 @@ export class OtpService {
     });
 
     if (!otpRecord) {
-      return apiFailed(HttpStatus.BAD_REQUEST, 'OTP not exist');
+      throw new BadRequestException('Invalid OTP');
     }
 
     const now = new Date();

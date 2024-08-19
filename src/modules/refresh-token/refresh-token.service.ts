@@ -35,11 +35,9 @@ export class RefreshTokenService {
 
     //Regex to get the number from env
     const numbers = refreshTokenExpiresIn.match(/\d+/g);
-    console.log(numbers[0]);
     const expiredAtTake = new Date();
     expiredAtTake.setDate(expiredAtTake.getDate() + parseInt(numbers[0]));
 
-    console.log(expiredAtTake);
     if (refreshTokenResult) {
       const refreshToken: Prisma.RefreshTokenCreateInput = {
         userId: user.id,
@@ -57,9 +55,6 @@ export class RefreshTokenService {
   }
 
   async validateRefreshToken(userIdInput: string, refreshTokenInput: string) {
-    console.log('userIdInput:', userIdInput);
-    console.log('refreshTokenInput:', refreshTokenInput);
-
     try {
       const refreshTokenResult = await this.prisma.refreshToken.findFirst({
         where: {
@@ -71,7 +66,6 @@ export class RefreshTokenService {
           },
         },
       });
-      console.log('refreshTokenResult:', refreshTokenResult);
       return !!refreshTokenResult;
     } catch (error) {
       console.error('Error validating refresh token:', error);

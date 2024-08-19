@@ -12,9 +12,10 @@ model CooperativeContract {
   createdAt                 DateTime @map("created_at")
   updatedAt                 DateTime @map("updated_at")
   deletedAt                 DateTime @map("deleted_at")
-  landlord                  LandLord @relation(fields: [landlordId], references: [id])
-  manager                   Manager  @relation(fields: [managerId], references: [id])
-  houses                    House[]
+
+  landlord LandLord @relation(fields: [landlordId], references: [id])
+  manager  Manager  @relation(fields: [managerId], references: [id])
+  houses   House[]
 
   @@map("cooperative_contracts")
 }

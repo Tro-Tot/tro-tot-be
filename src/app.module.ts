@@ -17,6 +17,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { PrismaService } from 'prisma/prisma.service';
 import { RoomModule } from './modules/room/room.module';
 import { AttachmentModule } from './modules/attachment/attachment.module';
+import { ServiceModule } from './modules/service/service.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { AttachmentModule } from './modules/attachment/attachment.module';
     OtpModule,
     RoomModule,
     AttachmentModule,
+    ServiceModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService, RolesGuard],
