@@ -27,6 +27,7 @@ model House {
   cooperativeContract CooperativeContract @relation(fields: [cooperativeContractId], references: [id])
   rooms               Room[]
   houseServices       HouseService[]
+  Attachment          Attachment[]
 
   @@map("houses")
 }

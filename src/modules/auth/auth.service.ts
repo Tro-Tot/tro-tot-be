@@ -258,51 +258,6 @@ export class AuthService {
         });
         break;
       }
-      case RoleCode.STAFF: {
-        result = await prisma.staff.create({
-          data: {
-            ...schema,
-          },
-        });
-        break;
-      }
-      // Admin hasn't done yet
-      case RoleCode.ADMIN: {
-        // checkRoleSchema = !!(await this.prisma.staff.findFirst({
-        //   where: {
-        //     userId: userId,
-        //   },
-        // }));
-        break;
-      }
-      case RoleCode.TECHNICAL_STAFF: {
-        result = await prisma.technicalStaff.create({
-          data: {
-            ...schema,
-          },
-        });
-        break;
-      }
-      case RoleCode.MANAGER: {
-        result = await prisma.manager.create({
-          data: {
-            ...schema,
-          },
-        });
-        break;
-      }
-      case RoleCode.LANDLORD: {
-        result = await prisma.landLord.create({
-          data: {
-            ...schema,
-          },
-        });
-        break;
-      }
-      default: {
-        result = null;
-        break;
-      }
     }
     return result;
   }

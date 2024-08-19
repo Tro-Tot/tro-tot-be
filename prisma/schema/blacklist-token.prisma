@@ -1,12 +1,10 @@
 model BlacklistToken {
-  id    String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  token String @unique
-
-  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz()
-  updatedAt  DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
-  deleted_at DateTime? @map("deleted_at") @db.Timestamptz()
-
-  expiredAt DateTime @map("expired_at")
+  token      String    @unique
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  deleted_at DateTime? @map("deleted_at") @db.Timestamptz(6)
+  expiredAt  DateTime  @map("expired_at")
+  updatedAt  DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 
   @@map("black_list_tokens")
 }
