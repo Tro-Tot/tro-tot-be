@@ -7,4 +7,5 @@ model Staff {
   user      User      @relation(fields: [userId], references: [id])
 
   @@map("staffs")
+  House House[]
 }
