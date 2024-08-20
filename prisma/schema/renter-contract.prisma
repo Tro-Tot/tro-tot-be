@@ -19,9 +19,6 @@ model RenterContract {
   depositBill DepositBill? @relation(fields: [depositBillId], references: [id])
 
   renterContractAttachments RenterContractAttachment[]
-  depositBill               DepositBill                @relation(fields: [depositBillId], references: [id])
-  renter                    Renter                     @relation(fields: [renterId], references: [id])
-  roomHistory               RoomHistory                @relation(fields: [roomHistoryId], references: [id])
 
   @@map("renter_contracts")
 }

@@ -21,7 +21,6 @@ model CooperativeRequest {
 
   manager                    Manager                     @relation(fields: [managerId], references: [id])
   landlord                   LandLord                    @relation(fields: [landlordId], references: [id])
-  manager                    Manager                     @relation(fields: [managerId], references: [id])
   technicalStaff             TechnicalStaff?             @relation(fields: [technicalStaffId], references: [id])
   cooperativeRequestSchedule CooperativeRequestSchedule?
   houseAppraisals            HouseAppraisal[]

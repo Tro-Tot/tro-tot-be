@@ -1,4 +1,5 @@
 model Transaction {
+  id               String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   billId           String          @map("bill_id") @db.Uuid
   transaction_type TransactionType
   amount           Float           @map("amount")

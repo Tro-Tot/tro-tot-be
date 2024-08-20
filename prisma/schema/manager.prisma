@@ -8,7 +8,6 @@ model Manager {
   user                 User                  @relation(fields: [userId], references: [id])
   cooperativeContracts CooperativeContract[]
   cooperativeRequests  CooperativeRequest[]
-  user                 User                  @relation(fields: [userId], references: [id])
 
   @@map("managers")
 }

@@ -15,6 +15,7 @@ model Service {
   deletedAt         DateTime?     @map("deleted_at") @db.Timestamptz()
   updatedAt         DateTime?     @updatedAt @map("updated_at") @db.Timestamptz()
 
+  HouseService HouseService[]
   @@map("services")
 }
 

@@ -8,4 +8,6 @@ model CooperativeRequestSchedule {
   updatedAt            DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
 
   @@map("cooperative_request_schedule")
+
+  cooperativeRequest CooperativeRequest @relation(fields: [cooperativeRequestId], references: [id])
 }
