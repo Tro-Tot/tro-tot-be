@@ -13,9 +13,8 @@ model CooperativeContract {
   deletedAt                 DateTime? @map("deleted_at") @db.Timestamptz()
   updatedAt                 DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
 
-  landlord LandLord @relation(fields: [landlordId], references: [id])
-  manager  Manager  @relation(fields: [managerId], references: [id])
-  houses   House[]
-
+  House House[]
+  LandLord LandLord[]
+  Manager Manager[]
   @@map("cooperative_contracts")
 }
