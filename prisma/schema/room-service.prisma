@@ -5,9 +5,9 @@ model RoomService {
   status         String         @default("available") @map("status")
   fromDate       DateTime?      @map("from_date") @db.Timestamptz(6)
   toDate         DateTime?      @map("to_date") @db.Timestamptz(6)
-  createdAt      DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt      DateTime?      @updatedAt @map("updated_at") @db.Timestamptz(6)
-  deletedAt      DateTime?      @map("deleted_at") @db.Timestamptz(6)
+  createdAt      DateTime?      @default(now()) @map("created_at") @db.Timestamptz()
+  deletedAt      DateTime?      @map("deleted_at") @db.Timestamptz()
+  updatedAt      DateTime?      @updatedAt @map("updated_at") @db.Timestamptz()
   houseService   HouseService   @relation(fields: [houseServiceId], references: [id])
   roomHistory    RoomHistory    @relation(fields: [roomHistoryId], references: [id])
   serviceUsages  ServiceUsage[]

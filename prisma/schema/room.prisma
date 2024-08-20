@@ -12,12 +12,12 @@ model Room {
   rentPrice         Float              @map("rent_price")
   numberOfPeople    Int                @map("number_of_people")
   hasMezzanine      Boolean            @map("has_mezzanine")
-  index             Int                @unique @default(autoincrement()) @map("index")
-  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt         DateTime?          @updatedAt @map("updated_at") @db.Timestamptz(6)
-  deletedAt         DateTime?          @map("deleted_at") @db.Timestamptz(6)
   description       String?
   status            RoomStatus         @default(UNAVAILABLE) @map("status")
+  index             Int                @unique @default(autoincrement()) @map("index")
+  createdAt         DateTime?          @default(now()) @map("created_at") @db.Timestamptz()
+  deletedAt         DateTime?          @map("deleted_at") @db.Timestamptz()
+  updatedAt         DateTime?          @updatedAt @map("updated_at") @db.Timestamptz()
   attachments       Attachment[]
   rentalRequests    RentalRequest[]
   roomHistories     RoomHistory[]

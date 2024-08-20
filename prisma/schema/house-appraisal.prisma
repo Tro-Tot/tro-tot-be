@@ -20,9 +20,9 @@ model HouseAppraisal {
   description          String    @map("description")
   legalDocument        String    @map("legal_document")
   technicalNote        String    @map("technical_note")
-  createdAt            DateTime  @map("created_at")
-  updatedAt            DateTime  @map("updated_at")
-  deletedAt            DateTime? @map("deleted_at")
+  createdAt            DateTime? @default(now()) @map("created_at") @db.Timestamptz()
+  deletedAt            DateTime? @map("deleted_at") @db.Timestamptz()
+  updatedAt            DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
 
   cooperativeRequest     CooperativeRequest?      @relation(fields: [cooperativeRequestId], references: [id])
   roomAppraisals         RoomAppraisal[]

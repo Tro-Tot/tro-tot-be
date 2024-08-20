@@ -12,9 +12,9 @@ model RoomAppraisal {
   landlordDeposit   Float     @map("landlord_deposit")
   hasMezzanine      Boolean   @map("has_mezzanine")
   isHouse           Boolean   @map("is_house")
-  createdAt         DateTime  @map("created_at")
-  updatedAt         DateTime  @map("updated_at")
-  deletedAt         DateTime? @map("deleted_at")
+  createdAt         DateTime? @default(now()) @map("created_at") @db.Timestamptz()
+  deletedAt         DateTime? @map("deleted_at") @db.Timestamptz()
+  updatedAt         DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
 
   houseAppraisal HouseAppraisal @relation(fields: [houseAppraisalId], references: [id])
 

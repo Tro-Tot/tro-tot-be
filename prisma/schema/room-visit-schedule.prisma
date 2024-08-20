@@ -1,13 +1,12 @@
 model RoomVisitSchedule {
-  id                 String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  roomVisitRequestId String   @map("room_visit_request_id") @db.Uuid
-  status             String   @default("active") @map("status")
-  from               DateTime @map("from") @db.Timestamptz()
-  expectationEnd     DateTime @map("expectation_end") @db.Timestamptz()
-
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz()
-  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
-  deletedAt DateTime? @map("deleted_at") @db.Timestamptz()
+  id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  roomVisitRequestId String    @map("room_visit_request_id") @db.Uuid
+  status             String    @default("active") @map("status")
+  from               DateTime  @map("from") @db.Timestamptz()
+  expectationEnd     DateTime  @map("expectation_end") @db.Timestamptz()
+  createdAt          DateTime? @default(now()) @map("created_at") @db.Timestamptz()
+  deletedAt          DateTime? @map("deleted_at") @db.Timestamptz()
+  updatedAt          DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
 
   roomVisitRequest RoomVisitRequest @relation(fields: [roomVisitRequestId], references: [id])
 
