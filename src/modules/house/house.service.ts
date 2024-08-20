@@ -73,4 +73,15 @@ export class HouseService {
       },
     });
   }
+
+  async isHouseOfStaff(houseId: string, staffId: string) {
+    return this.prismaService.house.findFirst({
+      where: {
+        id: houseId,
+        staff: {
+          id: staffId,
+        },
+      },
+    });
+  }
 }
