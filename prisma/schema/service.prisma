@@ -9,7 +9,7 @@ model Service {
   billCycle         Int           @default(1) @map("bill_cycle")
   isCompulsory      Boolean       @map("is_compulsory")
   isManual          Boolean       @map("is_manual")
-  status            ServiceStatus @default(ACTIVE) @map("status")
+  status            ServiceStatus @default(AVAILABLE) @map("status")
   isDeleted         Boolean       @default(false) @map("is_deleted")
   createdAt         DateTime      @default(now()) @map("created_at")
   updatedAt         DateTime?     @default(now()) @map("updated_at")
@@ -31,7 +31,8 @@ enum ServiceType {
 }
 
 enum ServiceStatus {
-  ACTIVE
+  AVAILABLE
+  UNAVAILABLE
   UNREGISTRABLE
   TERMINATED
 }
