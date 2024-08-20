@@ -3,9 +3,9 @@ model CooperativeRequestSchedule {
   cooperativeRequestId String    @unique @map("cooperative_request_id") @db.Uuid
   from                 DateTime  @map("from")
   expectationEnd       DateTime  @map("expectation_end")
-  createdAt            DateTime  @map("created_at")
-  updatedAt            DateTime  @map("updated_at")
-  deletedAt            DateTime? @map("deleted_at")
+  createdAt            DateTime? @default(now()) @map("created_at") @db.Timestamptz()
+  deletedAt            DateTime? @map("deleted_at") @db.Timestamptz()
+  updatedAt            DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
 
   cooperativeRequest CooperativeRequest @relation(fields: [cooperativeRequestId], references: [id])
 

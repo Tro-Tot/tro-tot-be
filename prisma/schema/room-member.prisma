@@ -1,13 +1,12 @@
 model RoomMember {
-  id               String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  roomHistoryId    String @map("room_history_id") @db.Uuid
-  renterId         String @map("renter_id") @db.Uuid
-  roomMemberRoleId String @map("room_role_id") @db.Uuid
-  status           String @map("status")
-
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz()
-  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
-  deletedAt DateTime? @map("deleted_at") @db.Timestamptz()
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  roomHistoryId    String    @map("room_history_id") @db.Uuid
+  renterId         String    @map("renter_id") @db.Uuid
+  roomMemberRoleId String    @map("room_role_id") @db.Uuid
+  status           String    @map("status")
+  createdAt        DateTime? @default(now()) @map("created_at") @db.Timestamptz()
+  deletedAt        DateTime? @map("deleted_at") @db.Timestamptz()
+  updatedAt        DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
 
   roomHistory    RoomHistory    @relation(fields: [roomHistoryId], references: [id])
   roomMemberRole RoomMemberRole @relation(fields: [roomMemberRoleId], references: [id])

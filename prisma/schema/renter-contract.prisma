@@ -1,19 +1,18 @@
 model RenterContract {
-  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  roomHistoryId   String   @map("room_history_id") @db.Uuid
-  depositBillId   String   @unique @map("deposit_bill_id") @db.Uuid
-  renterId        String   @map("renter_id") @db.Uuid
-  totalMonths     Int      @map("total_months")
-  billingCycle    Int      @map("billing_cycle")
-  fromDate        DateTime @map("from_date") @db.Timestamptz()
-  toDate          DateTime @map("to_date") @db.Timestamptz()
-  signingDate     DateTime @map("signing_date") @db.Timestamptz()
-  exterminateDate DateTime @map("exterminate_date") @db.Timestamptz()
-  status          String   @map("status")
-
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz()
-  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
-  deletedAt DateTime? @map("deleted_at") @db.Timestamptz() // Nullable field
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  roomHistoryId   String    @map("room_history_id") @db.Uuid
+  depositBillId   String    @unique @map("deposit_bill_id") @db.Uuid
+  renterId        String    @map("renter_id") @db.Uuid
+  totalMonths     Int       @map("total_months")
+  billingCycle    Int       @map("billing_cycle")
+  fromDate        DateTime  @map("from_date") @db.Timestamptz()
+  toDate          DateTime  @map("to_date") @db.Timestamptz()
+  signingDate     DateTime  @map("signing_date") @db.Timestamptz()
+  exterminateDate DateTime  @map("exterminate_date") @db.Timestamptz()
+  status          String    @map("status")
+  createdAt       DateTime? @default(now()) @map("created_at") @db.Timestamptz()
+  deletedAt       DateTime? @map("deleted_at") @db.Timestamptz()
+  updatedAt       DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
 
   roomHistory RoomHistory  @relation(fields: [roomHistoryId], references: [id])
   renter      Renter       @relation(fields: [renterId], references: [id])

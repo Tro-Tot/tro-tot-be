@@ -14,9 +14,9 @@ model User {
   phoneNumber     String           @unique @map("phone_number")
   roleId          String           @map("role_id") @db.Uuid
   status          String?          @default("active") @map("status")
-  createdAt       DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt       DateTime?        @updatedAt @map("updated_at") @db.Timestamptz(6)
-  deletedAt       DateTime?        @map("deleted_at") @db.Timestamptz(6)
+  createdAt       DateTime?        @default(now()) @map("created_at") @db.Timestamptz()
+  deletedAt       DateTime?        @map("deleted_at") @db.Timestamptz()
+  updatedAt       DateTime?        @updatedAt @map("updated_at") @db.Timestamptz()
   landLords       LandLord[]
   managers        Manager[]
   renters         Renter[]
