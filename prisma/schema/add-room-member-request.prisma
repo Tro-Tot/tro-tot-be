@@ -1,8 +1,8 @@
 model AddRoomMemberRequest {
   status        String      @map("status")
-  deletedAt     DateTime?   @map("deleted_at") @db.Timestamptz(6)
-  createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime?   @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdAt     DateTime?   @default(now()) @map("created_at") @db.Timestamptz()
+  deletedAt     DateTime?   @map("deleted_at") @db.Timestamptz()
+  updatedAt     DateTime?   @updatedAt @map("updated_at") @db.Timestamptz()
   id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   roomHistoryId String      @map("room_history_id") @db.Uuid
   renterId      String      @map("renter_id") @db.Uuid

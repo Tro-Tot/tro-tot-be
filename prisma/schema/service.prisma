@@ -1,20 +1,19 @@
 model Service {
-  id                String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  houseId           String?        @map("house_id")
-  serviceScheduleId String?        @map("service_schedule_id")
-  serviceName       String         @map("service_name")
-  servicePrice      Float          @map("service_price")
-  serviceType       ServiceType    @map("service_type")
-  unit              String         @map("unit")
-  billCycle         Int            @default(1) @map("bill_cycle")
-  isCompulsory      Boolean        @map("is_compulsory")
-  isManual          Boolean        @map("is_manual")
-  status            String         @default("available") @map("status")
-  isDeleted         ServiceStatus        @default(ACTIVE) @map("is_deleted")
-  createdAt         DateTime       @default(now()) @map("created_at")
-  updatedAt         DateTime?      @default(now()) @map("updated_at")
-  deletedAt         DateTime?      @map("deleted_at")
-  houseServices     HouseService[]
+  id                String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  houseId           String?       @map("house_id")
+  serviceScheduleId String?       @map("service_schedule_id")
+  serviceName       String        @map("service_name")
+  servicePrice      Float         @map("service_price")
+  serviceType       ServiceType   @map("service_type")
+  unit              String        @map("unit")
+  billCycle         Int           @default(1) @map("bill_cycle")
+  isCompulsory      Boolean       @map("is_compulsory")
+  isManual          Boolean       @map("is_manual")
+  status            ServiceStatus @default(AVAILABLE) @map("status")
+  isDeleted         Boolean       @default(false) @map("is_deleted")
+  createdAt         DateTime?     @default(now()) @map("created_at") @db.Timestamptz()
+  deletedAt         DateTime?     @map("deleted_at") @db.Timestamptz()
+  updatedAt         DateTime?     @updatedAt @map("updated_at") @db.Timestamptz()
 
   @@map("services")
 }
@@ -30,7 +29,8 @@ enum ServiceType {
 }
 
 enum ServiceStatus {
-  ACTIVE
+  AVAILABLE
+  UNAVAILABLE
   UNREGISTRABLE
   TERMINATED
 }

@@ -1,20 +1,17 @@
 model CooperativeContract {
-  id                        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  landlordId                String   @map("landlord_id") @db.Uuid
-  managerId                 String   @map("manager_id") @db.Uuid
-  companyRevenuePercentage  Float    @map("company_revenue_percentage")
-  landlordRevenuePercentage Float    @map("landlord_revenue_percentage")
-  contractPdfUri            String   @map("contract_pdf_uri")
-  fromDate                  DateTime @map("from_date")
-  toDate                    DateTime @map("to_date")
-  signingDate               DateTime @map("signing_date")
-  exterminateDate           DateTime @map("exterminate_date")
-  createdAt                 DateTime @map("created_at")
-  updatedAt                 DateTime @map("updated_at")
-  deletedAt                 DateTime @map("deleted_at")
-  landlord                  LandLord @relation(fields: [landlordId], references: [id])
-  manager                   Manager  @relation(fields: [managerId], references: [id])
-  houses                    House[]
+  id                        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  landlordId                String    @map("landlord_id") @db.Uuid
+  managerId                 String    @map("manager_id") @db.Uuid
+  companyRevenuePercentage  Float     @map("company_revenue_percentage")
+  landlordRevenuePercentage Float     @map("landlord_revenue_percentage")
+  contractPdfUri            String    @map("contract_pdf_uri")
+  fromDate                  DateTime  @map("from_date")
+  toDate                    DateTime  @map("to_date")
+  signingDate               DateTime  @map("signing_date")
+  exterminateDate           DateTime  @map("exterminate_date")
+  createdAt                 DateTime? @default(now()) @map("created_at") @db.Timestamptz()
+  deletedAt                 DateTime? @map("deleted_at") @db.Timestamptz()
+  updatedAt                 DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
 
   @@map("cooperative_contracts")
 }

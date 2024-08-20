@@ -26,85 +26,82 @@ import { ResetPasswordDTO } from './dto/reset-password.dto';
 import { EmailDTO } from './dto/email.dto';
 import { VerifyOtpDTO } from './dto/verify-otp.dto';
 import { RefreshJwtAuthGuard } from './strategy/refresh-jwt-auth.guard';
+import { RoleCode } from '@prisma/client';
 
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  // @Post('/login')
-  // @UsePipes(new ValidationPipe())
-  // login(@Body() body: LoginAuthDTO) {
-  //   return this.authService.login(body);
-  // }
-
+  //SIGN IN FLOW
   @Post('/renter/login')
   @UsePipes(new ValidationPipe())
   renterLogin(@Body() body: LoginAuthDTO) {
-    return this.authService.loginRenter(body);
+    return this.authService.loginGeneral(body, RoleCode.RENTER);
   }
 
   @Post('/manager/login')
   @UsePipes(new ValidationPipe())
   managerLogin(@Body() body: LoginAuthDTO) {
-    return this.authService.loginManager(body);
+    return this.authService.loginGeneral(body, RoleCode.MANAGER);
   }
 
   @Post('/staff/login')
   @UsePipes(new ValidationPipe())
   staffLogin(@Body() body: LoginAuthDTO) {
-    return this.authService.loginStaff(body);
+    return this.authService.loginGeneral(body, RoleCode.STAFF);
   }
 
   @Post('/technical-staff/login')
   @UsePipes(new ValidationPipe())
   technicalStaffLogin(@Body() body: LoginAuthDTO) {
-    return this.authService.loginTechnicalStaff(body);
+    return this.authService.loginGeneral(body, RoleCode.TECHNICAL_STAFF);
   }
 
   @Post('/admin/login')
   @UsePipes(new ValidationPipe({}))
   adminLogin(@Body() body: LoginAuthDTO) {
-    return this.authService.loginAdmin(body);
+    return this.authService.loginGeneral(body, RoleCode.ADMIN);
   }
 
   @Post('/landlord/login')
   @UsePipes(new ValidationPipe())
   landlordLogin(@Body() body: LoginAuthDTO) {
-    return this.authService.loginRenter(body);
+    return this.authService.loginGeneral(body, RoleCode.LANDLORD);
   }
 
+  //SIGN UP FLOW
   @Post('/sign-up/renter')
   @UsePipes(new ValidationPipe())
   renterSignUp(@Body() body: SignUpDTO) {
-    return this.authService.registerRenter(body);
+    return this.authService.registerGeneral(body, RoleCode.RENTER);
   }
 
   @Post('/sign-up/landlord')
   @UsePipes(new ValidationPipe())
   landlordSignUp(@Body() body: SignUpDTO) {
-    return this.authService.registerLandlord(body);
+    return this.authService.registerGeneral(body, RoleCode.LANDLORD);
   }
 
   //To-do: Need Authen Manager to do this
   @Post('/sign-up/staff')
   @UsePipes(new ValidationPipe())
   staffSignUp(@Body() body: SignUpDTO) {
-    return this.authService.registerStaff(body);
+    return this.authService.registerGeneral(body, RoleCode.STAFF);
   }
 
   //To-do: Need Authen Manager to do this
   @Post('/sign-up/technical-staff')
   @UsePipes(new ValidationPipe())
   technicalStaffSignUp(@Body() body: SignUpDTO) {
-    return this.authService.registerTechnicalStaff(body);
+    return this.authService.registerGeneral(body, RoleCode.TECHNICAL_STAFF);
   }
 
   //To-do: Need Authen Manager to do this
   @Post('/sign-up/manager')
   @UsePipes(new ValidationPipe())
   managerSignUp(@Body() body: SignUpDTO) {
-    return this.authService.registerManager(body);
+    return this.authService.registerGeneral(body, RoleCode.MANAGER);
   }
 
   @Get('/refresh-token')

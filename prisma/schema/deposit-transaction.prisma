@@ -6,6 +6,11 @@ model DepositTransaction {
   deletedAt       DateTime?       @map("deleted_at") @db.Timestamptz(6)
   id              String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   depositBillId   String          @map("deposit_bill_id") @db.Uuid
+  transactionType TransactionType @map("transaction_type") // Assuming `transaction_type` is a string
+  amount          Float           @map("amount")
+  createdAt       DateTime?       @default(now()) @map("created_at") @db.Timestamptz()
+  deletedAt       DateTime?       @map("deleted_at") @db.Timestamptz()
+  updatedAt       DateTime?       @updatedAt @map("updated_at") @db.Timestamptz()
 
   @@map("deposit_transactions")
 }

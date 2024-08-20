@@ -1,16 +1,16 @@
 model Attachment {
-  id           String    @id @default(uuid()) @map("id")
-  fileName     String    @map("file_name")
-  fileType     FileType  @map("file_type")
-  createdAt    DateTime  @default(now()) @map("created_at")
-  updatedAt    DateTime? @updatedAt @map("updated_at")
-  deletedAt    DateTime? @map("deleted_at")
-  file_url     String
-  house_id     String?   @db.Uuid
-  room_id      String?   @db.Uuid
-  display_name String
-  houses       House?    @relation(fields: [house_id], references: [id])
-  rooms        Room?     @relation(fields: [room_id], references: [id])
+  id          String    @id @default(uuid()) @map("id")
+  fileName    String    @map("file_name")
+  fileType    FileType  @map("file_type")
+  createdAt   DateTime? @default(now()) @map("created_at") @db.Timestamptz()
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz()
+  updatedAt   DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
+  displayName String    @map("display_name")
+  fileUrl     String    @map("file_url")
+  houseId     String?   @map("house_id") @db.Uuid
+  roomId      String?   @map("room_id") @db.Uuid
+  house       House?    @relation(fields: [houseId], references: [id])
+  room        Room?     @relation(fields: [roomId], references: [id])
 
   @@map("attachments")
 }

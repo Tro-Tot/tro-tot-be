@@ -8,7 +8,6 @@ export class BlacklistTokenService {
   constructor(private readonly prisma: PrismaService) {}
 
   createBlackListToken = (token: string, expiredAt: Date) => {
-    console.log(token);
     return this.prisma.blacklistToken.create({
       data: {
         token,

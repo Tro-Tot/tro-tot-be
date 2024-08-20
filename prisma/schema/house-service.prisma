@@ -1,21 +1,23 @@
 model HouseService {
-  id           String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  serviceId    String?            @map("service_id") @db.Uuid
-  houseId      String?            @map("house_id") @db.Uuid
-  status       HouseServiceStatus @default(ACTIVE) @map("status")
-  isDeleted    Boolean            @default(false) @map("is_deleted")
-  createdAt    DateTime           @default(now()) @map("created_at")
-  updatedAt    DateTime?          @default(now()) @map("updated_at")
-  deletedAt    DateTime?          @map("deleted_at")
-  house        House?             @relation(fields: [houseId], references: [id])
-  service      Service?           @relation(fields: [serviceId], references: [id])
+  id        String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  serviceId String?            @map("service_id") @db.Uuid
+  houseId   String?            @map("house_id") @db.Uuid
+  status    HouseServiceStatus @default(AVAILABLE) @map("status")
+  isDeleted Boolean            @default(false) @map("is_deleted")
+  createdAt DateTime?          @default(now()) @map("created_at") @db.Timestamptz()
+  deletedAt DateTime?          @map("deleted_at") @db.Timestamptz()
+  updatedAt DateTime?          @updatedAt @map("updated_at") @db.Timestamptz()
+
+  house        House?        @relation(fields: [houseId], references: [id])
+  service      Service?      @relation(fields: [serviceId], references: [id])
   roomServices RoomService[]
 
   @@map("house_services")
 }
 
 enum HouseServiceStatus {
-  ACTIVE
-  UNREGISTRABLE
+  AVAILABLE
+  UNREGISTRABLE //Can't Register but still work so can make bill
   TERMINATED
+  UNAVAILABLE //Can't Register and also can't make bill
 }

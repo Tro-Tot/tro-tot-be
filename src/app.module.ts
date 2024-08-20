@@ -14,6 +14,9 @@ import { ImageModule } from './modules/image/image.module';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './common/guard/roles.guard';
 import { AuthGuard } from '@nestjs/passport';
+import { PrismaService } from 'prisma/prisma.service';
+import { RoomModule } from './modules/room/room.module';
+import { AttachmentModule } from './modules/attachment/attachment.module';
 import { ServiceModule } from './modules/service/service.module';
 
 @Module({
@@ -28,10 +31,12 @@ import { ServiceModule } from './modules/service/service.module';
     CidModule,
     ImageModule,
     OtpModule,
-    // RoomModule,
+    RoomModule,
+    AttachmentModule,
     ServiceModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, PrismaService, RolesGuard],
+  exports: [PrismaService],
 })
 export class AppModule {}

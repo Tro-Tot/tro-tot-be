@@ -1,11 +1,10 @@
 model Transaction {
   billId           String          @map("bill_id") @db.Uuid
-  amount           Float           @map("amount")
-  createdAt        DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
   transaction_type TransactionType
-  deletedAt        DateTime?       @map("deleted_at") @db.Timestamptz(6)
-  updatedAt        DateTime?       @updatedAt @map("updated_at") @db.Timestamptz(6)
-  id               String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  amount           Float           @map("amount")
+  createdAt        DateTime?       @default(now()) @map("created_at") @db.Timestamptz()
+  deletedAt        DateTime?       @map("deleted_at") @db.Timestamptz()
+  updatedAt        DateTime?       @updatedAt @map("updated_at") @db.Timestamptz()
   bill             Bill            @relation(fields: [billId], references: [id])
 
   @@map("transactions")
