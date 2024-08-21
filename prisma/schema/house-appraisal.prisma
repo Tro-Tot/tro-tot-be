@@ -25,8 +25,8 @@ model HouseAppraisal {
   updatedAt            DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
 
   cooperativeRequest     CooperativeRequest?      @relation(fields: [cooperativeRequestId], references: [id])
+  AppraisalReport        AppraisalReport?
   roomAppraisals         RoomAppraisal[]
-  AppraisalReport        AppraisalReport[]
   HouseAppraisalStandard HouseAppraisalStandard[]
 
   @@map("house_appraisal")

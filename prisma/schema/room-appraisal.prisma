@@ -16,7 +16,6 @@ model RoomAppraisal {
   deletedAt         DateTime? @map("deleted_at") @db.Timestamptz()
   updatedAt         DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
 
-  houseAppraisal HouseAppraisal @relation(fields: [houseAppraisalId], references: [id])
-
+  HouseAppraisal HouseAppraisal @relation(fields: [houseAppraisalId], references: [id])
   @@map("room_appraisal")
 }
