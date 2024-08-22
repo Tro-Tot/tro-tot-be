@@ -5,6 +5,11 @@
 import { Path } from "nestjs-i18n";
 /* prettier-ignore */
 export type I18nTranslations = {
+    "house": {
+        "house_not_exist": string;
+        "house_exist": string;
+        "house_not_belong_to_staff": string;
+    };
     "room": {
         "room_not_exist": string;
         "room_exist": string;
