@@ -1,8 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail } from 'class-validator';
+import {
+  IsEmailCustom,
+  IsNotEmptyCustom,
+} from 'src/common/decorator/class-validator-custom.decorator';
 
 export class EmailDTO {
   @ApiProperty()
-  @IsEmail()
+  @IsNotEmptyCustom()
+  @IsEmailCustom()
   email: string;
 }

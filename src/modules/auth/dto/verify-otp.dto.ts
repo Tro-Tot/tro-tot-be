@@ -1,14 +1,29 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNumber, IsString, Length, Max, Min } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
+import { i18nValidationMessage } from 'nestjs-i18n';
+import {
+  IsEmailCustom,
+  IsStringCustom,
+  MaxLengthCustom,
+  MinLengthCustom,
+} from 'src/common/decorator/class-validator-custom.decorator';
+import { I18nTranslations } from 'src/i18n/generated/i18n.generated';
 
 export class VerifyOtpDTO {
   @ApiProperty()
-  @IsString()
-  @IsEmail()
+  @IsStringCustom()
+  @IsEmailCustom()
   email: string;
 
   @ApiProperty()
-  @IsString()
-  @Length(6, 6)
+  @IsStringCustom()
+  @MinLengthCustom(6)
+  @MaxLengthCustom(6)
   otp: string;
 }

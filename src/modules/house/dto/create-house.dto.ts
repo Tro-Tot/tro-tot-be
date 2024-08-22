@@ -1,13 +1,29 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString, Min } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  Min,
+  MinLength,
+} from 'class-validator';
+import { IsHouseExist } from '../validator/is-house-exist-validator';
+import { i18nValidationMessage } from 'nestjs-i18n';
+import { I18nTranslations } from 'src/i18n/generated/i18n.generated';
 
 export class CreateHouseDTO {
   @ApiProperty()
   @IsString()
+  @IsHouseExist()
   cooperativeContractId: string;
 
   @ApiProperty()
-  @IsString()
+  @MinLength(3, {
+    message: i18nValidationMessage<I18nTranslations>(
+      'validation.INVALID_MIN_LENGTH',
+      { length: 3 },
+    ),
+  })
+  @IsString({})
   name: string;
 
   @ApiProperty()

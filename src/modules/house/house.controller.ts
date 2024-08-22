@@ -7,6 +7,8 @@ import {
   Post,
   Put,
   UseGuards,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CreateHouseDTO } from './dto/create-house.dto';
 import { JwtAuthGuard } from '../auth/strategy/jwt-auth.guard';
