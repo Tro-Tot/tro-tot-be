@@ -25,11 +25,7 @@ async function bootstrap() {
     optionsSuccessStatus: 204,
   });
 
-  class CustomValidationPipe extends ValidationPipe {
-    catch(exception: any, host: ArgumentsHost) {}
-  }
-
-  app.useGlobalPipes(new CustomValidationPipe());
+  // app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
   app.useGlobalFilters(
     new AllExceptionsFilter(app.get(HttpAdapterHost)),
