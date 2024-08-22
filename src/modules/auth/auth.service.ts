@@ -161,7 +161,7 @@ export class AuthService {
   async registerGeneral(user: SignUpDTO, roleInput: RoleCode) {
     // Ensure the transaction either succeeds or fails completely
     return await this.prisma.$transaction(
-      async (prisma) => {
+      async (prismaTransaction) => {
         try {
           //Hash user's password
           user.password = await this.hashPassword(user.password);
@@ -185,7 +185,7 @@ export class AuthService {
             deletedAt: undefined,
           };
           //Save the renter in DB
-          const userResult = await this.prisma.user.create({
+          const userResult = await prismaTransaction.user.create({
             data: {
               ...userInput,
             },
@@ -197,13 +197,14 @@ export class AuthService {
             return apiFailed(500, 'Created User failed');
           }
 
-          const schemaResult = await this.addRoleSchema(
-            prisma,
+          const addRoleSchemaResult = await this.addRoleSchema(
+            prismaTransaction,
             userResult.id,
             roleInput,
           );
-          if (!schemaResult) {
-            return apiFailed(500, 'Created User failed');
+
+          if (!addRoleSchemaResult) {
+            throw new BadRequestException('Add role schema failed!');
           }
 
           const accessToken = await this.generateAccessToken(userResult);
@@ -241,25 +242,65 @@ export class AuthService {
     userId: string,
     role: RoleCode,
   ) {
-    const schema: any = {
-      id: undefined,
-      userId: userId,
-      createdAt: undefined,
-      updatedAt: undefined,
-      deletedAt: undefined,
-    };
-    let result = null;
-    switch (role) {
-      case RoleCode.RENTER: {
-        result = await prisma.renter.create({
-          data: {
-            ...schema,
-          },
-        });
-        break;
+    try {
+      const schema: any = {
+        id: undefined,
+        userId: userId,
+        createdAt: undefined,
+        updatedAt: undefined,
+        deletedAt: undefined,
+      };
+      let result = null;
+      switch (role) {
+        case RoleCode.RENTER: {
+          result = await prisma.renter.create({
+            data: {
+              ...schema,
+            },
+          });
+          break;
+        }
+        case RoleCode.LANDLORD: {
+          result = await prisma.landLord.create({
+            data: {
+              ...schema,
+            },
+          });
+          break;
+        }
+        case RoleCode.MANAGER: {
+          result = await prisma.manager.create({
+            data: {
+              ...schema,
+            },
+          });
+          break;
+        }
+        case RoleCode.STAFF: {
+          result = await prisma.staff.create({
+            data: {
+              ...schema,
+            },
+          });
+          break;
+        }
+        case RoleCode.TECHNICAL_STAFF: {
+          result = await prisma.technicalStaff.create({
+            data: {
+              ...schema,
+            },
+          });
+          break;
+        }
+
+        default: {
+          throw new BadRequestException('No role found!');
+        }
       }
+      return result;
+    } catch (error) {
+      throw error;
     }
-    return result;
   }
 
   async handleLogout(user: AuthenUser, logout: Logout) {
