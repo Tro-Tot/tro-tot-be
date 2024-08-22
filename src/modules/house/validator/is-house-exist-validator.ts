@@ -41,7 +41,7 @@ export function IsHouseExist(validationOptions?: ValidationOptions) {
     registerDecorator({
       target: object.constructor,
       propertyName: propertyName,
-      options: this.validationOptions,
+      options: validationOptions,
       constraints: [],
       validator: IsHouseExistValidator,
       async: true,

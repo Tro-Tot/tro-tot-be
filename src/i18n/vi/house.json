@@ -1,4 +1,5 @@
 {
   "house_not_exist": "Nhà không tồn tại",
-  "house_exist": "Nhà đã tồn tại"
+  "house_exist": "Nhà đã tồn tại",
+  "house_not_belong_to_staff": "Nhà không thuộc quyền quản lý của nhân viên"
 }
