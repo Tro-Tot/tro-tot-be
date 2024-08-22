@@ -1,0 +1,50 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
+import { HouseServiceService } from './house-service.service';
+import { CreateHouseServiceDto } from './dto/create-house-service.dto';
+import { UpdateHouseServiceDto } from './dto/update-house-service.dto';
+import { IsHouseExist } from '../house/pipe/is-house-exist';
+import { ApiTags } from '@nestjs/swagger';
+import { RolesGuard } from 'src/common/guard/roles.guard';
+import { RoleCode } from '@prisma/client';
+import { Roles } from 'src/common/decorator/roles.decorator';
+import { JwtAuthGuard } from '../auth/strategy/jwt-auth.guard';
+import { Public } from 'src/common/decorator/is-public.decorator';
+
+@ApiTags('house-service')
+@Controller('house-service')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(RoleCode.TECHNICAL_STAFF, RoleCode.STAFF, RoleCode.MANAGER)
+export class HouseServiceController {
+  constructor(private readonly houseServiceService: HouseServiceService) {}
+
+  @Post()
+  create(@Body() createHouseServiceDto: CreateHouseServiceDto) {
+    return this.houseServiceService.create(createHouseServiceDto);
+  }
+
+  @Get(':id')
+  @Public()
+  findOne(@Param('id') id: string) {
+    return this.houseServiceService.findOne(id);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.houseServiceService.remove(id);
+  }
+
+  @Get('/house/:houseId')
+  @Public()
+  findAllBasedOnHouseId(@Param('houseId', IsHouseExist) houseId: string) {
+    return this.houseServiceService.findAllBasedOnHouseId(houseId);
+  }
+}

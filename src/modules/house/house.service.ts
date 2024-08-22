@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { CreateHouseDTO } from './dto/create-house.dto';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class HouseService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(@Inject() private readonly prismaService: PrismaService) {}
 
   async findAll() {
     return this.prismaService.house.findMany({

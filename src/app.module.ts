@@ -18,6 +18,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { RoomModule } from './modules/room/room.module';
 import { AttachmentModule } from './modules/attachment/attachment.module';
 import { ServiceModule } from './modules/service/service.module';
+import { HouseServiceModule } from './modules/house-service/house-service.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { ServiceModule } from './modules/service/service.module';
     RoomModule,
     AttachmentModule,
     ServiceModule,
+    HouseServiceModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService, RolesGuard],
