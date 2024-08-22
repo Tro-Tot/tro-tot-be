@@ -6,7 +6,6 @@ import { Prisma } from '@prisma/client';
 @Injectable()
 export class HouseService {
   constructor(private readonly prismaService: PrismaService) {}
-
   async findAll() {
     return this.prismaService.house.findMany({
       include: {

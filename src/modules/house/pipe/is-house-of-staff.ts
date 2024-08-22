@@ -11,7 +11,7 @@ export class IsHouseOfStaff implements PipeTransform {
   constructor(private readonly houseService: HouseService) {}
   transform({ houseId, staffId }: any, metadata: ArgumentMetadata) {
     if (this.houseService.isHouseOfStaff(houseId, staffId)) {
-      throw new BadRequestException('Invalid house of staff');
+      throw new BadRequestException('Nhà không thuộc quyền quản lý của bạn');
     }
     return houseId;
   }
