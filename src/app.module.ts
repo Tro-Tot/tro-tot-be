@@ -11,18 +11,39 @@ import { RefreshTokenModule } from './modules/refresh-token/refresh-token.module
 import { CidModule } from './modules/cid/cid.module';
 import { OtpModule } from './modules/otp/otp.module';
 import { ImageModule } from './modules/image/image.module';
-import { APP_GUARD } from '@nestjs/core';
-import { RolesGuard } from './common/guard/roles.guard';
-import { AuthGuard } from '@nestjs/passport';
+import * as rolesGuard from './common/guard/roles.guard';
 import { PrismaService } from 'prisma/prisma.service';
 import { RoomModule } from './modules/room/room.module';
 import { AttachmentModule } from './modules/attachment/attachment.module';
 import { ServiceModule } from './modules/service/service.module';
+import * as path from 'path';
+import {
+  AcceptLanguageResolver,
+  HeaderResolver,
+  I18nModule,
+} from 'nestjs-i18n';
 import { HouseServiceModule } from './modules/house-service/house-service.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    I18nModule.forRoot({
+      fallbackLanguage: 'vi',
+      loaderOptions: {
+        path: path.join(__dirname, '/i18n/'),
+        watch: true,
+      },
+      resolvers: [
+        { use: HeaderResolver, options: ['x-lang'] },
+        AcceptLanguageResolver,
+      ],
+      typesOutputPath: path.join(
+        __dirname,
+        '../../src/i18n/generated/i18n.generated.ts',
+      ),
+    }),
     RoleModule,
     AuthModule,
     UserModule,
@@ -38,7 +59,7 @@ import { HouseServiceModule } from './modules/house-service/house-service.module
     HouseServiceModule,
   ],
   controllers: [AppController],
-  providers: [AppService, PrismaService, RolesGuard],
+  providers: [AppService, PrismaService, rolesGuard.RolesGuard],
   exports: [PrismaService],
 })
 export class AppModule {}

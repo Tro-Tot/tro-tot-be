@@ -9,7 +9,7 @@ export class IsHouseExist implements PipeTransform {
     const isHouseExist = !!(await this.houseService.findOne(value));
 
     if (!isHouseExist) {
-      throw new BadRequestException('House not exist');
+      throw new BadRequestException('Nhà không tồn tại');
     }
     return value;
   }

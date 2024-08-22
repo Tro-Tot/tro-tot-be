@@ -1,12 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsString } from 'class-validator';
+import {
+  IsNotEmptyCustom,
+  IsStringCustom,
+} from 'src/common/decorator/class-validator-custom.decorator';
 
 export class ResetPasswordDTO {
   @ApiProperty()
-  @IsString()
+  @IsNotEmptyCustom()
+  @IsStringCustom()
   token: string;
 
   @ApiProperty()
-  @IsString()
+  @IsNotEmptyCustom()
+  @IsStringCustom()
   newPassword: string;
 }

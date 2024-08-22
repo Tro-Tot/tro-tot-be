@@ -1,17 +1,12 @@
+import { Logger } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import {
-  ArgumentsHost,
-  BadRequestException,
-  Logger,
-  ValidationError,
-  ValidationPipe,
-} from '@nestjs/common';
+import { useContainer } from 'class-validator';
+import { I18nValidationExceptionFilter, I18nValidationPipe } from 'nestjs-i18n';
+import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filter/all-exceptions.filter';
-import { PrismaExceptionFilter } from './common/filter/prisma-exception.filter';
-import { ValidationPipeExceptionFilter } from './common/filter/validation-pipe-exception.filter';
 import { AuthExceptionFilter } from './common/filter/auth-exception.filter';
+import { PrismaExceptionFilter } from './common/filter/prisma-exception.filter';
 import { StatusCodeInterceptor } from './common/interceptor/status-code.interceptor';
 
 async function bootstrap() {
@@ -25,16 +20,20 @@ async function bootstrap() {
     optionsSuccessStatus: 204,
   });
 
-  // app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  app.useGlobalPipes(new I18nValidationPipe({ whitelist: true }));
 
   app.useGlobalFilters(
     new AllExceptionsFilter(app.get(HttpAdapterHost)),
-    new ValidationPipeExceptionFilter(app.get(HttpAdapterHost)),
+    new I18nValidationExceptionFilter({
+      detailedErrors: true,
+    }),
     new PrismaExceptionFilter(app.get(HttpAdapterHost)),
     new AuthExceptionFilter(app.get(HttpAdapterHost)),
   );
 
   app.useGlobalInterceptors(new StatusCodeInterceptor());
+
+  useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
   const config = new DocumentBuilder()
     .setTitle('trotot API')

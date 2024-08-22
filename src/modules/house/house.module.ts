@@ -7,7 +7,7 @@ import { IsHouseExist } from './pipe/is-house-exist';
 @Module({
   imports: [],
   controllers: [HouseController],
-  providers: [PrismaService, HouseService, IsHouseExist],
-  exports: [IsHouseExist, HouseService],
+  providers: [PrismaService, HouseService],
+  exports: [HouseService, IsHouseExist],
 })
 export class HouseModule {}

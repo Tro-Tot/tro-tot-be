@@ -1,18 +1,13 @@
-import {
-  IsNotEmpty,
-  IsString,
-  IsEmail,
-  IsDate,
-  IsEnum,
-  IsOptional,
-  IsUUID,
-  isObject,
-  ValidateNested,
-  IsDateString,
-} from 'class-validator';
-import { CidDTO } from '../../cid/dto/cid.dto';
-import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsDateString, IsOptional, IsString, IsUUID } from 'class-validator';
+import {
+  IsEmailCustom,
+  IsEnumCustom,
+  IsNotEmptyCustom,
+  IsPhoneNumberCustom,
+  IsStringCustom,
+  MinLengthCustom,
+} from 'src/common/decorator/class-validator-custom.decorator';
 
 enum Gender {
   MALE = 'MALE',
@@ -28,43 +23,44 @@ export class SignUpDTO {
     example: 'nguyenphigv23@gmail.com',
     pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$',
   })
-  @IsNotEmpty()
-  @IsEmail()
+  @IsNotEmptyCustom()
+  @IsEmailCustom()
   email: string;
 
   @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmptyCustom()
+  @IsPhoneNumberCustom()
   phoneNumber: string;
 
   @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmptyCustom()
+  @IsStringCustom()
   password: string;
 
   @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmptyCustom()
+  @MinLengthCustom(6)
+  @IsStringCustom()
   firstName: string;
 
   @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmptyCustom()
+  @IsStringCustom()
   lastName: string;
 
   @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmptyCustom()
+  @IsStringCustom()
   username: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsNotEmptyCustom()
   @IsDateString()
   dateOfBirth: Date;
 
   @ApiProperty()
-  @IsNotEmpty()
-  @IsEnum(Gender)
+  @IsNotEmptyCustom()
+  @IsEnumCustom(Gender)
   gender: Gender;
 
   // @IsNotEmpty()

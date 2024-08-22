@@ -7,9 +7,10 @@
     "assets": [
       {
         "include": "./modules/mail/templates/**/*",
-        "outDir": "./dist/src/"
-      }
-    ],
-    "watchAssets": true
+        "outDir": "./dist/src/",
+        "watchAssets": true
+      },
+      { "include": "i18n/**/*", "outDir": "./dist/src/", "watchAssets": true }
+    ]
   }
 }
