@@ -7,29 +7,22 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 import { I18nService } from 'nestjs-i18n';
-import { PrismaService } from 'prisma/prisma.service';
 import { I18nTranslations } from 'src/i18n/generated/i18n.generated';
+import { HouseService } from '../house.service';
 
 @Injectable()
 @ValidatorConstraint({ async: true })
 export class IsHouseExistValidator implements ValidatorConstraintInterface {
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly houseService: HouseService,
     private readonly i18n: I18nService<I18nTranslations>,
   ) {}
-  validate(
+  async validate(
     value: string,
     validationArguments?: ValidationArguments,
-  ): Promise<boolean> | boolean {
-    return this.prisma.house
-      .findUnique({
-        where: {
-          id: value,
-        },
-      })
-      .then((house) => {
-        return !!house;
-      });
+  ): Promise<boolean> {
+    const house = await this.houseService.findOne(value);
+    return !!house;
   }
   defaultMessage?(validationArguments?: ValidationArguments): string {
     return this.i18n.t('house.house_exist');

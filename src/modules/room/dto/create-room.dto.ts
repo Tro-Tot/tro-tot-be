@@ -1,16 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { RoomStatus } from '@prisma/client';
 import {
+  IsBoolean,
+  IsNumber,
+  IsOptional,
   IsString,
   IsUUID,
-  IsOptional,
-  IsNumber,
-  IsBoolean,
-  IsEnum,
 } from 'class-validator';
+import { IsHouseExist } from 'src/modules/house/validator/is-house-exist-validator';
 
 export class CreateRoomDto {
   @ApiProperty({ description: 'House ID', type: String })
+  @IsHouseExist()
   @IsUUID()
   houseId: string;
 
