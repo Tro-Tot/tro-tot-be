@@ -22,6 +22,7 @@ import {
   HeaderResolver,
   I18nModule,
 } from 'nestjs-i18n';
+import { HouseServiceModule } from './modules/house-service/house-service.module';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import {
     RoomModule,
     AttachmentModule,
     ServiceModule,
+    HouseServiceModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService, rolesGuard.RolesGuard],
