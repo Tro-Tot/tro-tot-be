@@ -3,11 +3,12 @@ import { PrismaService } from 'prisma/prisma.service';
 import { HouseController } from './house.controller';
 import { HouseService } from './house.service';
 import { IsHouseExist } from './pipe/is-house-exist';
+import { IsHouseExistValidator } from './validator/is-house-exist-validator';
 
 @Module({
   imports: [],
   controllers: [HouseController],
-  providers: [PrismaService, HouseService, IsHouseExist],
+  providers: [PrismaService, HouseService, IsHouseExist, IsHouseExistValidator],
   exports: [HouseService, IsHouseExist],
 })
 export class HouseModule {}
