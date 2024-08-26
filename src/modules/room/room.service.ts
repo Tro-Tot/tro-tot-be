@@ -309,7 +309,7 @@ export class RoomService {
       return apiSuccess(
         201,
         { successful, failed },
-        'Upload Image successfully',
+        this.i18n.t('room.room_image_upload_success'),
       );
     } catch (error) {
       throw error;
@@ -326,8 +326,24 @@ export class RoomService {
           attachments: true,
         },
       });
-      return apiSuccess(HttpStatus.OK, result, 'Get room successfully');
+      return apiSuccess(HttpStatus.OK, result, this.i18n.t('room.room_found'));
     } catch (error) {
+      // if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      //   if (error.code === 'P2025') {
+      //     return apiFailed(
+      //       HttpStatus.NOT_FOUND,
+      //       this.i18n.t('room.room_not_found'),
+      //     );
+      //   } else {
+      //     return apiFailed(
+      //       HttpStatus.INTERNAL_SERVER_ERROR,
+      //       this.i18n.t('room.room_find_error'),
+      //     );
+      //   }
+      // }
+
+      error.meta = error.meta || {};
+      error.meta.target = 'Room';
       throw error;
     }
   }
@@ -341,7 +357,7 @@ export class RoomService {
       return apiSuccess(
         HttpStatus.CREATED,
         updatedRomm,
-        'Updated room successfully',
+        this.i18n.t('room.room_updated'),
       );
     } catch (error) {}
   }
@@ -368,7 +384,7 @@ export class RoomService {
         case RoomStatus.OCCUPIED: {
           return apiFailed(
             HttpStatus.CONFLICT,
-            'Room is occupied, can not change status',
+            this.i18n.t('room.room_status_occupied_conflict'),
           );
         }
         case RoomStatus.OUT_OF_SERVICE: {

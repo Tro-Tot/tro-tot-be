@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import {
   isUUID,
   registerDecorator,
@@ -7,7 +7,8 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { I18nService } from 'nestjs-i18n';
+import { I18nContext, I18nService, I18nValidationError } from 'nestjs-i18n';
+import { CustomI18nException } from 'src/common/filter/custom-i18n.exception';
 import { I18nTranslations } from 'src/i18n/generated/i18n.generated';
 import { HouseService } from '../house.service';
 
@@ -25,6 +26,31 @@ export class IsHouseExistValidator implements ValidatorConstraintInterface {
     if (!value) return false;
     if (!isUUID(value)) return false;
     const house = await this.houseService.findOne(value);
+
+    if (!house) {
+      const errors: I18nValidationError[] = [
+        {
+          property: validationArguments.property,
+          constraints: {
+            houseNotExist: this.i18n.t('house.house_not_exist', {
+              lang: I18nContext.current().lang,
+            }),
+          },
+          value: value,
+          children: [],
+          contexts: {},
+          target: validationArguments.object,
+        },
+      ];
+      throw new CustomI18nException(
+        errors,
+        HttpStatus.NOT_FOUND,
+        this.i18n.t('house.house_not_exist', {
+          lang: I18nContext.current().lang,
+        }),
+      );
+    }
+
     return !!house;
   }
   defaultMessage?(validationArguments?: ValidationArguments): string {

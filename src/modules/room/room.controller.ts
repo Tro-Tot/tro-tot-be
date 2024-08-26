@@ -17,6 +17,7 @@ import {
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
 import { Prisma, RoleCode, RoomStatus } from '@prisma/client';
+import { I18nValidationPipe } from 'nestjs-i18n';
 import { Public } from 'src/common/decorator/is-public.decorator';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { FilterDto } from 'src/common/dto/filter-query.dto';
@@ -47,7 +48,7 @@ export class RoomController {
   @Post()
   @Public()
   @UseInterceptors(FilesInterceptor('files', 10), ParseRoomDtoInterceptor)
-  @UsePipes(new ValidationPipe({ stopAtFirstError: true }))
+  @UsePipes(new I18nValidationPipe({ whitelist: true, stopAtFirstError: true }))
   createTest(
     @Body('room') createRoomDto: CreateRoomDto,
     @UploadedFiles() files: Express.Multer.File[],
@@ -56,6 +57,7 @@ export class RoomController {
   }
 
   @Get(':id')
+  @Public()
   findAll(@Param('id') id: string) {
     return this.roomService.findOne(id);
   }

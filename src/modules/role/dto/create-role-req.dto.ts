@@ -7,6 +7,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { i18nValidationMessage } from 'nestjs-i18n';
 
 export class CreateRoleReqDto {
   @ApiProperty()
@@ -17,6 +18,8 @@ export class CreateRoleReqDto {
   name: string;
 
   @ApiProperty()
-  @IsEnum(RoleCode)
+  @IsEnum(RoleCode, {
+    message: i18nValidationMessage('validation.INVALID_ROLE_CODE'),
+  })
   code: RoleCode;
 }

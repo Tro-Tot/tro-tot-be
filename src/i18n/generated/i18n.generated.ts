@@ -5,16 +5,41 @@
 import { Path } from "nestjs-i18n";
 /* prettier-ignore */
 export type I18nTranslations = {
+    "auth": {
+        "email_not_found": string;
+        "role_not_found": string;
+        "account_not_found": string;
+        "password_not_match": string;
+        "token_expired": string;
+        "invalid_token": string;
+        "UNAUTHORIZED": string;
+    };
     "house": {
         "house_not_exist": string;
         "house_exist": string;
         "house_not_belong_to_staff": string;
+    };
+    "prisma": {
+        "NOT_FOUND": string;
+        "NO_RECORD_FOUND": string;
+        "FOREIGN_KEY_CONSTRAINT": string;
+        "UNIQUE_CONSTRAINT": string;
+        "DATABASE_CONNECTION_FAILED": string;
     };
     "room": {
         "room_not_exist": string;
         "room_exist": string;
         "room_create_success": string;
         "room_create_fail": string;
+        "room_found": string;
+        "room_not_found": string;
+        "room_updated": string;
+        "room_status_occupied": string;
+        "room_status_occupied_conflict": string;
+        "room_find_error": string;
+        "room_image_upload_success": string;
+        "room_image_upload_fail": string;
+        "room_object_name": string;
     };
     "test": {
         "HELLO": string;
@@ -66,6 +91,8 @@ export type I18nTranslations = {
         "INVALID_LATITUDE": string;
         "INVALID_LONGITUDE": string;
         "INVALID_DATE_STRING": string;
+        "INVALID_ROLE_CODE": string;
+        "BAD_REQUEST": string;
     };
 };
 /* prettier-ignore */

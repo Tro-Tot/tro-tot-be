@@ -15,7 +15,7 @@ export class CreateRoomDto {
   @ApiProperty({ description: 'House ID', type: String })
   @IsHouseExist()
   @IsUUID()
-  @IsNotEmpty({ message: 'aaLSdoasdasd' })
+  @IsNotEmpty()
   houseId: string;
 
   @ApiProperty({ description: 'Attachment ID', type: String, required: false })
