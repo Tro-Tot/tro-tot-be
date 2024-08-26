@@ -1,22 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsString } from 'class-validator';
-import { i18nValidationMessage } from 'nestjs-i18n';
-import { I18nTranslations } from 'src/i18n/generated/i18n.generated';
+import {
+  IsNotEmptyCustom,
+  IsStringCustom,
+} from 'src/common/decorator/class-validator-custom.decorator';
 
 export class ResetPasswordDTO {
   @ApiProperty()
-  @IsString({
-    message: i18nValidationMessage<I18nTranslations>(
-      'validation.INVALID_STRING',
-    ),
-  })
+  @IsNotEmptyCustom()
+  @IsStringCustom()
   token: string;
 
   @ApiProperty()
-  @IsString({
-    message: i18nValidationMessage<I18nTranslations>(
-      'validation.INVALID_STRING',
-    ),
-  })
+  @IsNotEmptyCustom()
+  @IsStringCustom()
   newPassword: string;
 }
