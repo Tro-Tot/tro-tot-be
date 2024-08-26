@@ -1,18 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   Min,
   MinLength,
 } from 'class-validator';
-import { IsHouseExist } from '../validator/is-house-exist-validator';
 import { i18nValidationMessage } from 'nestjs-i18n';
 import { I18nTranslations } from 'src/i18n/generated/i18n.generated';
+import { IsHouseExist } from '../validator/is-house-exist-validator';
 
 export class CreateHouseDTO {
   @ApiProperty()
   @IsString()
+  @IsOptional()
   @IsHouseExist()
   cooperativeContractId: string;
 
@@ -51,7 +52,7 @@ export class CreateHouseDTO {
   latitude: number;
 
   @ApiProperty()
-  @IsString()
+  @IsNumber()
   longitude: number;
 
   @ApiProperty()

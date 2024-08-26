@@ -13,7 +13,7 @@ model CooperativeContract {
   deletedAt                 DateTime? @map("deleted_at") @db.Timestamptz()
   updatedAt                 DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
 
-  House House[]
+  House House?
   LandLord LandLord[]
   Manager Manager[]
   @@map("cooperative_contracts")

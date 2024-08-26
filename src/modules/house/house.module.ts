@@ -1,14 +1,15 @@
 import { Module } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
+import { AttachmentModule } from '../attachment/attachment.module';
+import { ImageModule } from '../image/image.module';
 import { HouseController } from './house.controller';
 import { HouseService } from './house.service';
-import { IsHouseExist } from './pipe/is-house-exist';
-import { IsHouseExistValidator } from './validator/is-house-exist-validator';
+import { IsHouseExistPipe } from './pipe/is-house-exist.pipe';
 
 @Module({
-  imports: [],
+  imports: [AttachmentModule, ImageModule],
   controllers: [HouseController],
-  providers: [PrismaService, HouseService, IsHouseExist, IsHouseExistValidator],
-  exports: [HouseService, IsHouseExist],
+  providers: [PrismaService, HouseService, IsHouseExistPipe],
+  exports: [HouseService, IsHouseExistPipe],
 })
 export class HouseModule {}
