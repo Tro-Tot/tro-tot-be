@@ -27,6 +27,7 @@ async function bootstrap() {
     new I18nValidationExceptionFilter({
       detailedErrors: true,
     }),
+    // new ValidationPipeExceptionFilter(app.get(HttpAdapterHost)),
     new PrismaExceptionFilter(app.get(HttpAdapterHost)),
     new AuthExceptionFilter(app.get(HttpAdapterHost)),
   );

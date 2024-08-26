@@ -13,6 +13,8 @@ export type I18nTranslations = {
     "room": {
         "room_not_exist": string;
         "room_exist": string;
+        "room_create_success": string;
+        "room_create_fail": string;
     };
     "test": {
         "HELLO": string;

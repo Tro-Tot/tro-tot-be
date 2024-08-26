@@ -1,4 +1,6 @@
 {
   "room_not_exist": "Phòng không tồn tại",
-  "room_exist": "Phòng đã tồn tại"
+  "room_exist": "Phòng đã tồn tại",
+  "room_create_success": "Tạo phòng thành công",
+  "room_create_fail": "Tạo phòng thất bại"
 }

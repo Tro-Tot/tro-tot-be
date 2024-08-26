@@ -2,18 +2,19 @@ import {
   ArgumentsHost,
   Catch,
   ExceptionFilter,
-  HttpException,
   HttpStatus,
   Logger,
 } from '@nestjs/common';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { AllExceptionsFilter } from './all-exceptions.filter';
 import { HttpAdapterHost } from '@nestjs/core';
-import { ApiResponse } from '../dto/response.dto';
+import {
+  PrismaClientKnownRequestError,
+  PrismaClientValidationError,
+} from '@prisma/client/runtime/library';
 import { apiFailed } from '../dto/api-response';
+import { ApiResponse } from '../dto/response.dto';
 import { PrismaErrorEnum } from '../enum/prisma-error.enum';
 
-@Catch(PrismaClientKnownRequestError)
+@Catch(PrismaClientKnownRequestError, PrismaClientValidationError)
 export class PrismaExceptionFilter implements ExceptionFilter {
   constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
   catch(exception: PrismaClientKnownRequestError, host: ArgumentsHost) {
@@ -51,6 +52,10 @@ export class PrismaExceptionFilter implements ExceptionFilter {
       case PrismaErrorEnum.DatabaseConnectionFailed:
         message = `Database connection failed`;
         responseBody = apiFailed(HttpStatus.INTERNAL_SERVER_ERROR, message);
+        break;
+      case PrismaErrorEnum.RequiredRecordNotFound:
+        message = `Required record not found`;
+        responseBody = apiFailed(HttpStatus.BAD_REQUEST, message);
         break;
       default:
         responseBody = apiFailed(HttpStatus.BAD_REQUEST, message);

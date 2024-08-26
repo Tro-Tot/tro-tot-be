@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
+  isUUID,
   registerDecorator,
   ValidationArguments,
   ValidationOptions,
@@ -21,11 +22,13 @@ export class IsHouseExistValidator implements ValidatorConstraintInterface {
     value: string,
     validationArguments?: ValidationArguments,
   ): Promise<boolean> {
+    if (!value) return false;
+    if (!isUUID(value)) return false;
     const house = await this.houseService.findOne(value);
     return !!house;
   }
   defaultMessage?(validationArguments?: ValidationArguments): string {
-    return this.i18n.t('house.house_exist');
+    return this.i18n.t('house.house_not_exist');
   }
 }
 
