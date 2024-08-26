@@ -1,6 +1,6 @@
 model House {
   id                    String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  cooperativeContractId String?   @map("cooperative_contract_id") @db.Uuid
+  cooperativeContractId String?   @map("cooperative_contract_id") @db.Uuid @unique
   staffId               String?   @map("staff_id") @db.Uuid
   name                  String    @map("name")
   city                  String    @map("city")
@@ -29,7 +29,7 @@ model House {
   staff               Staff?               @relation(fields: [staffId], references: [id])
   rooms               Room[]
   houseServices       HouseService[]
-  Attachment          Attachment[]
+  attachments         Attachment[]
 
   @@map("houses")
 }

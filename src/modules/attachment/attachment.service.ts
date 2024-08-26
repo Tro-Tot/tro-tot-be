@@ -1,13 +1,7 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { CreateAttachmentDto } from './dto/create-attachment.dto';
-import { UpdateAttachmentDto } from './dto/update-attachment.dto';
-import { PrismaService } from 'prisma/prisma.service';
+import { Injectable } from '@nestjs/common';
 import { Attachment } from '@prisma/client';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { PrismaService } from 'prisma/prisma.service';
+import { UpdateAttachmentDto } from './dto/update-attachment.dto';
 
 @Injectable()
 export class AttachmentService {
@@ -22,7 +16,7 @@ export class AttachmentService {
           fileUrl: createAttachmentDto.fileUrl,
           displayName: createAttachmentDto.displayName,
           roomId: createAttachmentDto.roomId,
-          houseId: undefined,
+          houseId: createAttachmentDto.houseId,
         },
       });
       return result;
@@ -52,6 +46,13 @@ export class AttachmentService {
       where: { id: id, roomId: roomId },
     });
   }
+
+  deleteHouseAttachment(id: string, houseId: string) {
+    return this.prismaService.attachment.delete({
+      where: { id: id, houseId: houseId },
+    });
+  }
+
   async findOne(id: string) {
     try {
       return this.prismaService.attachment.findFirstOrThrow({

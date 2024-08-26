@@ -1,23 +1,21 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Post,
   UseGuards,
 } from '@nestjs/common';
-import { HouseServiceService } from './house-service.service';
-import { CreateHouseServiceDto } from './dto/create-house-service.dto';
-import { UpdateHouseServiceDto } from './dto/update-house-service.dto';
-import { IsHouseExist } from '../house/pipe/is-house-exist';
 import { ApiTags } from '@nestjs/swagger';
-import { RolesGuard } from 'src/common/guard/roles.guard';
 import { RoleCode } from '@prisma/client';
-import { Roles } from 'src/common/decorator/roles.decorator';
-import { JwtAuthGuard } from '../auth/strategy/jwt-auth.guard';
 import { Public } from 'src/common/decorator/is-public.decorator';
+import { Roles } from 'src/common/decorator/roles.decorator';
+import { RolesGuard } from 'src/common/guard/roles.guard';
+import { JwtAuthGuard } from '../auth/strategy/jwt-auth.guard';
+import { IsHouseExistPipe } from '../house/pipe/is-house-exist.pipe';
+import { CreateHouseServiceDto } from './dto/create-house-service.dto';
+import { HouseServiceService } from './house-service.service';
 
 @ApiTags('house-service')
 @Controller('house-service')
@@ -44,7 +42,7 @@ export class HouseServiceController {
 
   @Get('/house/:houseId')
   @Public()
-  findAllBasedOnHouseId(@Param('houseId', IsHouseExist) houseId: string) {
+  findAllBasedOnHouseId(@Param('houseId', IsHouseExistPipe) houseId: string) {
     return this.houseServiceService.findAllBasedOnHouseId(houseId);
   }
 }

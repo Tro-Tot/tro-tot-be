@@ -4,18 +4,22 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
-  Put,
+  UploadedFiles,
   UseGuards,
-  UsePipes,
-  ValidationPipe,
+  UseInterceptors,
 } from '@nestjs/common';
-import { CreateHouseDTO } from './dto/create-house.dto';
-import { JwtAuthGuard } from '../auth/strategy/jwt-auth.guard';
-import { RolesGuard } from 'src/common/guard/roles.guard';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { RoleCode } from '@prisma/client';
+import { UUID } from 'crypto';
 import { Roles } from 'src/common/decorator/roles.decorator';
+import { CustomUUIDPipe } from 'src/common/pipe/custom-uuid.pipe';
+import { IsAttachmentExist } from '../attachment/pipe/is-attachment-exist.pipe';
+import { JwtAuthGuard } from '../auth/strategy/jwt-auth.guard';
+import { CreateHouseDTO } from './dto/create-house.dto';
 import { HouseService } from './house.service';
+import { IsHouseExistPipe } from './pipe/is-house-exist.pipe';
 
 @Controller('house')
 export class HouseController {
@@ -33,23 +37,24 @@ export class HouseController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  @Roles(RoleCode.MANAGER, RoleCode.STAFF)
+  @Roles(RoleCode.MANAGER, RoleCode.TECHNICAL_STAFF, RoleCode.STAFF)
   async create(@Body() createHouseDTO: CreateHouseDTO) {
     return this.houseService.create(createHouseDTO);
   }
 
   @Post('/bulk')
   @UseGuards(JwtAuthGuard)
-  @Roles(RoleCode.MANAGER, RoleCode.STAFF)
+  @Roles(RoleCode.MANAGER, RoleCode.TECHNICAL_STAFF, RoleCode.STAFF)
   async createMany(@Body() createHouseDTOs: CreateHouseDTO[]) {
     return this.houseService.createMany(createHouseDTOs);
   }
 
-  @Put(':id')
+  @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  @Roles(RoleCode.MANAGER, RoleCode.STAFF)
+  @Roles(RoleCode.MANAGER, RoleCode.TECHNICAL_STAFF, RoleCode.STAFF)
   async update(
-    @Param('id') id: string,
+    @Param('id', new CustomUUIDPipe(), IsHouseExistPipe)
+    id: UUID,
     @Body() updateHouseDTO: CreateHouseDTO,
   ) {
     return this.houseService.update(id, updateHouseDTO);
@@ -57,8 +62,26 @@ export class HouseController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  @Roles(RoleCode.MANAGER, RoleCode.STAFF)
+  @Roles(RoleCode.MANAGER, RoleCode.TECHNICAL_STAFF, RoleCode.STAFF)
   async delete(@Param('id') id: string) {
     return this.houseService.delete(id);
+  }
+
+  @Post(':id/image')
+  @UseInterceptors(FilesInterceptor('files', 10))
+  async uploadImagesArray(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Param('id', new CustomUUIDPipe(), IsHouseExistPipe) houseId: string,
+  ) {
+    return this.houseService.uploadImages(houseId, files);
+  }
+
+  @Delete(':id/image/:imageId')
+  @Roles(RoleCode.MANAGER, RoleCode.TECHNICAL_STAFF, RoleCode.STAFF)
+  async deleteImage(
+    @Param('id', IsHouseExistPipe) roomId: string,
+    @Param('imageId', IsAttachmentExist) attachmentId: string,
+  ) {
+    return this.houseService.deletedImage(roomId, attachmentId);
   }
 }
