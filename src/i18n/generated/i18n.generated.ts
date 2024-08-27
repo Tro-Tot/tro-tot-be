@@ -14,6 +14,7 @@ export type I18nTranslations = {
         "invalid_token": string;
         "UNAUTHORIZED": string;
         "no_token_provided": string;
+        "blacklist_token": string;
     };
     "house": {
         "house_not_exist": string;

@@ -19,6 +19,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     let error: I18nValidationError = {
       property: '',
     };
+
     if (info instanceof JsonWebTokenError) {
       if (info.name === 'TokenExpiredError') {
         error.value = info.message;
