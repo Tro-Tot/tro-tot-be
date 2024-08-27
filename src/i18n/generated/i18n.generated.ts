@@ -13,6 +13,7 @@ export type I18nTranslations = {
         "token_expired": string;
         "invalid_token": string;
         "UNAUTHORIZED": string;
+        "no_token_provided": string;
     };
     "house": {
         "house_not_exist": string;

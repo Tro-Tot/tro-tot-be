@@ -46,7 +46,6 @@ export class RoomController {
   // }
 
   @Post()
-  @Public()
   @UseInterceptors(FilesInterceptor('files', 10), ParseRoomDtoInterceptor)
   @UsePipes(
     new I18nValidationPipe({ whitelist: true, stopAtFirstError: false }),
