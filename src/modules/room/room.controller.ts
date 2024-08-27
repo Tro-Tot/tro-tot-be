@@ -48,7 +48,9 @@ export class RoomController {
   @Post()
   @Public()
   @UseInterceptors(FilesInterceptor('files', 10), ParseRoomDtoInterceptor)
-  @UsePipes(new I18nValidationPipe({ whitelist: true, stopAtFirstError: true }))
+  @UsePipes(
+    new I18nValidationPipe({ whitelist: true, stopAtFirstError: false }),
+  )
   createTest(
     @Body('room') createRoomDto: CreateRoomDto,
     @UploadedFiles() files: Express.Multer.File[],

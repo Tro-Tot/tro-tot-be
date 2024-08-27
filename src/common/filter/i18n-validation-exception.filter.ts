@@ -39,8 +39,6 @@ export class I18nValidationExceptionFilter implements ExceptionFilter {
     let logger = new Logger('I18nValidationExceptionFilter');
     logger.verbose('-------------Exception Start-------------');
     logger.error(exception.stack);
-    logger.error(exception.message);
-    logger.error(exception.errors);
     logger.verbose('-------------Exception End---------------');
 
     const errors = formatI18nErrors(exception.errors ?? [], i18n.service, {
@@ -86,8 +84,21 @@ export class I18nValidationExceptionFilter implements ExceptionFilter {
       !this.options.detailedErrors
     )
       return this.flattenValidationErrors(validationErrors);
+    return this.flattenConstraintValidationErrors(validationErrors);
+  }
 
-    return validationErrors;
+  protected flattenConstraintValidationErrors(
+    validationErrors: ValidationError[],
+  ): any[] {
+    return iterate(validationErrors)
+      .map((error) => mapChildrenToValidationErrors(error))
+      .flatten()
+      .map((item) => {
+        //Constraints are the validation error messages
+        return { ...item, constraints: Object.values(item.constraints) };
+      })
+      .flatten()
+      .toArray();
   }
 
   protected flattenValidationErrors(
