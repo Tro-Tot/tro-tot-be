@@ -22,5 +22,7 @@
   "INVALID_BASE64": "{property} phải là chuỗi Base64 hợp lệ",
   "INVALID_LATITUDE": "{property} phải là vĩ độ hợp lệ",
   "INVALID_LONGITUDE": "{property} phải là kinh độ hợp lệ",
-  "INVALID_DATE_STRING": "{property} phải là chuỗi ngày hợp lệ"
+  "INVALID_DATE_STRING": "{property} phải là chuỗi ngày hợp lệ",
+  "INVALID_ROLE_CODE": "{property} phải là mã vai trò hợp lệ",
+  "BAD_REQUEST": "Yêu cầu không hợp lệ"
 }

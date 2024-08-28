@@ -1,4 +1,3 @@
-import { error } from 'console';
 import { ApiResponse } from './response.dto';
 
 export const apiSuccess = (

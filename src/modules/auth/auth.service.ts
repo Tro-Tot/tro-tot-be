@@ -1,37 +1,31 @@
-import {
-  BadRequestException,
-  HttpException,
-  HttpStatus,
-  Injectable,
-} from '@nestjs/common';
-import { UserService } from '../user/user.service';
-import { LoginAuthDTO } from './dto/login-auth.dto';
-import { apiFailed, apiSuccess } from 'src/common/dto/api-response';
-import * as bcrypt from 'bcrypt';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 import {
   Prisma,
   PrismaClient,
   RefreshToken,
-  Renter,
   Role,
   RoleCode,
   User,
 } from '@prisma/client';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
-import { RefreshTokenService } from '../refresh-token/refresh-token.service';
-import { AuthenUser } from './dto/authen-user.dto';
-import { Logout } from './dto/logout.dto';
-import { BlacklistTokenService } from '../blacklist-token/blacklist-token.service';
-import { SignUpDTO } from './dto/sign-up.dto';
+import { DefaultArgs } from '@prisma/client/runtime/library';
+import * as bcrypt from 'bcrypt';
+import { I18nService, I18nValidationError } from 'nestjs-i18n';
 import { PrismaService } from 'prisma/prisma.service';
-import { CidService } from '../cid/cid.service';
-import { CidDTO } from '../cid/dto/cid.dto';
+import { apiFailed, apiSuccess } from 'src/common/dto/api-response';
+import { ApiResponse } from 'src/common/dto/response.dto';
+import { I18nTranslations } from 'src/i18n/generated/i18n.generated';
+import { BlacklistTokenService } from '../blacklist-token/blacklist-token.service';
 import { MailService } from '../mail/mail.service';
 import { OtpService } from '../otp/otp.service';
-import { ApiResponse } from 'src/common/dto/response.dto';
+import { RefreshTokenService } from '../refresh-token/refresh-token.service';
 import { RoleService } from '../role/role.service';
-import { DefaultArgs } from '@prisma/client/runtime/library';
+import { UserService } from '../user/user.service';
+import { AuthenUser } from './dto/authen-user.dto';
+import { LoginAuthDTO } from './dto/login-auth.dto';
+import { Logout } from './dto/logout.dto';
+import { SignUpDTO } from './dto/sign-up.dto';
 
 @Injectable()
 export class AuthService {
@@ -45,20 +39,42 @@ export class AuthService {
     private prisma: PrismaService,
     private readonly mailService: MailService,
     private readonly otpService: OtpService,
+    private readonly i18n: I18nService<I18nTranslations>,
   ) {}
 
   async loginGeneral(body: LoginAuthDTO, role: RoleCode) {
     try {
       const user = await this.handleFindUser(body.email);
       if (!user) {
-        return apiFailed(404, 'Account not found');
+        const error: I18nValidationError[] = [
+          {
+            property: 'email',
+            target: { body },
+            constraints: {
+              isEmailExist: this.i18n.t('auth.email_not_found'),
+            },
+            children: [],
+          },
+        ];
+        return apiFailed(404, this.i18n.t('auth.email_not_found'), error);
       }
       const isMatch = await this.validatePassword(user.password, body.password);
 
       const checkRoleSchema = await this.checkRoleSchema(user.id, role);
 
       if (!checkRoleSchema) {
-        return apiFailed(HttpStatus.NOT_FOUND, 'Account not found');
+        const error: I18nValidationError[] = [
+          {
+            property: 'role',
+            target: { body },
+            constraints: {
+              isRole: this.i18n.t('auth.role_not_found'),
+            },
+            children: [],
+          },
+        ];
+
+        return apiFailed(404, this.i18n.t('auth.account_not_found'), error);
       }
 
       if (isMatch) {
@@ -72,11 +88,17 @@ export class AuthService {
         }
         //If access token or refresh token is not generated
         if (accessToken === undefined || refreshToken === undefined) {
-          return apiFailed(
-            500,
-            'Internal server error',
-            'Internal server error',
-          );
+          const error: I18nValidationError[] = [
+            {
+              property: 'token',
+              target: { body },
+              constraints: {
+                isToken: 'Token is not generated',
+              },
+              children: [],
+            },
+          ];
+          return apiFailed(500, 'Token is not generated', error);
         }
 
         return apiSuccess(
@@ -85,13 +107,20 @@ export class AuthService {
           'Login success',
         );
       } else {
-        return apiFailed(400, 'Password not match', ['password']);
+        const error: I18nValidationError[] = [
+          {
+            property: 'password',
+            target: { body },
+            value: body.password,
+            constraints: {
+              isMatch: this.i18n.t('auth.password_not_match'),
+            },
+            children: [],
+          },
+        ];
+        return apiFailed(400, this.i18n.t('auth.password_not_match'), error);
       }
     } catch (e) {
-      if (e.code === 'P2025') {
-        return apiFailed(404, 'User not found', ['username']);
-      }
-      console.log(e);
       return apiFailed(500, e, 'Internal server error');
     }
   }

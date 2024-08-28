@@ -2,20 +2,26 @@ import {
   ArgumentsHost,
   Catch,
   ExceptionFilter,
-  HttpException,
   HttpStatus,
   Logger,
 } from '@nestjs/common';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { AllExceptionsFilter } from './all-exceptions.filter';
 import { HttpAdapterHost } from '@nestjs/core';
-import { ApiResponse } from '../dto/response.dto';
+import {
+  PrismaClientKnownRequestError,
+  PrismaClientValidationError,
+} from '@prisma/client/runtime/library';
+import { I18nService, I18nValidationError } from 'nestjs-i18n';
+import { I18nTranslations } from 'src/i18n/generated/i18n.generated';
 import { apiFailed } from '../dto/api-response';
+import { ApiResponse } from '../dto/response.dto';
 import { PrismaErrorEnum } from '../enum/prisma-error.enum';
 
-@Catch(PrismaClientKnownRequestError)
+@Catch(PrismaClientKnownRequestError, PrismaClientValidationError)
 export class PrismaExceptionFilter implements ExceptionFilter {
-  constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
+  constructor(
+    private readonly httpAdapterHost: HttpAdapterHost,
+    private readonly i18n: I18nService<I18nTranslations>,
+  ) {}
   catch(exception: PrismaClientKnownRequestError, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
@@ -26,31 +32,68 @@ export class PrismaExceptionFilter implements ExceptionFilter {
     logger.verbose('-------------Exception End---------------');
     let responseBody: ApiResponse;
 
-    let message = exception.message;
+    // let message: ErrorDetail={
+    //   property: '',
+    //   target: undefined,
+    //   children: [],
+    //   constraints: undefined
+    // }
 
+    let message = exception.message;
+    let error: I18nValidationError = {
+      property: '',
+      value: undefined,
+      contexts: {},
+      children: [],
+      target: undefined,
+      constraints: undefined,
+    };
     switch (exception.code) {
       case PrismaErrorEnum.OperationDependencyNotFound:
-        message = exception?.message
-          ? exception.message
-          : `An operation failed because it depends on one or more records that were required but not found`;
-        responseBody = apiFailed(HttpStatus.CONFLICT, message, exception.meta);
+        if (exception.meta?.target === 'Room') {
+          message = this.i18n.t('prisma.NOT_FOUND', {
+            args: {
+              entity: this.i18n.t('room.room_object_name'),
+            },
+          });
+          responseBody = apiFailed(HttpStatus.NOT_FOUND, message, [error]);
+        } else {
+          message = exception?.message
+            ? exception.message
+            : this.i18n.t('prisma.NOT_FOUND', {});
+          responseBody = apiFailed(HttpStatus.CONFLICT, message, [error]);
+        }
         break;
       case PrismaErrorEnum.ForeignKeyConstraintFailed:
-        message = `An operation failed because it would violate a primary key constraint ${exception.meta.target}`;
-        responseBody = apiFailed(HttpStatus.CONFLICT, message, exception.meta);
+        message = this.i18n.t('prisma.FOREIGN_KEY_CONSTRAINT', {
+          args: {
+            target: exception.meta.field_name,
+          },
+        });
+        if (exception.meta.field_name) {
+          error.property = exception.meta.field_name as string;
+        }
+        responseBody = apiFailed(HttpStatus.CONFLICT, message, [error]);
         break;
 
       case PrismaErrorEnum.UniqueConstraintFailed:
-        message = `An operation failed because it would violate a unique key constraint ${exception.meta.target}`;
-        responseBody = apiFailed(
-          HttpStatus.CONFLICT,
-          message,
-          exception.meta.target,
-        );
+        message = this.i18n.t('prisma.UNIQUE_CONSTRAINT', {
+          args: {
+            target: exception.meta.target,
+          },
+        });
+        if (exception.meta.target) {
+          error.property = exception.meta.target as string;
+        }
+        responseBody = apiFailed(HttpStatus.CONFLICT, message, [error]);
         break;
       case PrismaErrorEnum.DatabaseConnectionFailed:
-        message = `Database connection failed`;
+        message = this.i18n.t('prisma.DATABASE_CONNECTION_FAILED', {});
         responseBody = apiFailed(HttpStatus.INTERNAL_SERVER_ERROR, message);
+        break;
+      case PrismaErrorEnum.RequiredRecordNotFound:
+        message = this.i18n.t('prisma.NO_RECORD_FOUND', {});
+        responseBody = apiFailed(HttpStatus.BAD_REQUEST, message);
         break;
       default:
         responseBody = apiFailed(HttpStatus.BAD_REQUEST, message);
