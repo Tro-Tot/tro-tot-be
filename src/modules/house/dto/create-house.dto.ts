@@ -7,6 +7,10 @@ import {
   MinLength,
 } from 'class-validator';
 import { i18nValidationMessage } from 'nestjs-i18n';
+import {
+  IsNotEmptyCustom,
+  IsStringCustom,
+} from 'src/common/decorator/class-validator-custom.decorator';
 import { I18nTranslations } from 'src/i18n/generated/i18n.generated';
 import { IsHouseExist } from '../validator/is-house-exist-validator';
 
@@ -24,35 +28,43 @@ export class CreateHouseDTO {
       { length: 3 },
     ),
   })
-  @IsString({})
+  @IsNotEmptyCustom()
+  @IsStringCustom()
   name: string;
 
   @ApiProperty()
-  @IsString()
+  @IsNotEmptyCustom()
+  @IsStringCustom()
   city: string;
 
   @ApiProperty()
-  @IsString()
+  @IsNotEmptyCustom()
+  @IsStringCustom()
   district: string;
 
   @ApiProperty()
-  @IsString()
+  @IsNotEmptyCustom()
+  @IsStringCustom()
   ward: string;
 
   @ApiProperty()
-  @IsString()
+  @IsNotEmptyCustom()
+  @IsStringCustom()
   street: string;
 
   @ApiProperty()
-  @IsString()
+  @IsNotEmptyCustom()
+  @IsStringCustom()
   houseNumber: string;
 
   @ApiProperty()
   @IsNumber()
+  @Min(0)
   latitude: number;
 
   @ApiProperty()
   @IsNumber()
+  @Min(0)
   longitude: number;
 
   @ApiProperty()
@@ -73,14 +85,6 @@ export class CreateHouseDTO {
   @IsNumber()
   @Min(1)
   numberOfBathroom: number;
-
-  @ApiProperty()
-  @IsString()
-  mainDoorDirection: string;
-
-  @ApiProperty()
-  @IsString()
-  furniture: string;
 
   @ApiProperty()
   @IsNumber()
