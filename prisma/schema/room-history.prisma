@@ -1,17 +1,17 @@
 model RoomHistory {
-  id                    String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  roomId                String                 @map("room_id") @db.Uuid
-  fromDate              DateTime               @map("from_date") @db.Timestamptz(6)
-  toDate                DateTime?              @map("to_date") @db.Timestamptz(6)
-  status                RoomHistoryStatus      @default(ACTIVE)
-  createdAt             DateTime?              @default(now()) @map("created_at") @db.Timestamptz()
-  deletedAt             DateTime?              @map("deleted_at") @db.Timestamptz()
-  updatedAt             DateTime?              @updatedAt @map("updated_at") @db.Timestamptz()
-  addRoomMemberRequests AddRoomMemberRequest[]
-  renterContracts       RenterContract[]
-  room                  Room                   @relation(fields: [roomId], references: [id])
-  roomServices          RoomService[]
-  roomMembers           RoomMember[]
+  id                      String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  roomId                  String                    @map("room_id") @db.Uuid
+  fromDate                DateTime                  @map("from_date") @db.Timestamptz(6)
+  toDate                  DateTime?                 @map("to_date") @db.Timestamptz(6)
+  status                  RoomHistoryStatus         @default(ACTIVE)
+  createdAt               DateTime?                 @default(now()) @map("created_at") @db.Timestamptz()
+  deletedAt               DateTime?                 @map("deleted_at") @db.Timestamptz()
+  updatedAt               DateTime?                 @updatedAt @map("updated_at") @db.Timestamptz()
+  addRoomMemberRequests   AddRoomMemberRequest[]
+  renterContracts         RenterContract[]
+  room                    Room                      @relation(fields: [roomId], references: [id])
+  roomMembers             RoomMember[]
+  RoomServiceSubscription RoomServiceSubscription[]
 
   @@map("room_histories")
 }
