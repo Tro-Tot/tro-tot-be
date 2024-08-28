@@ -44,7 +44,6 @@ export class IsHouseExistValidator implements ValidatorConstraintInterface {
       ];
       throw new CustomI18nException(
         errors,
-
         HttpStatus.NOT_FOUND,
         this.i18n.t('house.house_not_exist', {
           lang: I18nContext.current().lang,
