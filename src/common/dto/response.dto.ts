@@ -2,7 +2,7 @@ export class ApiResponse {
   public statusCode: number;
   public data: any;
   public message: string;
-  public error: any;
+  public errors: any;
 
   constructor(
     statusCode: number,
@@ -13,6 +13,6 @@ export class ApiResponse {
     this.statusCode = statusCode;
     this.data = data;
     this.message = message;
-    this.error = error;
+    this.errors = error;
   }
 }

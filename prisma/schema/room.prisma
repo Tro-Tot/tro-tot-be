@@ -23,6 +23,7 @@ model Room {
   roomHistories     RoomHistory[]
   roomVisitRequests RoomVisitRequest[]
   house             House              @relation(fields: [houseId], references: [id])
+  RoomService       RoomService[]
 
   @@map("rooms")
 }

@@ -1,34 +1,36 @@
+import { DirectFilterPipe } from '@chax-at/prisma-filter';
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UploadedFiles,
   UseGuards,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
-  Query,
-  UseInterceptors,
-  UploadedFiles,
-  UseFilters,
 } from '@nestjs/common';
-import { RoomService } from './room.service';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { ApiTags } from '@nestjs/swagger';
+import { Prisma, RoleCode, RoomStatus } from '@prisma/client';
+import { I18nValidationPipe } from 'nestjs-i18n';
+import { Public } from 'src/common/decorator/is-public.decorator';
+import { Roles } from 'src/common/decorator/roles.decorator';
+import { FilterDto } from 'src/common/dto/filter-query.dto';
+import { RolesGuard } from 'src/common/guard/roles.guard';
+import { UpdateAttachmentDto } from '../attachment/dto/update-attachment.dto';
+import { IsAttachmentExist } from '../attachment/pipe/is-attachment-exist.pipe';
+import { JwtAuthGuard } from '../auth/strategy/jwt-auth.guard';
+import { IsHouseExistPipe } from '../house/pipe/is-house-exist.pipe';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { Roles } from 'src/common/decorator/roles.decorator';
-import { RoleCode, RoomStatus } from '@prisma/client';
-import { GetUser } from 'src/common/decorator/get_user.decorator';
-import { RolesGuard } from 'src/common/guard/roles.guard';
-import { JwtAuthGuard } from '../auth/strategy/jwt-auth.guard';
-import { FilesInterceptor } from '@nestjs/platform-express';
-import { UpdateAttachmentDto } from '../attachment/dto/update-attachment.dto';
+import { ParseRoomDtoInterceptor } from './interceptor/parse-room-dto.interceptor';
 import { IsRoomExist } from './pipe/is-room-exist.pipe';
-import { IsAttachmentExist } from '../attachment/pipe/is-attachment-exist.pipe';
-import { ApiTags } from '@nestjs/swagger';
-import { Public } from 'src/common/decorator/is-public.decorator';
+import { RoomService } from './room.service';
 
 @Controller('room')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -37,19 +39,33 @@ import { Public } from 'src/common/decorator/is-public.decorator';
 export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
+  // @Post()
+  // @UsePipes(new ValidationPipe())
+  // create(@Body() createRoomDto: CreateRoomDto) {
+  //   return this.roomService.create(createRoomDto);
+  // }
+
   @Post()
-  @UsePipes(new ValidationPipe())
-  create(@Body() createRoomDto: CreateRoomDto) {
-    return this.roomService.create(createRoomDto);
+  @UseInterceptors(FilesInterceptor('files', 10), ParseRoomDtoInterceptor)
+  @UsePipes(
+    new I18nValidationPipe({ whitelist: true, stopAtFirstError: false }),
+  )
+  createTest(
+    @Body('room') createRoomDto: CreateRoomDto,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    return this.roomService.createRoomWithImage(createRoomDto, files);
   }
 
   @Get(':id')
+  @Public()
   findAll(@Param('id') id: string) {
     return this.roomService.findOne(id);
   }
 
   @Get('/house/:houseId')
-  findAllRoomByRoomId(
+  @Public()
+  findAllRoomByHouseId(
     @Param('houseId') houseId: string,
     @Query('page') page?: number,
     @Query('page-size') pageSize?: number,
@@ -70,11 +86,32 @@ export class RoomController {
   //Test general where endpoint
   @Get('/house/:houseId/test')
   @Public()
-  findAllRoomByRoomIdTest(
-    @Param('houseId') houseId: string,
+  findAllRoomByHouseIdTest(
+    @Param('houseId', IsHouseExistPipe) houseId: string,
     @Query() query?: Record<string, string>,
   ) {
     return this.roomService.findAllRoomByRoomIdGeneral(query, houseId);
+  }
+
+  @Get('/house/:houseId/test2')
+  @Public()
+  findAllRoomByHouseIdTest2(
+    @Param('houseId', IsHouseExistPipe) houseId: string,
+    @Query(
+      new DirectFilterPipe<any, Prisma.RoomWhereInput>([
+        'roomName',
+        'rentPrice',
+        'status',
+        'AND',
+      ]),
+    )
+    filterDto: FilterDto<Prisma.RoomWhereInput>,
+  ) {
+    console.log(filterDto);
+    return this.roomService.findAllRoomByRoomIdGeneral(
+      filterDto.findOptions,
+      houseId,
+    );
   }
 
   @Post(':id/image')

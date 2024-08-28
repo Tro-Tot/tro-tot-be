@@ -1,16 +1,21 @@
 model RoomService {
-  id             String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  houseServiceId String         @map("house_service_id") @db.Uuid
-  roomHistoryId  String         @map("room_history_id") @db.Uuid
-  status         String         @default("available") @map("status")
-  fromDate       DateTime?      @map("from_date") @db.Timestamptz(6)
-  toDate         DateTime?      @map("to_date") @db.Timestamptz(6)
-  createdAt      DateTime?      @default(now()) @map("created_at") @db.Timestamptz()
-  deletedAt      DateTime?      @map("deleted_at") @db.Timestamptz()
-  updatedAt      DateTime?      @updatedAt @map("updated_at") @db.Timestamptz()
-  houseService   HouseService   @relation(fields: [houseServiceId], references: [id])
-  roomHistory    RoomHistory    @relation(fields: [roomHistoryId], references: [id])
-  serviceUsages  ServiceUsage[]
+  id                      String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  houseServiceId          String                    @map("house_service_id") @db.Uuid
+  room_id                 String                    @map("room_id") @db.Uuid
+  status                  RoomServiceStatus         @default(AVAILABLE) @map("status")
+  createdAt               DateTime?                 @default(now()) @map("created_at") @db.Timestamptz()
+  deletedAt               DateTime?                 @map("deleted_at") @db.Timestamptz()
+  updatedAt               DateTime?                 @updatedAt @map("updated_at") @db.Timestamptz()
+  houseService            HouseService              @relation(fields: [houseServiceId], references: [id])
+  room                    Room                      @relation(fields: [room_id], references: [id])
+  RoomServiceSubscription RoomServiceSubscription[]
 
-  @@map("room_member_services")
+  @@map("room_services")
+}
+
+enum RoomServiceStatus {
+  AVAILABLE
+  UNAVAILABLE
+  OUT_OF_SERVICE
+  UNREGISTERABLE
 }
