@@ -25,7 +25,7 @@ import { RolesGuard } from 'src/common/guard/roles.guard';
 import { UpdateAttachmentDto } from '../attachment/dto/update-attachment.dto';
 import { IsAttachmentExist } from '../attachment/pipe/is-attachment-exist.pipe';
 import { JwtAuthGuard } from '../auth/strategy/jwt-auth.guard';
-import { IsHouseExist } from '../house/pipe/is-house-exist';
+import { IsHouseExistPipe } from '../house/pipe/is-house-exist.pipe';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { ParseRoomDtoInterceptor } from './interceptor/parse-room-dto.interceptor';
@@ -87,7 +87,7 @@ export class RoomController {
   @Get('/house/:houseId/test')
   @Public()
   findAllRoomByHouseIdTest(
-    @Param('houseId', IsHouseExist) houseId: string,
+    @Param('houseId', IsHouseExistPipe) houseId: string,
     @Query() query?: Record<string, string>,
   ) {
     return this.roomService.findAllRoomByRoomIdGeneral(query, houseId);
@@ -96,7 +96,7 @@ export class RoomController {
   @Get('/house/:houseId/test2')
   @Public()
   findAllRoomByHouseIdTest2(
-    @Param('houseId', IsHouseExist) houseId: string,
+    @Param('houseId', IsHouseExistPipe) houseId: string,
     @Query(
       new DirectFilterPipe<any, Prisma.RoomWhereInput>([
         'roomName',
