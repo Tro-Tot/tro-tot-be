@@ -31,7 +31,7 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
     // Check if token is blacklisted before returning user data
     const isBlacklisted =
       await this.blackListTokenService.isTokenBlacklisted(token);
-    if (!isBlacklisted) {
+    if (isBlacklisted) {
       const i18n = I18nContext.current();
 
       let error: I18nValidationError = {

@@ -8,11 +8,12 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
+import { IsHouseExist } from 'src/modules/house/validator/is-house-exist-validator';
 
 export class CreateRoomDto {
   constructor(partial: Partial<CreateRoomDto>) {}
   @ApiProperty({ description: 'House ID', type: String })
-  // @IsHouseExist()
+  @IsHouseExist()
   @IsUUID()
   @IsNotEmpty()
   houseId: string;
