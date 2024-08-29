@@ -107,7 +107,6 @@ export class RoomController {
     )
     filterDto: FilterDto<Prisma.RoomWhereInput>,
   ) {
-    console.log(filterDto);
     return this.roomService.findAllRoomByRoomIdGeneral(
       filterDto.findOptions,
       houseId,

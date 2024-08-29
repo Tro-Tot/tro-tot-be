@@ -25,11 +25,12 @@ export class RoomServiceController {
   }
 
   @Get('room/:roomId')
+  @UsePipes(new I18nValidationPipe())
   getAllRoomServiceBasedOnRoomId(
     @Param('roomId') roomId: string,
     @Query(
       new DirectFilterPipe<any, Prisma.RoomServiceWhereInput>(
-        ['createdAt', 'status'],
+        ['status'],
         ['houseService.service.serviceName'],
       ),
     )

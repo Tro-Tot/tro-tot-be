@@ -84,23 +84,27 @@ export class RoomServiceService {
     findOptions: Prisma.RoomServiceFindManyArgs,
   ) {
     try {
-      const result = await this.prismaService.roomService.findMany({
-        ...findOptions,
-        where: {
-          ...findOptions.where,
-          roomId: roomId,
-        },
-      });
+      const [result, total] = await Promise.all([
+        this.prismaService.roomService.findMany({
+          ...findOptions,
+          where: { roomId, ...findOptions.where },
+        }),
+        this.prismaService.roomService.count({
+          where: { roomId, ...findOptions.where },
+        }),
+      ]);
 
       return apiSuccess(
         200,
-        result,
+        { result, total },
         this.i18n.translate('room-service.find_successfully'),
       );
     } catch (error) {
       throw error;
     }
   }
+
+  async getOneRoomService(id: string) {}
 
   async updateRoomService(updateRoomServiceDto: UpdateRoomServiceDto) {}
   async deleteRoomService(roomId: string) {}
