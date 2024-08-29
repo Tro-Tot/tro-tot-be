@@ -1,9 +1,9 @@
 model Renter {
   id                    String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId                String                 @map("user_id") @db.Uuid
-  createdAt             DateTime?              @default(now()) @map("created_at") @db.Timestamptz()
-  deletedAt             DateTime?              @map("deleted_at") @db.Timestamptz()
-  updatedAt             DateTime?              @updatedAt @map("updated_at") @db.Timestamptz()
+  createdAt             DateTime?              @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt             DateTime?              @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt             DateTime?              @map("deleted_at") @db.Timestamptz(6)
   addRoomMemberRequests AddRoomMemberRequest[]
   rentalRequests        RentalRequest[]
   renterContracts       RenterContract[]

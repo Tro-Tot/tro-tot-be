@@ -1,15 +1,13 @@
 model RoomVisitRequest {
-  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  roomId    String    @map("room_id") @db.Uuid
-  renterId  String    @map("renter_id") @db.Uuid
-  status    String    @default("pending") @map("status")
-  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamptz()
-  deletedAt DateTime? @map("deleted_at") @db.Timestamptz()
-  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
-
-  room   Room   @relation(fields: [roomId], references: [id])
-  renter Renter @relation(fields: [renterId], references: [id])
-
+  id                 String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  roomId             String              @map("room_id") @db.Uuid
+  renterId           String              @map("renter_id") @db.Uuid
+  status             String              @default("pending") @map("status")
+  createdAt          DateTime?           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime?           @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt          DateTime?           @map("deleted_at") @db.Timestamptz(6)
+  renter             Renter              @relation(fields: [renterId], references: [id])
+  room               Room                @relation(fields: [roomId], references: [id])
   roomVisitSchedules RoomVisitSchedule[]
 
   @@map("room_member_requests")

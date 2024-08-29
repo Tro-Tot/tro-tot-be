@@ -1,14 +1,14 @@
 model AppraisalReport {
-  id                        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  houseAppraisalId          String    @map("house_appraisal_id") @unique @db.Uuid
-  managerNote               String?   @map("manager_note")
-  isQualified               Boolean   @map("is_qualified")
-  companyRevenuePercentage  Float     @map("company_revenue_percentage")
-  landlordRevenuePercentage Float     @map("landlord_revenue_percentage")
-  createdAt                 DateTime? @default(now()) @map("created_at") @db.Timestamptz()
-  deletedAt                 DateTime? @map("deleted_at") @db.Timestamptz()
-  updatedAt                 DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
+  id                        String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  houseAppraisalId          String         @unique @map("house_appraisal_id") @db.Uuid
+  managerNote               String?        @map("manager_note")
+  isQualified               Boolean        @map("is_qualified")
+  companyRevenuePercentage  Float          @map("company_revenue_percentage")
+  landlordRevenuePercentage Float          @map("landlord_revenue_percentage")
+  createdAt                 DateTime?      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                 DateTime?      @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt                 DateTime?      @map("deleted_at") @db.Timestamptz(6)
+  HouseAppraisal            HouseAppraisal @relation(fields: [houseAppraisalId], references: [id])
 
-  HouseAppraisal HouseAppraisal @relation(fields: [houseAppraisalId], references: [id])
   @@map("appraisal_report")
 }

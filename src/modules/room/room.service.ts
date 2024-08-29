@@ -1,5 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { Attachment, FileType, Prisma, Room, RoomStatus } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { I18nService } from 'nestjs-i18n';
 import { PrismaService } from 'prisma/prisma.service';
 import { PathConstants } from 'src/common/constant/path.constant';
@@ -182,11 +183,6 @@ export class RoomService {
     }
   }
 
-  //TODO: Find all room by house id
-  findAll() {
-    return `This action returns all room`;
-  }
-
   async findAllRoomByHouseId(
     params: {
       page?: number;
@@ -252,6 +248,10 @@ export class RoomService {
     try {
       const result = await this.prismaService.room.findMany({
         ...findOptions,
+        where: {
+          ...findOptions.where,
+          houseId: houseId,
+        },
       });
       return apiSuccess(200, { result }, 'Get rooms successfully');
     } catch (error) {
@@ -327,22 +327,13 @@ export class RoomService {
         },
       });
       return apiSuccess(HttpStatus.OK, result, this.i18n.t('room.room_found'));
-    } catch (error) {
-      // if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      //   if (error.code === 'P2025') {
-      //     return apiFailed(
-      //       HttpStatus.NOT_FOUND,
-      //       this.i18n.t('room.room_not_found'),
-      //     );
-      //   } else {
-      //     return apiFailed(
-      //       HttpStatus.INTERNAL_SERVER_ERROR,
-      //       this.i18n.t('room.room_find_error'),
-      //     );
-      //   }
-      // }
-
-      error.meta = error.meta || {};
+    } catch (error: any) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        error.meta = error.meta || {};
+        error.meta.property = 'roomId';
+      } else {
+        error.meta = error.meta || {};
+      }
       error.meta.target = 'Room';
       throw error;
     }

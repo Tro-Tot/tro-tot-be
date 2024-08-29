@@ -1,16 +1,16 @@
 model RoomServiceSubscription {
-    id            String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-    roomServiceId String         @map("room_service_id") @db.Uuid
-    roomHistoryId String         @map("room_history_id") @db.Uuid
-    status        String         @default("available") @map("status")
-    fromDate      DateTime?      @map("from_date") @db.Timestamptz(6)
-    toDate        DateTime?      @map("to_date") @db.Timestamptz(6)
-    createdAt     DateTime?      @default(now()) @map("created_at") @db.Timestamptz()
-    deletedAt     DateTime?      @map("deleted_at") @db.Timestamptz()
-    updatedAt     DateTime?      @updatedAt @map("updated_at") @db.Timestamptz()
-    ServiceUsage  ServiceUsage[]
-    RoomService   RoomService    @relation(fields: [roomServiceId], references: [id])
-    RoomHistory   RoomHistory    @relation(fields: [roomHistoryId], references: [id])
+  id            String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  roomServiceId String         @map("room_service_id") @db.Uuid
+  roomHistoryId String         @map("room_history_id") @db.Uuid
+  status        String         @default("available") @map("status")
+  fromDate      DateTime?      @map("from_date") @db.Timestamptz(6)
+  toDate        DateTime?      @map("to_date") @db.Timestamptz(6)
+  createdAt     DateTime?      @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt     DateTime?      @map("deleted_at") @db.Timestamptz(6)
+  updatedAt     DateTime?      @updatedAt @map("updated_at") @db.Timestamptz(6)
+  RoomHistory   RoomHistory    @relation(fields: [roomHistoryId], references: [id])
+  RoomService   RoomService    @relation(fields: [roomServiceId], references: [id])
+  ServiceUsage  ServiceUsage[]
 
-    @@map("room_service_subscriptions")
+  @@map("room_service_subscriptions")
 }

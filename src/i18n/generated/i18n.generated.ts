@@ -16,6 +16,10 @@ export type I18nTranslations = {
         "no_token_provided": string;
         "blacklist_token": string;
     };
+    "house-service": {
+        "invalid_status": string;
+        "house_service_not_exist": string;
+    };
     "house": {
         "house_not_exist": string;
         "house_exist": string;
@@ -27,6 +31,12 @@ export type I18nTranslations = {
         "FOREIGN_KEY_CONSTRAINT": string;
         "UNIQUE_CONSTRAINT": string;
         "DATABASE_CONNECTION_FAILED": string;
+    };
+    "room-service": {
+        "add_room_service_successfully": string;
+        "add_room_service_failed": string;
+        "find_successfully": string;
+        "house_id_not_match": string;
     };
     "room": {
         "room_not_exist": string;

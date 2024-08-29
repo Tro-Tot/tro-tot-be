@@ -419,6 +419,7 @@ export class AuthService {
       if (e.code === 'P2025') {
         return apiFailed(401, 'Refresh token is invalid', 'UNAUTHORIZED');
       }
+      console.log(e);
       return apiFailed(500, 'Internal server error', e);
     }
   }

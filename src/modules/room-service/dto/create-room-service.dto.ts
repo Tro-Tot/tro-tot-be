@@ -1,12 +1,12 @@
 import { IsNotEmpty, IsUUID } from 'class-validator';
-import { IsHouseExist } from 'src/modules/house/validator/is-house-exist-validator';
+import { IsHouseServiceExist } from 'src/modules/house-service/validator/is-house-service-exist.validator';
 import { IsRoomExist } from 'src/modules/room/validator/is-room-exist.validator';
 
 export class CreateRoomServiceDto {
   @IsNotEmpty()
   @IsUUID()
-  @IsHouseExist()
-  houseId: string;
+  @IsHouseServiceExist()
+  houseServiceId: string;
 
   @IsNotEmpty()
   @IsUUID()

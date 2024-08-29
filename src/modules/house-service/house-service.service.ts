@@ -1,12 +1,15 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
+import { HouseServiceStatus, Prisma } from '@prisma/client';
+import { PrismaService } from 'prisma/prisma.service';
+import { apiFailed, apiSuccess } from 'src/common/dto/api-response';
 import { CreateHouseServiceDto } from './dto/create-house-service.dto';
 import { UpdateHouseServiceDto } from './dto/update-house-service.dto';
-import { PrismaService } from 'prisma/prisma.service';
-import { HouseServiceStatus, Prisma } from '@prisma/client';
-import { apiFailed, apiSuccess } from 'src/common/dto/api-response';
 
 @Injectable()
 export class HouseServiceService {
+  updateHouseService(updateHouseServiceDto: UpdateHouseServiceDto) {
+    //Todo: after finish room service logic to check availabity of service subscription
+  }
   constructor(private prismaService: PrismaService) {}
   async create(createHouseServiceDto: CreateHouseServiceDto) {
     const houseService: Prisma.HouseServiceCreateInput = {

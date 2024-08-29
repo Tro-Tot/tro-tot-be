@@ -31,14 +31,6 @@ export class PrismaExceptionFilter implements ExceptionFilter {
     logger.error(exception.stack);
     logger.verbose('-------------Exception End---------------');
     let responseBody: ApiResponse;
-
-    // let message: ErrorDetail={
-    //   property: '',
-    //   target: undefined,
-    //   children: [],
-    //   constraints: undefined
-    // }
-
     let message = exception.message;
     let error: I18nValidationError = {
       property: '',
@@ -56,6 +48,10 @@ export class PrismaExceptionFilter implements ExceptionFilter {
               entity: this.i18n.t('room.room_object_name'),
             },
           });
+          if (exception.meta?.property) {
+            error.property = exception.meta.property as string;
+          }
+
           responseBody = apiFailed(HttpStatus.NOT_FOUND, message, [error]);
         } else {
           message = exception?.message

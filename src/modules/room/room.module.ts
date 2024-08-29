@@ -5,10 +5,11 @@ import { HouseService } from '../house/house.service';
 import { ImageModule } from '../image/image.module';
 import { RoomController } from './room.controller';
 import { RoomService } from './room.service';
+import { IsRoomExistValidator } from './validator/is-room-exist.validator';
 
 @Module({
   controllers: [RoomController],
   imports: [PrismaModule, ImageModule, AttachmentModule],
-  providers: [RoomService, HouseService],
+  providers: [RoomService, HouseService, IsRoomExistValidator],
 })
 export class RoomModule {}

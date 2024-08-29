@@ -1,9 +1,11 @@
 model ServiceSchedule {
-  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  dayOfMonth Int       @map("day_of_month") //1-28
-  createdAt  DateTime? @default(now()) @map("created_at") @db.Timestamptz()
-  deletedAt  DateTime? @map("deleted_at") @db.Timestamptz()
-  updatedAt  DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
+  id               String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  dayOfMonth       Int           @map("day_of_month")
+  createdAt        DateTime?     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime?     @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt        DateTime?     @map("deleted_at") @db.Timestamptz(6)
+  house_service_id String?       @unique @db.Uuid
+  house_services   HouseService? @relation(fields: [house_service_id], references: [id])
 
   @@map("service_schedules")
 }

@@ -1,21 +1,21 @@
 model RoomAppraisal {
-  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  houseAppraisalId  String    @map("house_appraisal_id") @db.Uuid
-  roomNumber        Int       @map("room_number")
-  name              String    @map("name")
-  floorNumber       Int       @map("floor_number")
-  furniture         String    @map("furniture")
-  width             Float     @map("width")
-  length            Float     @map("length")
-  description       String    @map("description")
-  landlordRentPrice Float     @map("landlord_rent_price")
-  landlordDeposit   Float     @map("landlord_deposit")
-  hasMezzanine      Boolean   @map("has_mezzanine")
-  isHouse           Boolean   @map("is_house")
-  createdAt         DateTime? @default(now()) @map("created_at") @db.Timestamptz()
-  deletedAt         DateTime? @map("deleted_at") @db.Timestamptz()
-  updatedAt         DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
+  id                String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  houseAppraisalId  String         @map("house_appraisal_id") @db.Uuid
+  roomNumber        Int            @map("room_number")
+  name              String         @map("name")
+  floorNumber       Int            @map("floor_number")
+  furniture         String         @map("furniture")
+  width             Float          @map("width")
+  length            Float          @map("length")
+  description       String         @map("description")
+  landlordRentPrice Float          @map("landlord_rent_price")
+  landlordDeposit   Float          @map("landlord_deposit")
+  hasMezzanine      Boolean        @map("has_mezzanine")
+  isHouse           Boolean        @map("is_house")
+  createdAt         DateTime?      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime?      @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt         DateTime?      @map("deleted_at") @db.Timestamptz(6)
+  HouseAppraisal    HouseAppraisal @relation(fields: [houseAppraisalId], references: [id])
 
-  HouseAppraisal HouseAppraisal @relation(fields: [houseAppraisalId], references: [id])
   @@map("room_appraisal")
 }

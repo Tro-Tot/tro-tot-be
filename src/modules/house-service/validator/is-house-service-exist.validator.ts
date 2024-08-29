@@ -8,13 +8,15 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 import { I18nService } from 'nestjs-i18n';
-import { RoomService } from '../room.service';
+import { HouseServiceService } from '../house-service.service';
 
 @Injectable()
 @ValidatorConstraint({ async: true })
-export class IsRoomExistValidator implements ValidatorConstraintInterface {
+export class IsHouseServiceExistValidator
+  implements ValidatorConstraintInterface
+{
   constructor(
-    private roomService: RoomService,
+    private houseServiceService: HouseServiceService,
     private i18n: I18nService,
   ) {}
 
@@ -24,23 +26,23 @@ export class IsRoomExistValidator implements ValidatorConstraintInterface {
   ): Promise<boolean> {
     if (!IsUUID(value)) return false;
 
-    const room = await this.roomService.findOne(value);
+    const houseService = await this.houseServiceService.findOne(value);
 
-    return !!room;
+    return !!houseService;
   }
   defaultMessage?(validationArguments?: ValidationArguments): string {
-    return this.i18n.t('room.room_not_exist');
+    return this.i18n.t('house-service.house_service_not_exist');
   }
 }
 
-export function IsRoomExist(validationOptions?: ValidationOptions) {
+export function IsHouseServiceExist(validationOptions?: ValidationOptions) {
   return function (object: Object, propertyName: string) {
     registerDecorator({
       target: object.constructor,
       propertyName: propertyName,
       options: validationOptions,
       constraints: [],
-      validator: IsRoomExistValidator,
+      validator: IsHouseServiceExistValidator,
     });
   };
 }
