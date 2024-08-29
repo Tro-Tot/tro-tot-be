@@ -1,51 +1,52 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ServiceStatus, ServiceType } from '@prisma/client';
+import { IsOptional } from 'class-validator';
 import {
-  IsBoolean,
-  IsEnum,
-  IsInt,
-  IsNumber,
-  IsString,
-  IsUUID,
-  Min,
-} from 'class-validator';
+  IsBooleanCustom,
+  IsEnumCustom,
+  IsNumberCustom,
+  IsStringCustom,
+  IsUUIDCustom,
+  MinCustom,
+} from 'src/common/decorator/class-validator-custom.decorator';
 
 export class CreateServiceDTO {
   @ApiProperty()
-  @IsUUID()
+  @IsOptional()
+  @IsUUIDCustom()
   serviceScheduleId: string;
 
   @ApiProperty()
-  @IsString()
+  @IsStringCustom()
   serviceName: string;
 
   @ApiProperty()
-  @IsNumber()
-  @Min(0)
+  @IsNumberCustom()
+  @MinCustom(0)
   servicePrice: number;
 
   @ApiProperty()
-  @IsEnum(ServiceType)
+  @IsEnumCustom(ServiceType)
   serviceType: ServiceType;
 
   @ApiProperty()
-  @IsString()
+  @IsStringCustom()
   unit: string;
 
   @ApiProperty()
-  @IsInt()
-  @Min(0)
+  @IsNumberCustom()
+  @MinCustom(0)
   billCycle: number;
 
   @ApiProperty()
-  @IsBoolean()
+  @IsBooleanCustom()
   isCompulsory: boolean;
 
   @ApiProperty()
-  @IsBoolean()
+  @IsBooleanCustom()
   isManual: boolean;
 
   @ApiProperty()
-  @IsEnum(ServiceStatus)
+  @IsEnumCustom(ServiceStatus)
   status: ServiceStatus;
 }

@@ -144,7 +144,7 @@ export class HouseService {
     return apiSuccess(
       HttpStatus.CREATED,
       { successful, failed },
-      'Upload Image successfully',
+      this.i18nService.t('house.house_image_upload_success'),
     );
   }
 
@@ -167,6 +167,10 @@ export class HouseService {
       //ignore error
     }
 
-    return apiSuccess(HttpStatus.CREATED, result, 'Deleted image successfully');
+    return apiSuccess(
+      HttpStatus.CREATED,
+      result,
+      this.i18nService.t('house.house_image_delete_success'),
+    );
   }
 }

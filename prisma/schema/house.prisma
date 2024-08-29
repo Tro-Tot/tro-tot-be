@@ -17,7 +17,7 @@ model House {
   width                 Float     @map("width")
   length                Float     @map("length")
   roadWidth             Float     @map("road_width")
-  title                 String    @map("title")
+  title                 String?    @map("title")
   description           String    @map("description")
   legalDocument         String    @map("legal_document")
   createdAt             DateTime? @default(now()) @map("created_at") @db.Timestamptz()

@@ -1,33 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsNumber,
-  IsOptional,
-  IsString,
-  Min,
-  MinLength,
-} from 'class-validator';
-import { i18nValidationMessage } from 'nestjs-i18n';
+import { IsOptional } from 'class-validator';
 import {
   IsNotEmptyCustom,
+  IsNumberCustom,
   IsStringCustom,
+  MinCustom,
+  MinLengthCustom,
 } from 'src/common/decorator/class-validator-custom.decorator';
-import { I18nTranslations } from 'src/i18n/generated/i18n.generated';
-import { IsHouseExist } from '../validator/is-house-exist-validator';
 
 export class CreateHouseDTO {
   @ApiProperty()
-  @IsString()
+  @IsStringCustom()
   @IsOptional()
-  @IsHouseExist()
   cooperativeContractId: string;
 
   @ApiProperty()
-  @MinLength(3, {
-    message: i18nValidationMessage<I18nTranslations>(
-      'validation.INVALID_MIN_LENGTH',
-      { length: 3 },
-    ),
-  })
+  @MinLengthCustom(3)
   @IsNotEmptyCustom()
   @IsStringCustom()
   name: string;
@@ -58,51 +46,56 @@ export class CreateHouseDTO {
   houseNumber: string;
 
   @ApiProperty()
-  @IsNumber()
-  @Min(0)
+  @IsNumberCustom()
+  @MinCustom(0)
   latitude: number;
 
   @ApiProperty()
-  @IsNumber()
-  @Min(0)
+  @IsNumberCustom()
+  @MinCustom(0)
   longitude: number;
 
   @ApiProperty()
-  @IsString()
+  @IsStringCustom()
   houseType: string;
 
   @ApiProperty()
-  @IsNumber()
-  @Min(0)
+  @IsNumberCustom()
+  @MinCustom(0)
   numberOfFloor: number;
 
   @ApiProperty()
-  @IsNumber()
-  @Min(1)
+  @IsNumberCustom()
+  @MinCustom(0)
   numberOfRoom: number;
 
   @ApiProperty()
-  @IsNumber()
-  @Min(1)
+  @IsNumberCustom()
+  @MinCustom(0)
   numberOfBathroom: number;
 
   @ApiProperty()
-  @IsNumber()
+  @IsNumberCustom()
   width: number;
 
   @ApiProperty()
-  @IsNumber()
+  @IsNumberCustom()
   length: number;
 
   @ApiProperty()
-  @IsNumber()
+  @IsNumberCustom()
   roadWidth: number;
 
   @ApiProperty()
-  @IsString()
+  @IsStringCustom()
+  title: string;
+
+  @ApiProperty()
+  @IsStringCustom()
   description: string;
 
   @ApiProperty()
-  @IsString()
+  @IsOptional()
+  @IsStringCustom()
   legalDocument: string;
 }
