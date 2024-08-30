@@ -42,16 +42,32 @@ export class PrismaExceptionFilter implements ExceptionFilter {
     };
     switch (exception.code) {
       case PrismaErrorEnum.OperationDependencyNotFound:
-        if (exception.meta?.target === 'Room') {
+        //Room
+        if (exception.meta?.target === 'room') {
           message = this.i18n.t('prisma.NOT_FOUND', {
             args: {
               entity: this.i18n.t('room.room_object_name'),
             },
           });
+          //To know which property are we searching
           if (exception.meta?.property) {
             error.property = exception.meta.property as string;
           }
 
+          responseBody = apiFailed(HttpStatus.NOT_FOUND, message, [error]);
+        }
+
+        //Room service
+        else if (exception.meta?.target === 'roomService') {
+          message = this.i18n.t('prisma.NOT_FOUND', {
+            args: {
+              entity: this.i18n.t('room-service.room_service_object_name'),
+            },
+          });
+          //To know which property are we searching
+          if (exception.meta?.property) {
+            error.property = exception.meta.property as string;
+          }
           responseBody = apiFailed(HttpStatus.NOT_FOUND, message, [error]);
         } else {
           message = exception?.message

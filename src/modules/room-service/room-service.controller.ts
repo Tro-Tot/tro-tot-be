@@ -24,6 +24,10 @@ export class RoomServiceController {
     return this.roomServiceService.addServiceToRoom(createRoomServiceDto);
   }
 
+  @Get(':id')
+  getOneRoom(@Param('id') roomServiceId: string) {
+    return this.roomServiceService.findOneRoomService(roomServiceId);
+  }
   @Get('room/:roomId')
   @UsePipes(new I18nValidationPipe())
   getAllRoomServiceBasedOnRoomId(
@@ -36,7 +40,7 @@ export class RoomServiceController {
     )
     filterDto: FilterDto<Prisma.RoomServiceWhereInput>,
   ) {
-    return this.roomServiceService.getServiceBasedOnroomId(
+    return this.roomServiceService.findServiceBasedOnroomId(
       roomId,
       filterDto.findOptions,
     );

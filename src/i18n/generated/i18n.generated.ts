@@ -36,7 +36,9 @@ export type I18nTranslations = {
         "add_room_service_successfully": string;
         "add_room_service_failed": string;
         "find_successfully": string;
+        "find_one_successfully": string;
         "house_id_not_match": string;
+        "room_service_object_name": string;
     };
     "room": {
         "room_not_exist": string;

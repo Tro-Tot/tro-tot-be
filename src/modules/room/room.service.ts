@@ -334,7 +334,7 @@ export class RoomService {
       } else {
         error.meta = error.meta || {};
       }
-      error.meta.target = 'Room';
+      error.meta.target = 'room';
       throw error;
     }
   }

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { I18nService, I18nValidationError } from 'nestjs-i18n';
 import { PrismaService } from 'prisma/prisma.service';
 import { apiFailed, apiSuccess } from 'src/common/dto/api-response';
@@ -79,7 +80,7 @@ export class RoomServiceService {
     }
   }
 
-  async getServiceBasedOnroomId(
+  async findServiceBasedOnroomId(
     roomId: string,
     findOptions: Prisma.RoomServiceFindManyArgs,
   ) {
@@ -88,6 +89,13 @@ export class RoomServiceService {
         this.prismaService.roomService.findMany({
           ...findOptions,
           where: { roomId, ...findOptions.where },
+          include: {
+            houseService: {
+              include: {
+                service: true,
+              },
+            },
+          },
         }),
         this.prismaService.roomService.count({
           where: { roomId, ...findOptions.where },
@@ -99,12 +107,42 @@ export class RoomServiceService {
         { result, total },
         this.i18n.translate('room-service.find_successfully'),
       );
-    } catch (error) {
+    } catch (error: any) {
       throw error;
     }
   }
 
-  async getOneRoomService(id: string) {}
+  async findOneRoomService(id: string) {
+    try {
+      const result = await this.prismaService.roomService.findFirstOrThrow({
+        where: { id },
+        include: {
+          houseService: {
+            include: {
+              service: true,
+            },
+          },
+        },
+      });
+
+      return apiSuccess(
+        200,
+        result,
+        this.i18n.translate('room-service.find_one_successfully'),
+      );
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if ((error.code = 'P2025')) {
+          error.meta = error.meta || {};
+          error.meta.target = 'roomService';
+          error.meta.property = 'roomServiceId';
+        }
+
+        throw error;
+      }
+      throw error;
+    }
+  }
 
   async updateRoomService(updateRoomServiceDto: UpdateRoomServiceDto) {}
   async deleteRoomService(roomId: string) {}
