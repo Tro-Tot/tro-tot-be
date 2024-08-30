@@ -10,6 +10,7 @@ model RoomService {
   houseService            HouseService              @relation(fields: [houseServiceId], references: [id])
   room                    Room                      @relation(fields: [roomId], references: [id])
 
+  @@unique([houseServiceId, roomId])
   @@map("room_services")
 }
 
