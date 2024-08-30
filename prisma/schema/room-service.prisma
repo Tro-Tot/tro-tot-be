@@ -1,15 +1,16 @@
 model RoomService {
   id                      String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   houseServiceId          String                    @map("house_service_id") @db.Uuid
-  room_id                 String                    @map("room_id") @db.Uuid
+  roomId                  String                    @map("room_id") @db.Uuid
   status                  RoomServiceStatus         @default(AVAILABLE) @map("status")
-  createdAt               DateTime?                 @default(now()) @map("created_at") @db.Timestamptz()
-  deletedAt               DateTime?                 @map("deleted_at") @db.Timestamptz()
-  updatedAt               DateTime?                 @updatedAt @map("updated_at") @db.Timestamptz()
-  houseService            HouseService              @relation(fields: [houseServiceId], references: [id])
-  room                    Room                      @relation(fields: [room_id], references: [id])
+  createdAt               DateTime?                 @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt               DateTime?                 @map("deleted_at") @db.Timestamptz(6)
+  updatedAt               DateTime?                 @updatedAt @map("updated_at") @db.Timestamptz(6)
   RoomServiceSubscription RoomServiceSubscription[]
+  houseService            HouseService              @relation(fields: [houseServiceId], references: [id])
+  room                    Room                      @relation(fields: [roomId], references: [id])
 
+  @@unique([houseServiceId, roomId])
   @@map("room_services")
 }
 
