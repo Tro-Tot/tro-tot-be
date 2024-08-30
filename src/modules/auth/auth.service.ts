@@ -253,6 +253,7 @@ export class AuthService {
             'Created user successfully',
           );
         } catch (error) {
+          console.log(error);
           throw error;
         }
       },
