@@ -9,5 +9,6 @@ import { IsHouseServiceExistValidator } from './validator/is-house-service-exist
   controllers: [HouseServiceController],
   imports: [PrismaModule, HouseModule],
   providers: [HouseServiceService, IsHouseServiceExistValidator],
+  exports: [HouseServiceService],
 })
 export class HouseServiceModule {}

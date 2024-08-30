@@ -88,4 +88,20 @@ export class HouseServiceService {
     });
     return apiSuccess(HttpStatus.OK, result, 'House Service Disabled');
   }
+
+  async getAllCompulsoryServiceOfHouse(houseId: string) {
+    try {
+      const result = await this.prismaService.houseService.findMany({
+        where: {
+          houseId,
+          service: {
+            isCompulsory: true,
+          },
+        },
+      });
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

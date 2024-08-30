@@ -1,6 +1,16 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { Attachment, FileType, Prisma, Room, RoomStatus } from '@prisma/client';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import {
+  Attachment,
+  FileType,
+  Prisma,
+  PrismaClient,
+  Room,
+  RoomStatus,
+} from '@prisma/client';
+import {
+  DefaultArgs,
+  PrismaClientKnownRequestError,
+} from '@prisma/client/runtime/library';
 import { I18nService } from 'nestjs-i18n';
 import { PrismaService } from 'prisma/prisma.service';
 import { PathConstants } from 'src/common/constant/path.constant';
@@ -9,7 +19,10 @@ import { ApiResponse } from 'src/common/dto/response.dto';
 import { I18nTranslations } from 'src/i18n/generated/i18n.generated';
 import { AttachmentService } from '../attachment/attachment.service';
 import { UpdateAttachmentDto } from '../attachment/dto/update-attachment.dto';
+import { HouseServiceService } from '../house-service/house-service.service';
 import { ImageService } from '../image/image.service';
+import { CreateRoomServiceDto } from '../room-service/dto/create-room-service.dto';
+import { RoomServiceService } from '../room-service/room-service.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 
@@ -28,6 +41,8 @@ const fieldTypes: {
 export class RoomService {
   constructor(
     private prismaService: PrismaService,
+    private roomServiceService: RoomServiceService,
+    private houseServiceService: HouseServiceService,
     private imageService: ImageService,
     private attachmentService: AttachmentService,
     private readonly i18n: I18nService<I18nTranslations>,
@@ -37,7 +52,32 @@ export class RoomService {
     createRoomDto: CreateRoomDto,
     file: Express.Multer.File[],
   ) {
-    const room = await this.create(createRoomDto);
+    const room = await this.prismaService.$transaction(async (prisma) => {
+      const roomResult = await this.create(createRoomDto, prisma);
+
+      //Get all compusory service of the house
+      const compulsoryServices =
+        await this.houseServiceService.getAllCompulsoryServiceOfHouse(
+          roomResult.houseId,
+        );
+
+      //Assign compulsory service to room
+      if (compulsoryServices) {
+        for (const compulsoryService of compulsoryServices) {
+          const compulsoryServiceInput: CreateRoomServiceDto = {
+            houseServiceId: compulsoryService.id,
+            roomId: roomResult.id,
+          };
+          await this.roomServiceService.addServiceToRoom(
+            compulsoryServiceInput,
+            prisma,
+          );
+        }
+      }
+      // throw Error('test');
+
+      return roomResult;
+    });
 
     if (!room) {
       return apiFailed(500, null, this.i18n.t('room.room_create_fail'));
@@ -159,7 +199,13 @@ export class RoomService {
     }
   }
 
-  async create(createRoomDto: CreateRoomDto) {
+  async create(
+    createRoomDto: CreateRoomDto,
+    prisma: Omit<
+      PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
+      '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
+    > = this.prismaService,
+  ) {
     try {
       const room: Room = {
         ...createRoomDto,
@@ -172,7 +218,7 @@ export class RoomService {
         index: undefined,
       };
 
-      const roomResult = await this.prismaService.room.create({
+      const roomResult = await prisma.room.create({
         data: room,
       });
 
@@ -223,6 +269,16 @@ export class RoomService {
           orderBy,
           include: {
             attachments: true,
+            //Get Service
+            RoomService: {
+              include: {
+                houseService: {
+                  include: {
+                    service: true,
+                  },
+                },
+              },
+            },
           },
         }),
         this.prismaService.room.count({

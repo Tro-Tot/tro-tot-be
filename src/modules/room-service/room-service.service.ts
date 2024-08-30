@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { Prisma, PrismaClient } from '@prisma/client';
+import {
+  DefaultArgs,
+  PrismaClientKnownRequestError,
+} from '@prisma/client/runtime/library';
 import { I18nService, I18nValidationError } from 'nestjs-i18n';
 import { PrismaService } from 'prisma/prisma.service';
 import { apiFailed, apiSuccess } from 'src/common/dto/api-response';
@@ -15,22 +18,26 @@ export class RoomServiceService {
     private readonly i18n: I18nService<I18nTranslations>,
   ) {}
 
-  async addServiceToRoom(createRoomServiceDto: CreateRoomServiceDto) {
+  async addServiceToRoom(
+    createRoomServiceDto: CreateRoomServiceDto,
+    prisma: Omit<
+      PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
+      '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
+    > = this.prismaService,
+  ) {
     try {
-      console.log('asdasd');
       let errors: I18nValidationError[] = [];
 
       //Check if room and house service in the same house
-      const room = await this.prismaService.room.findFirstOrThrow({
+      const room = await prisma.room.findFirstOrThrow({
         where: { id: createRoomServiceDto.roomId },
       });
 
-      const houseService =
-        await this.prismaService.houseService.findFirstOrThrow({
-          where: {
-            id: createRoomServiceDto.houseServiceId,
-          },
-        });
+      const houseService = await prisma.houseService.findFirstOrThrow({
+        where: {
+          id: createRoomServiceDto.houseServiceId,
+        },
+      });
 
       if (room.houseId != houseService.houseId) {
         let roomIdError: I18nValidationError = {
@@ -59,7 +66,7 @@ export class RoomServiceService {
         },
       };
 
-      const result = await this.prismaService.roomService.create({
+      const result = await prisma.roomService.create({
         data: roomServiceInput,
         include: {
           houseService: true,
@@ -137,7 +144,6 @@ export class RoomServiceService {
           error.meta.target = 'roomService';
           error.meta.property = 'roomServiceId';
         }
-
         throw error;
       }
       throw error;
