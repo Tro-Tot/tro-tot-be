@@ -16,6 +16,21 @@ export type I18nTranslations = {
         "no_token_provided": string;
         "blacklist_token": string;
     };
+    "common": {
+        "success": string;
+        "fail": string;
+        "get_success": string;
+        "get_fail": string;
+        "create_success": string;
+        "create_fail": string;
+        "update_success": string;
+        "update_fail": string;
+        "delete_success": string;
+        "delete_fail": string;
+        "not_found": string;
+        "exist": string;
+        "not_exist": string;
+    };
     "house": {
         "house_object_name": string;
         "house_not_exist": string;

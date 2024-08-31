@@ -1,0 +1,15 @@
+{
+  "success": "Thành công",
+  "fail": "Thất bại",
+  "get_success": "Lấy dữ liệu thành công",
+  "get_fail": "Lấy dữ liệu thất bại",
+  "create_success": "Tạo thành công",
+  "create_fail": "Tạo thất bại",
+  "update_success": "Cập nhật thành công",
+  "update_fail": "Cập nhật thất bại",
+  "delete_success": "Xóa thành công",
+  "delete_fail": "Xóa thất bại",
+  "not_found": "Không tìm thấy",
+  "exist": "Đã tồn tại",
+  "not_exist": "Không tồn tại"
+}

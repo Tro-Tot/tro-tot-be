@@ -9,7 +9,7 @@ export class IsHouseExistPipe implements PipeTransform {
     private readonly i18nService: I18nService,
   ) {}
   async transform(value: string) {
-    const isHouseExist = !!(await this.houseService.findOne(value));
+    const isHouseExist = !!(await this.houseService.findFirst(value));
 
     if (!isHouseExist) {
       throw new BadRequestException('house.house_not_exist');

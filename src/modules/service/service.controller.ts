@@ -3,71 +3,97 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
   Post,
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
-import { RoleCode, Service } from '@prisma/client';
+import { RoleCode } from '@prisma/client';
+import { I18n, I18nContext } from 'nestjs-i18n';
 import { Public } from 'src/common/decorator/is-public.decorator';
 import { Roles } from 'src/common/decorator/roles.decorator';
+import { apiSuccess } from 'src/common/dto/api-response';
+import { RolesGuard } from 'src/common/guard/roles.guard';
+import { JwtAuthGuard } from '../auth/strategy/jwt-auth.guard';
 import { CreateServiceDTO } from './dto/create-service.dto';
 import { UpdateServiceDTO } from './dto/update-service.dto';
 import { ServiceService } from './service.service';
 
 @Controller('service')
 @ApiTags('service')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(RoleCode.MANAGER)
 export class ServiceController {
   constructor(private readonly serviceService: ServiceService) {}
 
   @Get()
   @Public()
-  async getServices(): Promise<Service[]> {
-    return this.serviceService.getServices();
+  async getServices(@I18n() i18n: I18nContext) {
+    return apiSuccess(
+      HttpStatus.OK,
+      await this.serviceService.getServices(),
+      i18n.t('common.get_success'),
+    );
   }
 
   @Get(':id')
   @Public()
-  async getService(@Param('id') id: string): Promise<Service> {
-    return this.serviceService.getService(id);
+  async getService(@Param('id') id: string, @I18n() i18n: I18nContext) {
+    return apiSuccess(
+      HttpStatus.OK,
+      await this.serviceService.getService(id),
+      i18n.t('common.get_success'),
+    );
   }
 
   @Post()
-  @Public()
   @Roles(RoleCode.MANAGER)
   async createService(
     @Body() createServiceDTO: CreateServiceDTO,
-  ): Promise<Service> {
-    return this.serviceService.createService(createServiceDTO);
+    @I18n() i18n: I18nContext,
+  ) {
+    return apiSuccess(
+      HttpStatus.CREATED,
+      await this.serviceService.createService(createServiceDTO),
+      i18n.t('common.create_success'),
+    );
   }
 
   @Post('/bulk')
-  @Public()
   @Roles(RoleCode.MANAGER)
-  async createServices(@Body() services: CreateServiceDTO[]): Promise<{
-    createdServices: Service[];
-    failedServices: CreateServiceDTO[];
-  }> {
-    return this.serviceService.createServices(services);
+  async createServices(
+    @Body() services: CreateServiceDTO[],
+    @I18n() i18n: I18nContext,
+  ) {
+    return apiSuccess(
+      HttpStatus.CREATED,
+      await this.serviceService.createServices(services),
+      i18n.t('common.create_success'),
+    );
   }
 
   @Put(':id')
-  @Public()
-  @Roles(RoleCode.MANAGER)
   async updateService(
     @Param('id') id: string,
     @Body() updateServiceDTO: UpdateServiceDTO,
-  ): Promise<Service> {
-    return this.serviceService.updateService(id, updateServiceDTO);
+    @I18n() i18n: I18nContext,
+  ) {
+    return apiSuccess(
+      HttpStatus.OK,
+      await this.serviceService.updateService(id, updateServiceDTO),
+      i18n.t('common.update_success'),
+    );
   }
 
   @Delete(':id')
-  @Public()
   @Roles(RoleCode.MANAGER)
-  async deleteService(@Param('id') id: string): Promise<Service> {
-    return this.serviceService.deleteService(id);
+  async deleteService(@Param('id') id: string, @I18n() i18n: I18nContext) {
+    return apiSuccess(
+      HttpStatus.OK,
+      await this.serviceService.deleteService(id),
+      i18n.t('common.delete_success'),
+    );
   }
 }

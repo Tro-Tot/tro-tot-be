@@ -27,8 +27,22 @@ export class HouseService {
     });
   }
 
-  async findOne(id: string) {
+  async findFirst(id: string) {
     return this.prismaService.house.findFirst({
+      where: {
+        id: id,
+      },
+      include: {
+        rooms: true,
+        cooperativeContract: true,
+        houseServices: true,
+        attachments: true,
+      },
+    });
+  }
+
+  async findUnique(id: string) {
+    return this.prismaService.house.findUnique({
       where: {
         id: id,
       },
@@ -148,7 +162,7 @@ export class HouseService {
     );
   }
 
-  async deletedImage(roomId: string, attachmentId: string) {
+  async deleteImage(roomId: string, attachmentId: string) {
     const result = await this.attachmentService.deleteHouseAttachment(
       attachmentId,
       roomId,

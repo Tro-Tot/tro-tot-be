@@ -25,7 +25,7 @@ export class IsHouseExistValidator implements ValidatorConstraintInterface {
   ): Promise<boolean> {
     if (!value) return false;
     if (!isUUID(value)) return false;
-    const house = await this.houseService.findOne(value);
+    const house = await this.houseService.findFirst(value);
 
     if (!house) {
       const errors: I18nValidationError[] = [
