@@ -23,6 +23,8 @@ import { JwtAuthGuard } from '../auth/strategy/jwt-auth.guard';
 import { CreateHouseDTO } from './dto/create-house.dto';
 import { HouseService } from './house.service';
 import { IsHouseExistPipe } from './pipe/is-house-exist.pipe';
+import { GetUser } from 'src/common/decorator/get_user.decorator';
+import { AuthenUser } from '../auth/dto/authen-user.dto';
 
 @Controller('house')
 export class HouseController {
@@ -81,6 +83,7 @@ export class HouseController {
     @Param('id', new CustomUUIDPipe(), IsHouseExistPipe)
     id: UUID,
     @Body() updateHouseDTO: CreateHouseDTO,
+    @GetUser() user: AuthenUser,
     @I18n() i18n: I18nContext,
   ) {
     return apiSuccess(

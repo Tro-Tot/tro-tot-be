@@ -39,7 +39,7 @@ export class SignUpDTO {
 
   @ApiProperty()
   @IsNotEmptyCustom()
-  @MinLengthCustom(6)
+  @MinLengthCustom(1)
   @IsStringCustom()
   firstName: string;
 

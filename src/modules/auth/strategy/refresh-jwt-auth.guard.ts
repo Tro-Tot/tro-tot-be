@@ -14,14 +14,15 @@ export class RefreshJwtAuthGuard extends AuthGuard('jwt-refresh') {
     let error: I18nValidationError = {
       property: '',
     };
-    error.value = info.message;
-    error.constraints = {
-      invalidToken: this.i18n.t('auth.UNAUTHORIZED'),
-    };
-    error.property = 'UNAUTHORIZED';
-    error.target = context.switchToHttp().getRequest().headers;
 
     if (info instanceof JsonWebTokenError) {
+      error.value = info.message;
+      error.constraints = {
+        invalidToken: this.i18n.t('auth.UNAUTHORIZED'),
+      };
+      error.property = 'UNAUTHORIZED';
+      error.target = context.switchToHttp().getRequest().headers;
+
       if (info.name === 'TokenExpiredError') {
         throw new CustomAuthException(401, this.i18n.t('auth.token_expired'), [
           error,
