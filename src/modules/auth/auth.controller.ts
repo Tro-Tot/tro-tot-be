@@ -10,6 +10,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
 import { RoleCode } from '@prisma/client';
 import { I18nValidationPipe } from 'nestjs-i18n';
+import { Roles } from 'src/common/decorator/roles.decorator';
+import { RolesGuard } from 'src/common/guard/roles.guard';
 import { GetUser } from '../../common/decorator/get_user.decorator';
 import { AuthService } from './auth.service';
 import { AuthenUser } from './dto/authen-user.dto';
@@ -20,12 +22,26 @@ import { ResetPasswordDTO } from './dto/reset-password.dto';
 import { SendResetPasswordDTO } from './dto/send-reset-password.dto';
 import { SignUpDTO } from './dto/sign-up.dto';
 import { VerifyOtpDTO } from './dto/verify-otp.dto';
+import { JwtAuthGuard } from './strategy/jwt-auth.guard';
 import { RefreshJwtAuthGuard } from './strategy/refresh-jwt-auth.guard';
 
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  //Test auth
+  @Get('/test')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(
+    RoleCode.LANDLORD,
+    RoleCode.TECHNICAL_STAFF,
+    RoleCode.STAFF,
+    RoleCode.MANAGER,
+  )
+  testAuth(@GetUser() user) {
+    return user;
+  }
 
   //SIGN IN FLOW
   @Post('/renter/login')

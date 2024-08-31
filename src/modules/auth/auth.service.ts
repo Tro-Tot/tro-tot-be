@@ -2,11 +2,15 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import {
+  LandLord,
+  Manager,
   Prisma,
   PrismaClient,
   RefreshToken,
-  Role,
+  Renter,
   RoleCode,
+  Staff,
+  TechnicalStaff,
   User,
 } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
@@ -20,12 +24,20 @@ import { BlacklistTokenService } from '../blacklist-token/blacklist-token.servic
 import { MailService } from '../mail/mail.service';
 import { OtpService } from '../otp/otp.service';
 import { RefreshTokenService } from '../refresh-token/refresh-token.service';
-import { RoleService } from '../role/role.service';
 import { UserService } from '../user/user.service';
 import { AuthenUser } from './dto/authen-user.dto';
 import { LoginAuthDTO } from './dto/login-auth.dto';
 import { Logout } from './dto/logout.dto';
 import { SignUpDTO } from './dto/sign-up.dto';
+interface UserRole {
+  id: string;
+  staffs?: Staff[];
+  renters?: Renter[];
+  managers?: Manager[];
+  landLords?: LandLord[];
+  technicalStaffs?: TechnicalStaff[];
+  // admins?: Admin[];
+}
 
 @Injectable()
 export class AuthService {
@@ -35,7 +47,6 @@ export class AuthService {
     private jwtService: JwtService,
     private blackListTokenService: BlacklistTokenService,
     private refreshTokenService: RefreshTokenService,
-    private roleService: RoleService,
     private prisma: PrismaService,
     private readonly mailService: MailService,
     private readonly otpService: OtpService,
@@ -44,8 +55,8 @@ export class AuthService {
 
   async loginGeneral(body: LoginAuthDTO, role: RoleCode) {
     try {
-      const user = await this.handleFindUser(body.email);
-      if (!user) {
+      const account = await this.handleFindUser(body.email);
+      if (!account) {
         const error: I18nValidationError[] = [
           {
             property: 'email',
@@ -58,11 +69,13 @@ export class AuthService {
         ];
         return apiFailed(404, this.i18n.t('auth.email_not_found'), error);
       }
-      const isMatch = await this.validatePassword(user.password, body.password);
+      const isMatch = await this.validatePassword(
+        account.password,
+        body.password,
+      );
 
-      const checkRoleSchema = await this.checkRoleSchema(user.id, role);
-
-      if (!checkRoleSchema) {
+      const user = await this.checkRoleSchema(account.id, role);
+      if (!user) {
         const error: I18nValidationError[] = [
           {
             property: 'role',
@@ -78,9 +91,9 @@ export class AuthService {
       }
 
       if (isMatch) {
-        const accessToken = await this.generateAccessToken(user);
+        const accessToken = await this.generateAccessToken(account, user, role);
         const refreshTokenResult =
-          await this.refreshTokenService.generateRefreshToken(user);
+          await this.refreshTokenService.generateRefreshToken(account);
 
         let refreshToken;
         if (refreshTokenResult?.refreshToken) {
@@ -103,7 +116,7 @@ export class AuthService {
 
         return apiSuccess(
           200,
-          { accessToken, refreshToken, user },
+          { accessToken, refreshToken, account },
           'Login success',
         );
       } else {
@@ -127,23 +140,23 @@ export class AuthService {
 
   //Use to check if roleSchema eg staffs, renters,... exist
   async checkRoleSchema(userId: string, role: RoleCode) {
-    let checkRoleSchema = false;
+    let checkRoleSchema = null;
 
     switch (role) {
       case RoleCode.RENTER: {
-        checkRoleSchema = !!(await this.prisma.renter.findFirst({
+        checkRoleSchema = await this.prisma.renter.findFirst({
           where: {
             userId: userId,
           },
-        }));
+        });
         break;
       }
       case RoleCode.STAFF: {
-        checkRoleSchema = !!(await this.prisma.staff.findFirst({
+        checkRoleSchema = await this.prisma.staff.findFirst({
           where: {
             userId: userId,
           },
-        }));
+        });
         break;
       }
       // Admin hasn't done yet
@@ -156,27 +169,27 @@ export class AuthService {
         break;
       }
       case RoleCode.TECHNICAL_STAFF: {
-        checkRoleSchema = !!(await this.prisma.technicalStaff.findFirst({
+        checkRoleSchema = await this.prisma.technicalStaff.findFirst({
           where: {
             userId: userId,
           },
-        }));
+        });
         break;
       }
       case RoleCode.MANAGER: {
-        checkRoleSchema = !!(await this.prisma.manager.findFirst({
+        checkRoleSchema = await this.prisma.manager.findFirst({
           where: {
             userId: userId,
           },
-        }));
+        });
         break;
       }
       case RoleCode.LANDLORD: {
-        checkRoleSchema = !!(await this.prisma.landLord.findFirst({
+        checkRoleSchema = await this.prisma.landLord.findFirst({
           where: {
             userId: userId,
           },
-        }));
+        });
         break;
       }
       default: {
@@ -195,10 +208,6 @@ export class AuthService {
           //Hash user's password
           user.password = await this.hashPassword(user.password);
 
-          //Apply renter role id
-          const role = await this.roleService.findRoleByCode(roleInput);
-          user.roleId = role.id;
-
           //Create User type
           const userInput: User = {
             ...user,
@@ -207,7 +216,7 @@ export class AuthService {
             isVerified: false,
             avatarUrl: user.avatarUrl || '',
             cidId: user.cidId || undefined,
-            roleId: role.id,
+            // roleId: role.id,
             status: 'active',
             createdAt: undefined,
             updatedAt: undefined,
@@ -218,9 +227,9 @@ export class AuthService {
             data: {
               ...userInput,
             },
-            include: {
-              role: true, // Include the role object in the result
-            },
+            // include: {
+            //   role: true, // Include the role object in the result
+            // },
           });
           if (!userResult) {
             return apiFailed(500, 'Created User failed');
@@ -236,7 +245,11 @@ export class AuthService {
             throw new BadRequestException('Add role schema failed!');
           }
 
-          const accessToken = await this.generateAccessToken(userResult);
+          const accessToken = await this.generateAccessToken(
+            userResult,
+            addRoleSchemaResult,
+            roleInput,
+          );
 
           //Generate refresh token and store it
           const refreshTokenResult =
@@ -333,6 +346,75 @@ export class AuthService {
     }
   }
 
+  async loginRoleCode(
+    prisma: Omit<
+      PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
+      '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
+    >,
+    userId: string,
+    role: RoleCode,
+  ) {
+    try {
+      const schema: any = {
+        id: undefined,
+        userId: userId,
+        createdAt: undefined,
+        updatedAt: undefined,
+        deletedAt: undefined,
+      };
+      let result = null;
+      switch (role) {
+        case RoleCode.RENTER: {
+          result = await prisma.renter.create({
+            data: {
+              ...schema,
+            },
+          });
+          break;
+        }
+        case RoleCode.LANDLORD: {
+          result = await prisma.landLord.create({
+            data: {
+              ...schema,
+            },
+          });
+          break;
+        }
+        case RoleCode.MANAGER: {
+          result = await prisma.manager.create({
+            data: {
+              ...schema,
+            },
+          });
+          break;
+        }
+        case RoleCode.STAFF: {
+          result = await prisma.staff.create({
+            data: {
+              ...schema,
+            },
+          });
+          break;
+        }
+        case RoleCode.TECHNICAL_STAFF: {
+          result = await prisma.technicalStaff.create({
+            data: {
+              ...schema,
+            },
+          });
+          break;
+        }
+
+        default: {
+          throw new BadRequestException('No role found!');
+        }
+      }
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async handleLogout(user: AuthenUser, logout: Logout) {
     try {
       const jwt = this.decodeJwt(user.accessToken);
@@ -350,13 +432,72 @@ export class AuthService {
     }
   }
 
-  generateAccessToken(user: { id: string; role?: Role }) {
+  generateAccessToken(account: { id: string }, user: any, roleCode: RoleCode) {
     const accessTokenExpiresIn = this.config.get('JWT_ACCESS_TOKEN_EXPIRY');
+
+    let payload: any = {
+      accountId: '',
+      role: '',
+    };
+
+    switch (roleCode) {
+      case RoleCode.ADMIN: {
+        payload = {
+          accountId: account.id,
+          role: roleCode,
+        };
+        payload.adminId = user.id;
+        break;
+      }
+      case RoleCode.LANDLORD: {
+        payload = {
+          accountId: account.id,
+          role: roleCode,
+        };
+        payload.landLordId = user.id;
+        break;
+      }
+      case RoleCode.MANAGER: {
+        payload = {
+          accountId: account.id,
+          role: roleCode,
+        };
+        payload.managerId = user.id;
+        break;
+      }
+      case RoleCode.RENTER: {
+        payload = {
+          accountId: account.id,
+          role: roleCode,
+        };
+        payload.renterId = user.id;
+        break;
+      }
+      case RoleCode.STAFF: {
+        payload = {
+          accountId: account.id,
+          role: roleCode,
+        };
+        payload.staffId = user.id;
+        break;
+      }
+      case RoleCode.TECHNICAL_STAFF: {
+        payload = {
+          accountId: account.id,
+          role: roleCode,
+        };
+        payload.technicalStaffId = user.id;
+        break;
+      }
+    }
+
+    console.log();
+
     const secrect = this.config.get('JWT_SECRET');
-    const accessToken = this.jwtService.sign(
-      { userId: user.id, role: user.role.code },
-      { secret: secrect, expiresIn: accessTokenExpiresIn },
-    );
+    const accessToken = this.jwtService.sign(payload, {
+      secret: secrect,
+      expiresIn: accessTokenExpiresIn,
+    });
     return accessToken;
   }
 
@@ -380,8 +521,6 @@ export class AuthService {
     try {
       const user = await this.userService.findOneByUserId(userId);
       if (user) {
-        console.log(userId);
-        console.log(refreshToken);
         const isRefreshTokenMatches =
           await this.refreshTokenService.validateRefreshToken(
             userId,
@@ -398,9 +537,44 @@ export class AuthService {
           refreshToken,
           false,
         );
-
+        let accessToken;
+        console.log(user);
+        if (user.staffs) {
+          accessToken = await this.generateAccessToken(
+            user,
+            user.staffs,
+            RoleCode.STAFF,
+          );
+        }
+        if (user.renters) {
+          accessToken = await this.generateAccessToken(
+            user,
+            user.renters,
+            RoleCode.RENTER,
+          );
+        }
+        if (user.managers) {
+          accessToken = await this.generateAccessToken(
+            user,
+            user.managers,
+            RoleCode.MANAGER,
+          );
+        }
+        if (user.landLords) {
+          accessToken = await this.generateAccessToken(
+            user,
+            user.landLords,
+            RoleCode.LANDLORD,
+          );
+        }
+        if (user.technicalStaffs) {
+          accessToken = await this.generateAccessToken(
+            user,
+            user.technicalStaffs,
+            RoleCode.TECHNICAL_STAFF,
+          );
+        }
         //Generate new token
-        const accessToken = await this.generateAccessToken(user);
         const newRefreshToken: RefreshToken =
           await this.refreshTokenService.generateRefreshToken(user);
 

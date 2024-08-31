@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { CreateRefreshTokenDto } from './dto/create-refresh-token.dto';
-import { UpdateRefreshTokenDto } from './dto/update-refresh-token.dto';
-import { Prisma, PrismaClient, RefreshToken } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
@@ -25,7 +23,7 @@ export class RefreshTokenService {
     });
   }
 
-  generateRefreshToken(user: { id: string; roleId: string }) {
+  generateRefreshToken(user: { id: string; roleId?: string }) {
     const refreshTokenExpiresIn = this.config.get('JWT_REFRESH_TOKEN_EXPIRY');
     const secrect = this.config.get('JWT_REFRESH_SECRET');
     const refreshTokenResult = this.jwtService.sign(
