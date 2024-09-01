@@ -15,6 +15,7 @@ export type I18nTranslations = {
         "UNAUTHORIZED": string;
         "no_token_provided": string;
         "blacklist_token": string;
+        "forbidden": string;
     };
     "house": {
         "house_object_name": string;

@@ -34,7 +34,7 @@ export class AuthController {
   @Get('/test')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(
-    RoleCode.LANDLORD,
+    // RoleCode.LANDLORD,
     RoleCode.TECHNICAL_STAFF,
     RoleCode.STAFF,
     RoleCode.MANAGER,
@@ -117,7 +117,7 @@ export class AuthController {
   @Get('/refresh-token')
   @UseGuards(RefreshJwtAuthGuard)
   refreshToken(@GetUser() user: AuthenUser) {
-    return this.authService.refreshToken(user.refreshToken, user.id);
+    return this.authService.refreshToken(user.refreshToken, user.accountId);
   }
 
   @Post('/logout')
