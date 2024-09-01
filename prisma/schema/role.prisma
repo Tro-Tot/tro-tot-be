@@ -1,22 +1,10 @@
-model Role {
-  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name      String    @unique @map("name")
-  code      RoleCode  @map("code")
-  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
-  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
-  users     User[]
+// enum RoleCode {
+//   RENTER          @map("RENTER")
+//   LANDLORD        @map("LANDLORD")
+//   STAFF           @map("STAFF")
+//   TECHNICAL_STAFF @map("TECHNICAL_STAFF")
+//   ADMIN           @map("ADMIN")
+//   MANAGER         @map("MANAGER")
 
-  @@map("roles")
-}
-
-enum RoleCode {
-  RENTER          @map("RENTER")
-  LANDLORD        @map("LANDLORD")
-  STAFF           @map("STAFF")
-  TECHNICAL_STAFF @map("TECHNICAL_STAFF")
-  ADMIN           @map("ADMIN")
-  MANAGER         @map("MANAGER")
-
-  @@map("role_codes")
-}
+//   @@map("role_codes")
+// }

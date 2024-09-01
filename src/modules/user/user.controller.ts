@@ -1,26 +1,20 @@
 import {
+  Body,
   Controller,
   Get,
   Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseInterceptors,
   UploadedFile,
   UseGuards,
-  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
-import { UserService } from './user.service';
-import { ApiTags } from '@nestjs/swagger';
-import { apiSuccess, apiFailed } from 'src/common/dto/api-response';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
-import { ImageService } from '../image/image.service';
-import { Auth } from 'firebase-admin/lib/auth/auth';
 import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiTags } from '@nestjs/swagger';
+import { apiFailed, apiSuccess } from 'src/common/dto/api-response';
 import { GetUser } from '../../common/decorator/get_user.decorator';
 import { AuthenUser } from '../auth/dto/authen-user.dto';
 import { JwtAuthGuard } from '../auth/strategy/jwt-auth.guard';
+import { UserService } from './user.service';
 
 @Controller('user')
 @ApiTags('user')
@@ -41,7 +35,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   async getMyProfile(@GetUser() user: AuthenUser) {
     try {
-      const result = await this.userService.findOneByUserId(user.id);
+      const result = await this.userService.findOneByUserId(user.accountId);
 
       if (result) {
         return apiSuccess(200, result, 'Get user success');

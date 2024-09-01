@@ -6,15 +6,24 @@ import {
   Param,
   Post,
   Query,
+  UseGuards,
   UsePipes,
 } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { ApiTags } from '@nestjs/swagger';
+import { Prisma, RoleCode } from '@prisma/client';
 import { I18nValidationPipe } from 'nestjs-i18n';
+import { Public } from 'src/common/decorator/is-public.decorator';
+import { Roles } from 'src/common/decorator/roles.decorator';
 import { FilterDto } from 'src/common/dto/filter-query.dto';
+import { RolesGuard } from 'src/common/guard/roles.guard';
+import { JwtAuthGuard } from '../auth/strategy/jwt-auth.guard';
 import { CreateRoomServiceDto } from './dto/create-room-service.dto';
 import { RoomServiceService } from './room-service.service';
 
 @Controller('room-service')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(RoleCode.TECHNICAL_STAFF, RoleCode.STAFF)
+@ApiTags('room-service')
 export class RoomServiceController {
   constructor(private readonly roomServiceService: RoomServiceService) {}
 
@@ -28,7 +37,9 @@ export class RoomServiceController {
   getOneRoom(@Param('id') roomServiceId: string) {
     return this.roomServiceService.findOneRoomService(roomServiceId);
   }
+
   @Get('room/:roomId')
+  @Public()
   @UsePipes(new I18nValidationPipe())
   getAllRoomServiceBasedOnRoomId(
     @Param('roomId') roomId: string,

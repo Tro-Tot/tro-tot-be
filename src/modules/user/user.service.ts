@@ -1,11 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
+import { Injectable } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
+import { PrismaService } from 'prisma/prisma.service';
+import { PathConstants } from 'src/common/constant/path.constant';
+import { apiFailed, apiSuccess } from 'src/common/dto/api-response';
 import { AuthenUser } from '../auth/dto/authen-user.dto';
 import { ImageService } from '../image/image.service';
-import { apiFailed, apiSuccess, apiGeneral } from 'src/common/dto/api-response';
-import { ApiResponse } from 'src/common/dto/response.dto';
-import { PathConstants } from 'src/common/constant/path.constant';
 
 @Injectable()
 export class UserService {
@@ -17,16 +16,16 @@ export class UserService {
   async findOne(query: Prisma.UserWhereInput): Promise<User | undefined> {
     return await this.prisma.user.findFirst({
       where: query,
-      include: {
-        role: true,
-      },
+      // include: {
+      //   role: true,
+      // },
     });
   }
 
   async addAvatar(file: Express.Multer.File, userInput: AuthenUser) {
     try {
       //Get the user
-      const user: User = await this.findOneByUserId(userInput.id);
+      const user: User = await this.findOneByUserId(userInput.accountId);
 
       const imageUrl = await this.imageService.addImageToFirebase(
         file,
@@ -77,7 +76,9 @@ export class UserService {
         managers: true,
         renters: true,
         staffs: true,
-        role: true,
+        technicalStaffs: true,
+        // admins: true,
+        // role: true,
       },
     });
   }
@@ -87,9 +88,9 @@ export class UserService {
       where: {
         username: usernameInput,
       },
-      include: {
-        role: true,
-      },
+      // include: {
+      //   role: true,
+      // },
     });
   }
 
@@ -111,9 +112,9 @@ export class UserService {
       where: {
         email: email,
       },
-      include: {
-        role: true,
-      },
+      // include: {
+      //   role: true,
+      // },
     });
   }
 

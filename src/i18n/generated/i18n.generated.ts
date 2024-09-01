@@ -15,15 +15,28 @@ export type I18nTranslations = {
         "UNAUTHORIZED": string;
         "no_token_provided": string;
         "blacklist_token": string;
+        "forbidden": string;
     };
     "house-service": {
         "invalid_status": string;
         "house_service_not_exist": string;
     };
     "house": {
+        "house_object_name": string;
         "house_not_exist": string;
         "house_exist": string;
         "house_not_belong_to_staff": string;
+        "house_create_success": string;
+        "house_create_fail": string;
+        "house_found": string;
+        "house_not_found": string;
+        "house_updated": string;
+        "house_status_occupied": string;
+        "house_status_occupied_conflict": string;
+        "house_find_error": string;
+        "house_image_upload_success": string;
+        "house_image_upload_fail": string;
+        "house_image_delete_success": string;
     };
     "prisma": {
         "NOT_FOUND": string;
@@ -54,6 +67,23 @@ export type I18nTranslations = {
         "room_image_upload_success": string;
         "room_image_upload_fail": string;
         "room_object_name": string;
+    };
+    "service": {
+        "service_object_name": string;
+        "service_not_exist": string;
+        "service_exist": string;
+        "service_not_belong_to_staff": string;
+        "service_create_success": string;
+        "service_create_fail": string;
+        "service_found": string;
+        "service_not_found": string;
+        "service_updated": string;
+        "service_status_occupied": string;
+        "service_status_occupied_conflict": string;
+        "service_find_error": string;
+        "service_image_upload_success": string;
+        "service_image_upload_fail": string;
+        "service_image_delete_success": string;
     };
     "test": {
         "HELLO": string;

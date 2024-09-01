@@ -45,7 +45,7 @@ import { UserModule } from './modules/user/user.module';
         '../../src/i18n/generated/i18n.generated.ts',
       ),
     }),
-    RoleModule,
+    // RoleModule,
     AuthModule,
     UserModule,
     BlacklistTokenModule,

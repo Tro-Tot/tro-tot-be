@@ -1,104 +1,101 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional } from 'class-validator';
 import {
-  IsNumber,
-  IsOptional,
-  IsString,
-  Min,
-  MinLength,
-} from 'class-validator';
-import { i18nValidationMessage } from 'nestjs-i18n';
-import { I18nTranslations } from 'src/i18n/generated/i18n.generated';
-import { IsHouseExist } from '../validator/is-house-exist-validator';
+  IsNotEmptyCustom,
+  IsNumberCustom,
+  IsStringCustom,
+  MinCustom,
+  MinLengthCustom,
+} from 'src/common/decorator/class-validator-custom.decorator';
 
 export class CreateHouseDTO {
   @ApiProperty()
-  @IsString()
+  @IsStringCustom()
   @IsOptional()
-  @IsHouseExist()
   cooperativeContractId: string;
 
   @ApiProperty()
-  @MinLength(3, {
-    message: i18nValidationMessage<I18nTranslations>(
-      'validation.INVALID_MIN_LENGTH',
-      { length: 3 },
-    ),
-  })
-  @IsString({})
+  @MinLengthCustom(3)
+  @IsNotEmptyCustom()
+  @IsStringCustom()
   name: string;
 
   @ApiProperty()
-  @IsString()
+  @IsNotEmptyCustom()
+  @IsStringCustom()
   city: string;
 
   @ApiProperty()
-  @IsString()
+  @IsNotEmptyCustom()
+  @IsStringCustom()
   district: string;
 
   @ApiProperty()
-  @IsString()
+  @IsNotEmptyCustom()
+  @IsStringCustom()
   ward: string;
 
   @ApiProperty()
-  @IsString()
+  @IsNotEmptyCustom()
+  @IsStringCustom()
   street: string;
 
   @ApiProperty()
-  @IsString()
+  @IsNotEmptyCustom()
+  @IsStringCustom()
   houseNumber: string;
 
   @ApiProperty()
-  @IsNumber()
+  @IsNumberCustom()
+  @MinCustom(0)
   latitude: number;
 
   @ApiProperty()
-  @IsNumber()
+  @IsNumberCustom()
+  @MinCustom(0)
   longitude: number;
 
   @ApiProperty()
-  @IsString()
+  @IsStringCustom()
   houseType: string;
 
   @ApiProperty()
-  @IsNumber()
-  @Min(0)
+  @IsNumberCustom()
+  @MinCustom(0)
   numberOfFloor: number;
 
   @ApiProperty()
-  @IsNumber()
-  @Min(1)
+  @IsNumberCustom()
+  @MinCustom(0)
   numberOfRoom: number;
 
   @ApiProperty()
-  @IsNumber()
-  @Min(1)
+  @IsNumberCustom()
+  @MinCustom(0)
   numberOfBathroom: number;
 
   @ApiProperty()
-  @IsString()
-  mainDoorDirection: string;
-
-  @ApiProperty()
-  @IsString()
-  furniture: string;
-
-  @ApiProperty()
-  @IsNumber()
+  @IsNumberCustom()
   width: number;
 
   @ApiProperty()
-  @IsNumber()
+  @IsNumberCustom()
   length: number;
 
   @ApiProperty()
-  @IsNumber()
+  @IsNumberCustom()
   roadWidth: number;
 
   @ApiProperty()
-  @IsString()
+  @IsStringCustom()
+  title: string;
+
+  @ApiProperty()
+  @IsStringCustom()
   description: string;
 
   @ApiProperty()
-  @IsString()
+  @IsOptional()
+  @IsStringCustom()
   legalDocument: string;
 }

@@ -1,11 +1,15 @@
-import { Prisma, Service, ServiceType } from '@prisma/client';
+import { Service, ServiceType } from '@prisma/client';
+import { I18nService } from 'nestjs-i18n';
 import { PrismaService } from 'prisma/prisma.service';
+import { SortByEnum } from 'src/common/enum/sort-by.enum';
 import { CreateServiceDTO } from './dto/create-service.dto';
 import { UpdateServiceDTO } from './dto/update-service.dto';
-import { SortByEnum } from 'src/common/enum/sort-by.enum';
 
 export class ServiceService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly i18nService: I18nService,
+  ) {}
 
   async getServices(): Promise<Service[]> {
     return this.prismaService.service.findMany();
