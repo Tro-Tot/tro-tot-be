@@ -1,28 +1,33 @@
 model House {
-  id                    String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  cooperativeContractId String?   @map("cooperative_contract_id") @db.Uuid @unique
-  staffId               String?   @map("staff_id") @db.Uuid
-  name                  String    @map("name")
-  city                  String    @map("city")
-  district              String    @map("district")
-  ward                  String    @map("ward")
-  street                String    @map("street")
-  houseNumber           String    @map("house_number")
-  latitude              Float     @map("latitude")
-  longitude             Float     @map("longitude")
-  houseType             String    @map("house_type")
-  numberOfFloor         Int       @map("number_of_floor")
-  numberOfRoom          Int       @map("number_of_room")
-  numberOfBathroom      Int       @map("number_of_bathroom")
-  width                 Float     @map("width")
-  length                Float     @map("length")
-  roadWidth             Float     @map("road_width")
-  title                 String?    @map("title")
-  description           String    @map("description")
-  legalDocument         String    @map("legal_document")
-  createdAt             DateTime? @default(now()) @map("created_at") @db.Timestamptz()
-  deletedAt             DateTime? @map("deleted_at") @db.Timestamptz()
-  updatedAt             DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
+  id                    String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  cooperativeContractId String?               @unique @map("cooperative_contract_id") @db.Uuid
+  staffId               String?               @map("staff_id") @db.Uuid
+  name                  String                @map("name")
+  city                  String                @map("city")
+  district              String                @map("district")
+  ward                  String                @map("ward")
+  street                String                @map("street")
+  houseNumber           String                @map("house_number")
+  latitude              Float                 @map("latitude")
+  longitude             Float                 @map("longitude")
+  houseType             String                @map("house_type")
+  numberOfFloor         Int                   @map("number_of_floor")
+  numberOfRoom          Int                   @map("number_of_room")
+  numberOfBathroom      Int                   @map("number_of_bathroom")
+  width                 Float                 @map("width")
+  length                Float                 @map("length")
+  roadWidth             Float                 @map("road_width")
+  title                 String?               @map("title")
+  description           String                @map("description")
+  legalDocument         String                @map("legal_document")
+  createdAt             DateTime?             @default(now()) @map("created_at") @db.Timestamptz()
+  deletedAt             DateTime?             @map("deleted_at") @db.Timestamptz()
+  updatedAt             DateTime?             @updatedAt @map("updated_at") @db.Timestamptz()
+  houseServices         HouseService[]
+  attachments           Attachment[]
+  cooperativeContract   CooperativeContract[]
+  rooms                 Room[]
+  staff                 Staff?                @relation(fields: [staffId], references: [id])
 
   @@map("houses")
 }

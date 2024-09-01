@@ -5,8 +5,6 @@ model Manager {
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz()
   updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz()
 
-  user                 User                  @relation(fields: [userId], references: [id])
-  cooperativeContracts CooperativeContract[]
   cooperativeRequests  CooperativeRequest[]
   user                 User                  @relation(fields: [userId], references: [id])
   cooperativeContracts CooperativeContract[] @relation("CooperativeContractToManager")

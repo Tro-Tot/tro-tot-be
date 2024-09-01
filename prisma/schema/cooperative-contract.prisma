@@ -12,9 +12,10 @@ model CooperativeContract {
   createdAt                 DateTime?  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt                 DateTime?  @updatedAt @map("updated_at") @db.Timestamptz(6)
   deletedAt                 DateTime?  @map("deleted_at") @db.Timestamptz(6)
-  House                     House?
+  House                     House?     @relation(fields: [houseId], references: [id])
   LandLord                  LandLord[] @relation("CooperativeContractToLandLord")
   Manager                   Manager[]  @relation("CooperativeContractToManager")
+  houseId                   String?    @db.Uuid
 
   @@map("cooperative_contracts")
 }
