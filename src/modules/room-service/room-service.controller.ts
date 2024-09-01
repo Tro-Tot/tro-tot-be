@@ -34,6 +34,7 @@ export class RoomServiceController {
   }
 
   @Get(':id')
+  @Public()
   getOneRoom(@Param('id') roomServiceId: string) {
     return this.roomServiceService.findOneRoomService(roomServiceId);
   }

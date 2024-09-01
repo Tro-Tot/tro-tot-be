@@ -19,7 +19,7 @@ import { ImageModule } from './modules/image/image.module';
 import { MailModule } from './modules/mail/mail.module';
 import { OtpModule } from './modules/otp/otp.module';
 import { RefreshTokenModule } from './modules/refresh-token/refresh-token.module';
-import { RoleModule } from './modules/role/role.module';
+// import { RoleModule } from './modules/role/role.module';
 import { RoomServiceModule } from './modules/room-service/room-service.module';
 import { RoomModule } from './modules/room/room.module';
 import { ServiceModule } from './modules/service/service.module';
