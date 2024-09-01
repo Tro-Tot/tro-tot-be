@@ -47,13 +47,12 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
 
       throw new CustomAuthException(401, i18n.t('auth.invalid_token'), [error]);
     }
-
-    const user: AuthenUser = {
-      id: payload.userId,
+    console.log('payload', payload);
+    const user: Partial<AuthenUser> = {
+      ...payload,
+      accountId: payload.accountId,
       accessToken: token,
       role: payload.role,
-      user: undefined,
-      refreshToken: '',
     };
     return user;
   }

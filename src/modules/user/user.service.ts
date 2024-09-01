@@ -25,7 +25,7 @@ export class UserService {
   async addAvatar(file: Express.Multer.File, userInput: AuthenUser) {
     try {
       //Get the user
-      const user: User = await this.findOneByUserId(userInput.id);
+      const user: User = await this.findOneByUserId(userInput.accountId);
 
       const imageUrl = await this.imageService.addImageToFirebase(
         file,

@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { RoleCode, User } from '@prisma/client';
+import { IsOptional } from 'class-validator';
 import {
   IsEnumCustom,
   IsUUIDCustom,
@@ -7,7 +8,7 @@ import {
 export class AuthenUser {
   @ApiProperty()
   @IsUUIDCustom()
-  id: string;
+  accountId: string;
 
   @ApiProperty()
   user: User;
@@ -21,4 +22,28 @@ export class AuthenUser {
 
   @ApiProperty()
   refreshToken: string;
+
+  @ApiProperty()
+  @IsOptional()
+  landLordId: string;
+
+  @ApiProperty()
+  @IsOptional()
+  renterId: string;
+
+  @ApiProperty()
+  @IsOptional()
+  managerId: string;
+
+  @ApiProperty()
+  @IsOptional()
+  staffId: string;
+
+  @ApiProperty()
+  @IsOptional()
+  adminId: string;
+
+  @ApiProperty()
+  @IsOptional()
+  technicalStaffId: string;
 }

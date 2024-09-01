@@ -19,12 +19,13 @@ export class AuthExceptionFilter implements ExceptionFilter {
   catch(exception: I18nValidationException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
-
     let logger = new Logger('AuthExceptionFilter');
+    console.log('exception', exception.getStatus());
     logger.verbose('-------------Exception Start-------------');
     logger.error(exception.stack);
     logger.error(exception.message);
     logger.error(exception.errors);
+    logger.error(exception.getStatus());
     logger.verbose('-------------Exception End---------------');
     let responseBody: ApiResponse;
 
@@ -32,7 +33,7 @@ export class AuthExceptionFilter implements ExceptionFilter {
     let errors = this.flattenConstraintValidationErrors(exception.errors);
     switch (exception.message) {
       default:
-        responseBody = apiFailed(401, message, errors);
+        responseBody = apiFailed(exception.getStatus(), message, errors);
         break;
     }
 
@@ -48,7 +49,10 @@ export class AuthExceptionFilter implements ExceptionFilter {
       .flatten()
       .map((item) => {
         //Constraints are the validation error messages
-        return { ...item, constraints: Object.values(item.constraints) };
+        return {
+          ...item,
+          constraints: Object?.values(item?.constraints ?? {}),
+        };
       })
       .flatten()
       .toArray();

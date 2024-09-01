@@ -1,8 +1,8 @@
-import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt, Strategy } from 'passport-jwt';
-import { Request } from 'express';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { PassportStrategy } from '@nestjs/passport';
+import { Request } from 'express';
+import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AuthenUser } from '../dto/authen-user.dto';
 
 @Injectable()
@@ -29,12 +29,13 @@ export class RefreshTokenStrategy extends PassportStrategy(
     const refreshToken = authorizationHeader
       ? authorizationHeader.replace('Bearer', '').trim()
       : '';
-    const user: AuthenUser = {
-      id: payload.userId,
-      accessToken: '',
-      role: payload?.role,
-      user: undefined,
-      refreshToken: refreshToken,
+    const user: Partial<AuthenUser> = {
+      ...payload,
+      // accountId: payload.accountId,
+      // accessToken: '',
+      // role: payload?.role,
+      // user: undefined,
+      // refreshToken: refreshToken,
     };
     return user;
   }
