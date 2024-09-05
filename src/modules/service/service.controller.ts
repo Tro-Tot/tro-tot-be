@@ -4,9 +4,10 @@ import {
   Delete,
   Get,
   HttpStatus,
+  Logger,
   Param,
+  Patch,
   Post,
-  Put,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -74,12 +75,13 @@ export class ServiceController {
     );
   }
 
-  @Put(':id')
+  @Patch(':id')
   async updateService(
     @Param('id') id: string,
     @Body() updateServiceDTO: UpdateServiceDTO,
     @I18n() i18n: I18nContext,
   ) {
+    Logger.debug(updateServiceDTO);
     return apiSuccess(
       HttpStatus.OK,
       await this.serviceService.updateService(id, updateServiceDTO),

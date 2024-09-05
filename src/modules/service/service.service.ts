@@ -1,10 +1,12 @@
-import { Service, ServiceType } from '@prisma/client';
+import { Injectable } from '@nestjs/common';
+import { Prisma, Service, ServiceType } from '@prisma/client';
 import { I18nService } from 'nestjs-i18n';
 import { PrismaService } from 'prisma/prisma.service';
 import { SortByEnum } from 'src/common/enum/sort-by.enum';
 import { CreateServiceDTO } from './dto/create-service.dto';
 import { UpdateServiceDTO } from './dto/update-service.dto';
 
+@Injectable()
 export class ServiceService {
   constructor(
     private readonly prismaService: PrismaService,
@@ -48,8 +50,9 @@ export class ServiceService {
   }
 
   async createService(service: CreateServiceDTO): Promise<Service> {
+    const data: Prisma.ServiceCreateInput = service;
     return this.prismaService.service.create({
-      data: service,
+      data: data,
     });
   }
 
